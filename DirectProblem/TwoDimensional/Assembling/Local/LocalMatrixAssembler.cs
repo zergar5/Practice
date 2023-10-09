@@ -95,8 +95,8 @@ public class LocalMatrixAssembler : ILocalMatrixAssembler
         var d = _grid.Nodes[element.NodesIndexes[0]].R / element.Length;
 
         _rotorStiffness[0, 0] = Math.Pow(1 + d, 2);
-        _rotorStiffness[0, 1] = d * (1 + d);
-        _rotorStiffness[1, 0] = d * (1 + d);
+        _rotorStiffness[0, 1] = -d * (1 + d);
+        _rotorStiffness[1, 0] = _rotorStiffness[0, 1];
         _rotorStiffness[1, 1] = Math.Pow(d, 2);
 
         Matrix.Multiply(Math.Log(1 + 1 / d), _rotorStiffness, _rotorStiffness);
