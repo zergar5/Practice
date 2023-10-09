@@ -11,7 +11,6 @@ using DirectProblem.TwoDimensional.Assembling.Boundary;
 using DirectProblem.TwoDimensional.Assembling.Global;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using DirectProblem.TwoDimensional.Parameters;
-using Practice6Sem.TwoDimensional.Assembling;
 using System.Globalization;
 using System.Numerics;
 using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;

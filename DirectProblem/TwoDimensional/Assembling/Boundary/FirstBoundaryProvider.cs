@@ -43,11 +43,11 @@ public class FirstBoundaryProvider
             }
         }
 
-        for (var j = 0; j < conditions.Length * 2;)
+        for (var j = 0; j < conditions.Length; j++)
         {
             var (indexes, _) = _grid.Elements[conditions[j].ElementIndex].GetBoundNodeIndexes(conditions[j].Bound, _indexesBuffer);
 
-            for (var i = 0; i < indexes.Length; i++, j++)
+            for (var i = 0; i < indexes.Length; i++)
             {
                 for (var k = 0; k < indexes.Length; k++)
                 {
