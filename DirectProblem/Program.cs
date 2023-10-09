@@ -13,6 +13,7 @@ using Practice6Sem.TwoDimensional.Parameters;
 using System;
 using System.Globalization;
 using System.Numerics;
+using DirectProblem.GridGenerator;
 using Practice6Sem.GridGenerator.Intervals.Splitting;
 using static System.Math;
 
