@@ -14,6 +14,7 @@ using DirectProblem.TwoDimensional.Parameters;
 using Practice6Sem.TwoDimensional.Assembling;
 using System.Globalization;
 using System.Numerics;
+using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
@@ -103,16 +104,16 @@ var localBasisFunctionsProvider = new LocalBasisFunctionsProvider(grid, new Line
 
 Func<Node2D, Complex> u = p => new Complex((p.R - 1d) * (p.R - 15d) * (p.Z + 1d) * (p.Z + 13d), -(p.R - 1d) * (p.R - 15d) * (p.Z + 1d) * (p.Z + 13d));
 
-var f = new RightPartParameter
-(
-    (p, mu, sigma) => new Complex(
-        (-((p.Z + 13d) * (p.Z + 1d) * (4d * p.R - 16d) / p.R) + u(p).Real / (p.R * p.R) -
-         2d * (p.R - 15d) * (p.R - 1d)) / mu - omega * sigma * u(p).Imaginary,
-        ((p.Z + 13d) * (p.Z + 1d) * (4d * p.R - 16d) / p.R + u(p).Imaginary / (p.R * p.R) +
-         2d * (p.R - 15d) * (p.R - 1d)) / mu + omega * sigma * u(p).Real
-    ),
-    grid
-);
+//var f = new RightPartParameter
+//(
+//    (p, mu, sigma) => new Complex(
+//        (-((p.Z + 13d) * (p.Z + 1d) * (4d * p.R - 16d) / p.R) + u(p).Real / (p.R * p.R) -
+//         2d * (p.R - 15d) * (p.R - 1d)) / mu - omega * sigma * u(p).Imaginary,
+//        ((p.Z + 13d) * (p.Z + 1d) * (4d * p.R - 16d) / p.R + u(p).Imaginary / (p.R * p.R) +
+//         2d * (p.R - 15d) * (p.R - 1d)) / mu + omega * sigma * u(p).Real
+//    ),
+//    grid
+//);
 
 //Func<Node2D, Complex> u = p => new Complex(Exp(p.R), Exp(p.Z));
 
@@ -171,13 +172,15 @@ var f = new RightPartParameter
 
 var derivativeCalculator = new DerivativeCalculator();
 
-var localAssembler = new LocalAssembler(grid, localBasisFunctionsProvider, materialFactory, f,
-    new DoubleIntegralCalculator(), derivativeCalculator, omega);
+var localAssembler =
+    new LocalAssembler(
+        new LocalMatrixAssembler(grid, new StiffnessMatrixTemplatesProvider(), new MassMatrixTemplateProvider()),
+        materialFactory, omega);
 
 var inserter = new Inserter();
-var globalAssembler = new GlobalAssembler<Node2D>(new MatrixPortraitBuilder(), localAssembler, inserter, new GaussExcluder());
+var globalAssembler = new GlobalAssembler<Node2D>(grid, new MatrixPortraitBuilder(), localAssembler, inserter, new GaussExcluder(), localBasisFunctionsProvider);
 
-var firstBoundaryProvider = new FirstBoundaryProvider(grid, u);
+var firstBoundaryProvider = new FirstBoundaryProvider(grid);
 var conditions = firstBoundaryProvider.GetConditions(10, 40);
 
 var equation = globalAssembler
@@ -189,7 +192,7 @@ var preconditionMatrix = globalAssembler.BuildPreconditionMatrix();
 
 var luPreconditioner = new LUPreconditioner();
 
-var los = new LOS(luPreconditioner, new LUSparse(luPreconditioner));
+var los = new LOS(luPreconditioner, new LUSparse());
 var solution = los.Solve(equation, preconditionMatrix);
 
 var femSolution = new FEMSolution(grid, solution, localBasisFunctionsProvider, omega);

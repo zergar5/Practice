@@ -79,7 +79,7 @@ public class GlobalAssembler<TNode>
         return this;
     }
 
-    public GlobalAssembler<TNode> ApplyFirstConditions(List<FirstConditionValue> conditions)
+    public GlobalAssembler<TNode> ApplyFirstConditions(FirstConditionValue[] conditions)
     {
         foreach (var condition in conditions)
         {

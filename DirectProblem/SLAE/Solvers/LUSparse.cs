@@ -1,12 +1,13 @@
-﻿using DirectProblem.Core.Global;
+﻿using DirectProblem.Core.Base;
+using DirectProblem.Core.Global;
 
 namespace DirectProblem.SLAE.Solvers;
 
 public class LUSparse
 {
-    public GlobalVector CalcY(SparseMatrix sparseMatrix, GlobalVector b, GlobalVector? y = null)
+    public Vector CalcY(SparseMatrix sparseMatrix, Vector b, Vector? y = null)
     {
-        y ??= new GlobalVector(b.Count);
+        y ??= new Vector(b.Count);
 
         for (var i = 0; i < sparseMatrix.Count; i++)
         {
@@ -23,7 +24,7 @@ public class LUSparse
         return y;
     }
 
-    public GlobalVector CalcX(SparseMatrix sparseMatrix, GlobalVector y, GlobalVector? x = null)
+    public Vector CalcX(SparseMatrix sparseMatrix, Vector y, Vector? x = null)
     {
         x = x == null ? y.Clone() : y.Copy(x);
 

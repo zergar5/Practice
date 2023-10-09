@@ -1,11 +1,12 @@
-﻿using DirectProblem.Core.Global;
+﻿using DirectProblem.Core.Base;
+using DirectProblem.Core.Global;
 using Practice6Sem.Core.Global;
 
 namespace Practice6Sem.SLAE.Solvers;
 
 public class LUProfile
 {
-    public GlobalVector Solve(Equation<ProfileMatrix> equation)
+    public Vector Solve(Equation<ProfileMatrix> equation)
     {
         var matrix = equation.Matrix.LU();
         var y = CalcY(matrix, equation.Solution, equation.RightPart);
@@ -14,7 +15,7 @@ public class LUProfile
         return x;
     }
 
-    private GlobalVector CalcY(ProfileMatrix profileMatrix, GlobalVector q, GlobalVector b)
+    private Vector CalcY(ProfileMatrix profileMatrix, Vector q, Vector b)
     {
         var y = q;
 
@@ -35,7 +36,7 @@ public class LUProfile
         return y;
     }
 
-    private GlobalVector CalcX(ProfileMatrix profileMatrix, GlobalVector y)
+    private Vector CalcX(ProfileMatrix profileMatrix, Vector y)
     {
         var x = y;
 

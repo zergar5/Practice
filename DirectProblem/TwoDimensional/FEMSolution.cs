@@ -1,23 +1,25 @@
 ﻿using DirectProblem.Core;
+using DirectProblem.Core.Base;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.FEM;
 using DirectProblem.GridGenerator.Intervals.Core;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using System.Numerics;
+using Vector = DirectProblem.Core.Base.Vector;
 
 namespace DirectProblem.TwoDimensional;
 
 public class FEMSolution
 {
     private readonly Grid<Node2D> _grid;
-    private readonly GlobalVector _solution;
+    private readonly Vector _solution;
     private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
     private readonly double _omega;
 
     public FEMSolution
     (
         Grid<Node2D> grid,
-        GlobalVector solution,
+        Vector solution,
         LocalBasisFunctionsProvider localBasisFunctionsProvider,
         double omega
     )
@@ -121,7 +123,7 @@ public class FEMSolution
 
     public double CalcError(Func<Node2D, Complex> u)
     {
-        var trueSolution = new GlobalVector(_solution.Count);
+        var trueSolution = new Vector(_solution.Count);
 
         for (var i = 0; i < trueSolution.Count / 2; i++)
         {
@@ -130,7 +132,7 @@ public class FEMSolution
             trueSolution[i * 2 + 1] = uValues.Imaginary;
         }
 
-        GlobalVector.Subtract(_solution, trueSolution, trueSolution);
+        Vector.Subtract(_solution, trueSolution, trueSolution);
 
         return trueSolution.Norm;
     }

@@ -3,13 +3,16 @@ using DirectProblem.Core.Boundary;
 using DirectProblem.Core.GridComponents;
 using System;
 using DirectProblem.Core.Base;
+using DirectProblem.Core.Local;
 
 namespace DirectProblem.TwoDimensional.Assembling.Boundary;
 
 public class FirstBoundaryProvider
 {
     private readonly Grid<Node2D> _grid;
-    private Vector[]? _buffers;
+    private int[][]? _indexes;
+    private Vector[]? _values;
+    private readonly int[] _indexesBuffer = new int [2];
 
     public FirstBoundaryProvider(Grid<Node2D> grid)
     {
@@ -20,23 +23,38 @@ public class FirstBoundaryProvider
     {
         var conditionsValues = new FirstConditionValue[conditions.Length * 2];
 
-        if (_buffers is null)
+        if (_indexes is null)
         {
-            _buffers = new Vector[conditionsValues.Length * 2];
+            _indexes = new int[conditionsValues.Length * 2][];
 
             for (var i = 0; i < conditions.Length * 2; i++)
             {
-                _buffers[i] = new Vector(2);
+                _indexes[i] = new int[2];
+            }
+        }
+
+        if (_values is null)
+        {
+            _values = new Vector[conditionsValues.Length * 2];
+
+            for (var i = 0; i < conditions.Length * 2; i++)
+            {
+                _values[i] = new Vector(2);
             }
         }
 
         for (var j = 0; j < conditions.Length * 2;)
         {
-            var (indexes, _) = _grid.Elements[conditions[j].ElementIndex].GetBoundNodeIndexes(conditions[j].Bound);
+            var (indexes, _) = _grid.Elements[conditions[j].ElementIndex].GetBoundNodeIndexes(conditions[j].Bound, _indexesBuffer);
 
-            foreach (var i in indexes)
+            for (var i = 0; i < indexes.Length; i++, j++)
             {
-                conditions[j++] = new FirstConditionValue(j * 2, 0);
+                for (var k = 0; k < indexes.Length; k++)
+                {
+                    _indexes[j][k] = indexes[k] * 2 + i;
+                }
+
+                conditionsValues[j] = new FirstConditionValue(new LocalVector(_indexes[j], _values[j]));
             }
         }
 
