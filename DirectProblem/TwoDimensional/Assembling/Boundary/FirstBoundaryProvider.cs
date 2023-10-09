@@ -1,68 +1,73 @@
-﻿using Practice6Sem.Core;
-using Practice6Sem.Core.Boundary;
-using Practice6Sem.Core.GridComponents;
-using System.Numerics;
+﻿using DirectProblem.Core;
+using DirectProblem.Core.Boundary;
+using DirectProblem.Core.GridComponents;
+using System;
+using DirectProblem.Core.Base;
 
-namespace Practice6Sem.TwoDimensional.Assembling.Boundary;
+namespace DirectProblem.TwoDimensional.Assembling.Boundary;
 
 public class FirstBoundaryProvider
 {
     private readonly Grid<Node2D> _grid;
-    private readonly Func<Node2D, Complex> _u;
+    private Vector[]? _buffers;
 
-    public FirstBoundaryProvider(Grid<Node2D> grid, Func<Node2D, Complex> u)
+    public FirstBoundaryProvider(Grid<Node2D> grid)
     {
         _grid = grid;
-        _u = u;
     }
 
-    public List<FirstCondition> GetConditions(List<int> elementsIndexes, List<Bound> bounds)
+    public FirstConditionValue[] GetConditions(FirstCondition[] conditions)
     {
-        var conditions = new List<FirstCondition>(elementsIndexes.Count * 4);
+        var conditionsValues = new FirstConditionValue[conditions.Length * 2];
 
-        for (var i = 0; i < elementsIndexes.Count; i++)
+        if (_buffers is null)
         {
-            var (indexes, _) = _grid.Elements[elementsIndexes[i]].GetBoundNodeIndexes(bounds[i]);
+            _buffers = new Vector[conditionsValues.Length * 2];
 
-            foreach (var t in indexes)
+            for (var i = 0; i < conditions.Length * 2; i++)
             {
-                conditions.Add(new FirstCondition(t * 2, _u(_grid.Nodes[t]).Real));
-                conditions.Add(new FirstCondition(t * 2 + 1, _u(_grid.Nodes[t]).Imaginary));
+                _buffers[i] = new Vector(2);
             }
         }
 
-        return conditions;
+        for (var j = 0; j < conditions.Length * 2;)
+        {
+            var (indexes, _) = _grid.Elements[conditions[j].ElementIndex].GetBoundNodeIndexes(conditions[j].Bound);
+
+            foreach (var i in indexes)
+            {
+                conditions[j++] = new FirstConditionValue(j * 2, 0);
+            }
+        }
+
+        return conditionsValues;
     }
 
-    public List<FirstCondition> GetConditions(int elementsByLength, int elementsByHeight)
+    public FirstConditionValue[] GetConditions(int elementsByLength, int elementsByHeight)
     {
-        var elementsIndexes = new List<int>(2 * (elementsByLength + elementsByHeight));
-        var bounds = new List<Bound>(2 * (elementsByLength + elementsByHeight));
+        var conditions = new FirstCondition[2 * (elementsByLength + elementsByHeight)];
 
-        for (var i = 0; i < elementsByLength; i++)
+        var j = 0;
+        for (var i = 0; i < elementsByLength; i++, j++)
         {
-            elementsIndexes.Add(i);
-            bounds.Add(Bound.Lower);
+            conditions[j] = new FirstCondition(i, Bound.Lower);
         }
 
-        for (var i = 0; i < elementsByHeight; i++)
+        for (var i = 0; i < elementsByHeight; i++, j++)
         {
-            elementsIndexes.Add(i * elementsByLength);
-            bounds.Add(Bound.Left);
+            conditions[j] = new FirstCondition(i * elementsByLength, Bound.Left);
         }
 
-        for (var i = 0; i < elementsByHeight; i++)
+        for (var i = 0; i < elementsByHeight; i++, j++)
         {
-            elementsIndexes.Add((i + 1) * elementsByLength - 1);
-            bounds.Add(Bound.Right);
+            conditions[j] = new FirstCondition((i + 1) * elementsByLength - 1, Bound.Right);
         }
 
-        for (var i = elementsByLength * (elementsByHeight - 1); i < elementsByLength * elementsByHeight; i++)
+        for (var i = elementsByLength * (elementsByHeight - 1); i < elementsByLength * elementsByHeight; i++, j++)
         {
-            elementsIndexes.Add(i);
-            bounds.Add(Bound.Upper);
+            conditions[j] = new FirstCondition(i, Bound.Upper);
         }
 
-        return GetConditions(elementsIndexes, bounds);
+        return GetConditions(conditions);
     }
 }

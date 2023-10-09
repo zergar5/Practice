@@ -1,4 +1,4 @@
-﻿namespace Practice6Sem.Core.GridComponents;
+﻿namespace DirectProblem.Core.Boundary;
 
 public enum Bound
 {

@@ -7,8 +7,9 @@ public class ProfileMatrix
     public List<double> UpperValues { get; }
     public int[] RowsIndexes { get; }
 
-    public int CountRows => Diagonal.Length;
-    public int CountColumns => Diagonal.Length;
+    public int Count => Diagonal.Length;
+
+    //public ReadOnlySpan<int> this[int rowIndex] => newRowsIndexes[rowIndex]..RowsIndexes[rowIndex + 1]];
 
     public ProfileMatrix(int[] rowsIndexes, double[] diagonal, List<double> lowerValues, List<double> upperValues)
     {
@@ -20,7 +21,7 @@ public class ProfileMatrix
 
     public ProfileMatrix LU()
     {
-        for (var i = 0; i < CountRows; i++)
+        for (var i = 0; i < Count; i++)
         {
             var j = i - (RowsIndexes[i + 1] - RowsIndexes[i]);
 

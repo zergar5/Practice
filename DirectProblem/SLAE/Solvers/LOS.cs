@@ -1,10 +1,8 @@
-﻿using System.Net.Http.Headers;
-using CourseProject.SLAE;
-using Practice6Sem.Core.Global;
-using Practice6Sem.FEM;
-using Practice6Sem.SLAE.Preconditions;
+﻿using DirectProblem.Core.Global;
+using DirectProblem.FEM;
+using DirectProblem.SLAE.Preconditions;
 
-namespace Practice6Sem.SLAE.Solvers;
+namespace DirectProblem.SLAE.Solvers;
 
 public class LOS
 {
@@ -24,10 +22,10 @@ public class LOS
     private void PrepareProcess(Equation<SparseMatrix> equation)
     {
         _preconditionMatrix = _luPreconditioner.Decompose(_preconditionMatrix);
-        var bufferVector = SparseMatrix.Multiply(equation.Matrix, equation.Solution);
-        _r = _luSparse.CalcY(_preconditionMatrix, GlobalVector.Subtract(equation.RightSide, bufferVector, bufferVector));
-        _z = _luSparse.CalcX(_preconditionMatrix, _r);
-        _p = _luSparse.CalcY(_preconditionMatrix, SparseMatrix.Multiply(equation.Matrix, _z));
+        SparseMatrix.Multiply(equation.Matrix, equation.Solution, _r);
+        _luSparse.CalcY(_preconditionMatrix, GlobalVector.Subtract(equation.RightPart, _r, _r), _r);
+        _luSparse.CalcX(_preconditionMatrix, _r, _z);
+        _luSparse.CalcY(_preconditionMatrix, SparseMatrix.Multiply(equation.Matrix, _z, _p), _p);
     }
 
     public GlobalVector Solve(Equation<SparseMatrix> equation, SparseMatrix preconditionMatrix)
@@ -49,23 +47,21 @@ public class LOS
         for (var i = 1; i <= MethodsConfig.MaxIterations && residualNext > Math.Pow(MethodsConfig.Eps, 2); i++)
         {
             var scalarPP = GlobalVector.ScalarProduct(_p, _p);
-
             var alpha = GlobalVector.ScalarProduct(_p, _r) / scalarPP;
 
             GlobalVector.Multiply(alpha, _z, bufferVector);
-
             GlobalVector.Sum(equation.Solution, bufferVector, equation.Solution);
 
-            var rNext = GlobalVector.Subtract(_r, GlobalVector.Multiply(alpha, _p, bufferVector));
+            var rNext = GlobalVector.Subtract(_r, GlobalVector.Multiply(alpha, _p, bufferVector), _r);
 
-            bufferVector = _luSparse.CalcX(_preconditionMatrix, rNext);
-            var LAUr = _luSparse.CalcY(_preconditionMatrix, SparseMatrix.Multiply(equation.Matrix, bufferVector));
+            _luSparse.CalcX(_preconditionMatrix, rNext, bufferVector);
+
+            var LAUr = _luSparse.CalcY(_preconditionMatrix, SparseMatrix.Multiply(equation.Matrix, bufferVector), bufferVector);
 
             var beta = -(GlobalVector.ScalarProduct(_p, LAUr) / scalarPP);
 
-            var zNext = GlobalVector.Sum(_luSparse.CalcX(_preconditionMatrix, rNext), GlobalVector.Multiply(beta, _z, _z));
-
-            var pNext = GlobalVector.Sum(LAUr, GlobalVector.Multiply(beta, _p, _p));
+            var zNext = GlobalVector.Sum(_luSparse.CalcX(_preconditionMatrix, rNext), GlobalVector.Multiply(beta, _z, _z), _z);
+            var pNext = GlobalVector.Sum(LAUr, GlobalVector.Multiply(beta, _p, _p), _p);
 
             _r = rNext;
             _z = zNext;

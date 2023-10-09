@@ -1,13 +1,14 @@
-﻿using Practice6Sem.GridGenerator.Intervals.Splitting;
+﻿using DirectProblem.Core;
+using DirectProblem.Core.GridComponents;
+using DirectProblem.GridGenerator.Intervals.Splitting;
 
-namespace Practice6Sem.GridGenerator;
+namespace DirectProblem.GridGenerator;
 
 public class GridBuilder2D : IGridBuilder<Node2D>
 {
     private AxisSplitParameter _rAxisSplitParameter;
     private AxisSplitParameter _zAxisSplitParameter;
     private int[]? _materialsId;
-    private Source[]? _sources;
     private Area[]? _areas;
 
     private int GetTotalRElements => _rAxisSplitParameter.Splitters.Sum(r => r.Steps);
@@ -28,12 +29,6 @@ public class GridBuilder2D : IGridBuilder<Node2D>
     public GridBuilder2D SetMaterials(int[] materialsId)
     {
         _materialsId = materialsId;
-        return this;
-    }
-
-    public GridBuilder2D SetSources(Source[] sources)
-    {
-        _sources = sources;
         return this;
     }
 
@@ -100,7 +95,7 @@ public class GridBuilder2D : IGridBuilder<Node2D>
             }
         }
 
-        return new Grid<Node2D>(nodes, elements, _areas, _sources);
+        return new Grid<Node2D>(nodes, elements, _areas);
     }
 
     private int GetTotalNodes()

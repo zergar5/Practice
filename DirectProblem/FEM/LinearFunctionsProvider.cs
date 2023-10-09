@@ -1,4 +1,4 @@
-﻿namespace Practice6Sem.FEM;
+﻿namespace DirectProblem.FEM;
 
 public class LinearFunctionsProvider
 {

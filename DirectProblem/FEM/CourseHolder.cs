@@ -1,6 +1,6 @@
-﻿using Practice6Sem.Core.GridComponents;
+﻿using DirectProblem.Core.GridComponents;
 
-namespace Practice6Sem.FEM;
+namespace DirectProblem.FEM;
 
 public class CourseHolder
 {

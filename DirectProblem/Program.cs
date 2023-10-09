@@ -1,20 +1,19 @@
-﻿using Practice6Sem.Calculus;
-using Practice6Sem.Core.GridComponents;
-using Practice6Sem.FEM;
-using Practice6Sem.GridGenerator;
-using Practice6Sem.SLAE.Preconditions;
-using Practice6Sem.SLAE.Solvers;
-using Practice6Sem.TwoDimensional;
+﻿using DirectProblem.Calculus;
+using DirectProblem.Core.GridComponents;
+using DirectProblem.FEM;
+using DirectProblem.GridGenerator;
+using DirectProblem.GridGenerator.Intervals.Splitting;
+using DirectProblem.SLAE.Preconditions;
+using DirectProblem.SLAE.Solvers;
+using DirectProblem.TwoDimensional;
+using DirectProblem.TwoDimensional.Assembling;
+using DirectProblem.TwoDimensional.Assembling.Boundary;
+using DirectProblem.TwoDimensional.Assembling.Global;
+using DirectProblem.TwoDimensional.Assembling.Local;
+using DirectProblem.TwoDimensional.Parameters;
 using Practice6Sem.TwoDimensional.Assembling;
-using Practice6Sem.TwoDimensional.Assembling.Boundary;
-using Practice6Sem.TwoDimensional.Assembling.Global;
-using Practice6Sem.TwoDimensional.Assembling.Local;
-using Practice6Sem.TwoDimensional.Parameters;
-using System;
 using System.Globalization;
 using System.Numerics;
-using Practice6Sem.GridGenerator.Intervals.Splitting;
-using static System.Math;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 

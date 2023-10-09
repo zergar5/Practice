@@ -1,6 +1,6 @@
-﻿using Practice6Sem.GridGenerator.Intervals.Core;
+﻿using DirectProblem.GridGenerator.Intervals.Core;
 
-namespace Practice6Sem.GridGenerator.Intervals.Splitting;
+namespace DirectProblem.GridGenerator.Intervals.Splitting;
 
 public readonly record struct UniformSplitter(int Steps) : IIntervalSplitter
 {

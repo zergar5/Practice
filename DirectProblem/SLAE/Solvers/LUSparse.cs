@@ -1,29 +1,23 @@
-﻿using Practice6Sem.Core.Global;
-using Practice6Sem.SLAE.Preconditions;
+﻿using DirectProblem.Core.Global;
 
-namespace Practice6Sem.SLAE.Solvers;
+namespace DirectProblem.SLAE.Solvers;
 
 public class LUSparse
 {
-    private readonly LUPreconditioner _luPreconditioner;
-
-    public LUSparse(LUPreconditioner luPreconditioner)
-    {
-        _luPreconditioner = luPreconditioner;
-    }
-
     public GlobalVector CalcY(SparseMatrix sparseMatrix, GlobalVector b, GlobalVector? y = null)
     {
         y ??= new GlobalVector(b.Count);
 
-        for (var i = 0; i < sparseMatrix.CountRows; i++)
+        for (var i = 0; i < sparseMatrix.Count; i++)
         {
             var sum = 0.0;
-            for (var j = sparseMatrix.RowsIndexes[i]; j < sparseMatrix.RowsIndexes[i + 1]; j++)
+
+            foreach (var j in sparseMatrix[i])
             {
-                sum += sparseMatrix.LowerValues[j] * y[sparseMatrix.ColumnsIndexes[j]];
+                sum += sparseMatrix[i, j] * y[j];
             }
-            y[i] = (b[i] - sum) / sparseMatrix.Diagonal[i];
+
+            y[i] = (b[i] - sum) / sparseMatrix[i, i];
         }
 
         return y;
@@ -31,13 +25,14 @@ public class LUSparse
 
     public GlobalVector CalcX(SparseMatrix sparseMatrix, GlobalVector y, GlobalVector? x = null)
     {
-        x ??= y.Clone();
+        x = x == null ? y.Clone() : y.Copy(x);
 
-        for (var i = sparseMatrix.CountRows - 1; i >= 0; i--)
+        for (var i = sparseMatrix.Count - 1; i >= 0; i--)
         {
-            for (var j = sparseMatrix.RowsIndexes[i + 1] - 1; j >= sparseMatrix.RowsIndexes[i]; j--)
+            var columns = sparseMatrix[i];
+            for (var j = columns.Length - 1; j >= 0; j--)
             {
-                x[sparseMatrix.ColumnsIndexes[j]] -= sparseMatrix.UpperValues[j] * x[i];
+                x[columns[j]] -= sparseMatrix[columns[j], i] * x[i];
             }
         }
 

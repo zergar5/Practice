@@ -1,28 +1,33 @@
-﻿using Practice6Sem.Core.Boundary;
-using Practice6Sem.Core.Global;
+﻿using DirectProblem.Core.Boundary;
+using DirectProblem.Core.Global;
+using DirectProblem.FEM.Assembling.Global;
 
-namespace Practice6Sem.TwoDimensional.Assembling.Global;
+namespace DirectProblem.TwoDimensional.Assembling.Global;
 
-public class GaussExcluder
+public class GaussExcluder : IGaussExcluder<SparseMatrix>
 {
-    public void Exclude(Equation<SparseMatrix> equation, FirstCondition condition)
+    public void Exclude(Equation<SparseMatrix> equation, FirstConditionValue condition)
     {
-        equation.RightSide[condition.NodeIndex] = condition.Value;
-        equation.Matrix.Diagonal[condition.NodeIndex] = 1d;
-
-        for (var j = equation.Matrix.RowsIndexes[condition.NodeIndex];
-             j < equation.Matrix.RowsIndexes[condition.NodeIndex + 1];
-             j++)
+        for (var i = 0; i < condition.Values.Count; i++)
         {
-            equation.Matrix.LowerValues[j] = 0d;
-        }
+            var row = condition.Values.Indexes[i];
+            equation.RightPart[row] = condition.Values[i];
+            equation.Matrix[row, row] = 1d;
 
-        for (var j = condition.NodeIndex + 1; j < equation.Matrix.CountRows; j++)
-        {
-            var elementIndex = equation.Matrix[j, condition.NodeIndex];
+            foreach (var columnIndex in equation.Matrix[row])
+            {
+                equation.RightPart[columnIndex] -= equation.Matrix[row, columnIndex] * condition.Values[i];
+                equation.Matrix[row, columnIndex] = 0d;
+            }
 
-            if (elementIndex == -1) continue;
-            equation.Matrix.UpperValues[elementIndex] = 0;
+            var column = row;
+
+            for (row = column + 1; row < equation.Matrix.Count; row++)
+            {
+                if (!equation.Matrix[row].Contains(column)) continue;
+
+                equation.Matrix[column, row] = 0d;
+            }
         }
     }
 }

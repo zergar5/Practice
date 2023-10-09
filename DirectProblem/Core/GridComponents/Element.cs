@@ -1,4 +1,6 @@
-﻿namespace Practice6Sem.Core.GridComponents;
+﻿using DirectProblem.Core.Boundary;
+
+namespace DirectProblem.Core.GridComponents;
 
 public class Element
 {
@@ -17,6 +19,7 @@ public class Element
         MaterialId = materialId;
     }
 
+    //Не выделять доп память
     public (int[], double) GetBoundNodeIndexes(Bound bound) =>
         bound switch
         {

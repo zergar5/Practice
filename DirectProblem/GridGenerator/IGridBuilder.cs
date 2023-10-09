@@ -1,6 +1,6 @@
-﻿using Practice6Sem.Core;
+﻿using DirectProblem.Core;
 
-namespace Practice6Sem.GridGenerator;
+namespace DirectProblem.GridGenerator;
 
 public interface IGridBuilder<TPoint>
 {

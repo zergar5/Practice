@@ -1,12 +1,11 @@
-﻿using Practice6Sem.Core;
-using Practice6Sem.Core.Global;
-using Practice6Sem.Core.GridComponents;
-using Practice6Sem.FEM;
-using Practice6Sem.TwoDimensional.Assembling.Local;
+﻿using DirectProblem.Core;
+using DirectProblem.Core.GridComponents;
+using DirectProblem.FEM;
+using DirectProblem.GridGenerator.Intervals.Core;
+using DirectProblem.TwoDimensional.Assembling.Local;
 using System.Numerics;
-using Practice6Sem.GridGenerator.Intervals.Core;
 
-namespace Practice6Sem.TwoDimensional;
+namespace DirectProblem.TwoDimensional;
 
 public class FEMSolution
 {

@@ -1,3 +1,5 @@
-﻿namespace Practice6Sem.Core.Global;
+﻿using DirectProblem.Core.Base;
 
-public record Equation<TMatrix>(TMatrix Matrix, GlobalVector Solution, GlobalVector RightSide);
+namespace DirectProblem.Core.Global;
+
+public record Equation<TMatrix>(TMatrix Matrix, Vector Solution, Vector RightPart);
