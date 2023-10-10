@@ -83,12 +83,12 @@ var gridBuilder2D = new GridBuilder2D();
 
 var grid = gridBuilder2D
     .SetRAxis(new AxisSplitParameter(
-            new[] { 1d, 2d },
+            new[] { 1d, 3d },
             new UniformSplitter(2)
         )
     )
     .SetZAxis(new AxisSplitParameter(
-            new[] { 1d, 2d },
+            new[] { 1d, 3d },
             new UniformSplitter(2)
         )
     )
@@ -103,18 +103,18 @@ var omega = 100000d;
 
 var localBasisFunctionsProvider = new LocalBasisFunctionsProvider(grid, new LinearFunctionsProvider());
 
-Func<Node2D, Complex> u = p => new Complex((p.R - 1d) * (p.R - 15d) * (p.Z + 1d) * (p.Z + 13d), -(p.R - 1d) * (p.R - 15d) * (p.Z + 1d) * (p.Z + 13d));
+//Func<Node2D, Complex> u = p => new Complex((p.R - 1d) * (p.R - 3d) * (p.Z + 1d) * (p.Z + 3d), -(p.R - 1d) * (p.R - 3d) * (p.Z + 1d) * (p.Z + 3d));
 
-var f = new RightPartParameter
-(
-    (p, mu, sigma) => new Complex(
-        (-((p.Z + 13d) * (p.Z + 1d) * (4d * p.R - 16d) / p.R) + u(p).Real / (p.R * p.R) -
-         2d * (p.R - 15d) * (p.R - 1d)) / mu - omega * sigma * u(p).Imaginary,
-        ((p.Z + 13d) * (p.Z + 1d) * (4d * p.R - 16d) / p.R + u(p).Imaginary / (p.R * p.R) +
-         2d * (p.R - 15d) * (p.R - 1d)) / mu + omega * sigma * u(p).Real
-    ),
-    grid
-);
+//var f = new RightPartParameter
+//(
+//    (p, mu, sigma) => new Complex(
+//        (-((p.Z + 13d) * (p.Z + 1d) * (4d * p.R - 16d) / p.R) + u(p).Real / (p.R * p.R) -
+//         2d * (p.R - 15d) * (p.R - 1d)) / mu - omega * sigma * u(p).Imaginary,
+//        ((p.Z + 13d) * (p.Z + 1d) * (4d * p.R - 16d) / p.R + u(p).Imaginary / (p.R * p.R) +
+//         2d * (p.R - 15d) * (p.R - 1d)) / mu + omega * sigma * u(p).Real
+//    ),
+//    grid
+//);
 
 //Func<Node2D, Complex> u = p => new Complex(Exp(p.R), Exp(p.Z));
 
@@ -160,16 +160,16 @@ var f = new RightPartParameter
 //    grid
 //);
 
-//Func<Node2D, Complex> u = p => new Complex(p.R, p.R);
+Func<Node2D, Complex> u = p => new Complex(p.R, p.R);
 
-//var f = new RightPartParameter
-//(
-//    (p, mu, sigma) => new Complex(
-//        -omega * sigma * u(p).Imaginary,
-//        omega * sigma * u(p).Real
-//    ),
-//    grid
-//);
+var f = new RightPartParameter
+(
+    (p, mu, sigma) => new Complex(
+        -omega * sigma * u(p).Imaginary,
+        omega * sigma * u(p).Real
+    ),
+    grid
+);
 
 var derivativeCalculator = new DerivativeCalculator();
 
