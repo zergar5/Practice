@@ -18,79 +18,79 @@ using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
 var gridBuilder2D = new GridBuilder2D();
-var grid = gridBuilder2D
-    .SetRAxis(new AxisSplitParameter(
-            new[] { 1d, 1.1d, 1.101d, 15d },
-            new UniformSplitter(2),
-            new UniformSplitter(1),
-            new UniformSplitter(7)
-        )
-    )
-    .SetZAxis(new AxisSplitParameter(
-            new[] { -13d, -10d, -7d, -4d, -1d },
-            new ProportionalSplitter(4, 0.7),
-            new ProportionalSplitter(16, 0.9),
-            new ProportionalSplitter(16, 1.1),
-            new ProportionalSplitter(4, 1.3)
-        )
-    )
-    .SetMaterials(new[]
-    {
-        0, 0, 1, 2, 2, 2, 2, 2, 2, 2, //0
-        0, 0, 1, 2, 2, 2, 2, 2, 2, 2,
-        0, 0, 1, 2, 2, 2, 2, 2, 2, 2,
-        0, 0, 1, 2, 2, 2, 2, 2, 2, 2, //3
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4, //0
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
-        0, 0, 1, 3, 3, 4, 4, 4, 4, 4, // 15
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3, //0
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
-        0, 0, 1, 4, 4, 3, 3, 3, 3, 3, // 15
-        0, 0, 1, 2, 2, 2, 2, 2, 2, 2, //0
-        0, 0, 1, 2, 2, 2, 2, 2, 2, 2,
-        0, 0, 1, 2, 2, 2, 2, 2, 2, 2,
-        0, 0, 1, 2, 2, 2, 2, 2, 2, 2, //3
-    })
-    .Build();
-
 //var grid = gridBuilder2D
 //    .SetRAxis(new AxisSplitParameter(
-//            new[] { 1d, 2d },
-//            new UniformSplitter(32)
+//            new[] { 1d, 1.1d, 1.101d, 15d },
+//            new UniformSplitter(2),
+//            new UniformSplitter(1),
+//            new UniformSplitter(7)
 //        )
 //    )
 //    .SetZAxis(new AxisSplitParameter(
-//            new[] { 1d, 2d },
-//            new UniformSplitter(32)
+//            new[] { -13d, -10d, -7d, -4d, -1d },
+//            new ProportionalSplitter(4, 0.7),
+//            new ProportionalSplitter(16, 0.9),
+//            new ProportionalSplitter(16, 1.1),
+//            new ProportionalSplitter(4, 1.3)
 //        )
 //    )
+//    .SetMaterials(new[]
+//    {
+//        0, 0, 1, 2, 2, 2, 2, 2, 2, 2, //0
+//        0, 0, 1, 2, 2, 2, 2, 2, 2, 2,
+//        0, 0, 1, 2, 2, 2, 2, 2, 2, 2,
+//        0, 0, 1, 2, 2, 2, 2, 2, 2, 2, //3
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4, //0
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4,
+//        0, 0, 1, 3, 3, 4, 4, 4, 4, 4, // 15
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3, //0
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3,
+//        0, 0, 1, 4, 4, 3, 3, 3, 3, 3, // 15
+//        0, 0, 1, 2, 2, 2, 2, 2, 2, 2, //0
+//        0, 0, 1, 2, 2, 2, 2, 2, 2, 2,
+//        0, 0, 1, 2, 2, 2, 2, 2, 2, 2,
+//        0, 0, 1, 2, 2, 2, 2, 2, 2, 2, //3
+//    })
 //    .Build();
+
+var grid = gridBuilder2D
+    .SetRAxis(new AxisSplitParameter(
+            new[] { 1d, 2d },
+            new UniformSplitter(2)
+        )
+    )
+    .SetZAxis(new AxisSplitParameter(
+            new[] { 1d, 2d },
+            new UniformSplitter(2)
+        )
+    )
+    .Build();
 
 var materialFactory = new MaterialFactory
 (
@@ -180,7 +180,7 @@ var inserter = new Inserter();
 var globalAssembler = new GlobalAssembler<Node2D>(grid, new MatrixPortraitBuilder(), localAssembler, inserter, new GaussExcluder(), localBasisFunctionsProvider);
 
 var firstBoundaryProvider = new FirstBoundaryProvider(grid);
-var conditions = firstBoundaryProvider.GetConditions(10, 40);
+var conditions = firstBoundaryProvider.GetConditions(2, 2);
 
 var equation = globalAssembler
     .AssembleEquation(grid)
