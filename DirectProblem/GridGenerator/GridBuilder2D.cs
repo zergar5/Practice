@@ -71,7 +71,7 @@ public class GridBuilder2D : IGridBuilder<Node2D>
                         {
                             var elementIndex = j - 1 + (i - 1) * totalRElements;
                             var nodesIndexes = GetCurrentElementIndexes(i - 1, j - 1);
-                            var materialId = _materialsId[elementIndex];
+                            var materialId = 0;
 
                             elements[elementIndex] = new Element(
                                 nodesIndexes,
