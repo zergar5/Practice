@@ -25,9 +25,9 @@ public class FirstBoundaryProvider
 
         if (_indexes is null)
         {
-            _indexes = new int[conditionsValues.Length * 2][];
+            _indexes = new int[conditionsValues.Length][];
 
-            for (var i = 0; i < conditions.Length * 2; i++)
+            for (var i = 0; i < conditionsValues.Length; i++)
             {
                 _indexes[i] = new int[2];
             }
@@ -35,19 +35,20 @@ public class FirstBoundaryProvider
 
         if (_values is null)
         {
-            _values = new Vector[conditionsValues.Length * 2];
+            _values = new Vector[conditionsValues.Length];
 
-            for (var i = 0; i < conditions.Length * 2; i++)
+            for (var i = 0; i < conditionsValues.Length; i++)
             {
                 _values[i] = new Vector(2);
             }
         }
 
-        for (var j = 0; j < conditions.Length; j++)
+        var j = 0;
+        foreach (var condition in conditions)
         {
-            var (indexes, _) = _grid.Elements[conditions[j].ElementIndex].GetBoundNodeIndexes(conditions[j].Bound, _indexesBuffer);
+            var (indexes, _) = _grid.Elements[condition.ElementIndex].GetBoundNodeIndexes(condition.Bound, _indexesBuffer);
 
-            for (var i = 0; i < indexes.Length; i++)
+            for (var i = 0; i < 2; i++, j++)
             {
                 for (var k = 0; k < indexes.Length; k++)
                 {
