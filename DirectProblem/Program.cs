@@ -81,12 +81,12 @@ var gridBuilder2D = new GridBuilder2D();
 
 var grid = gridBuilder2D
     .SetRAxis(new AxisSplitParameter(
-            new[] { 1d, 2d },
+            new[] { 1d, 3d },
             new UniformSplitter(2)
         )
     )
     .SetZAxis(new AxisSplitParameter(
-            new[] { 1d, 2d },
+            new[] { 1d, 3d },
             new UniformSplitter(2)
         )
     )
