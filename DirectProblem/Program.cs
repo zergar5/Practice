@@ -194,8 +194,8 @@ var preconditionMatrix = globalAssembler.AllocatePreconditionMatrix();
 
 var luPreconditioner = new LUPreconditioner();
 
-var los = new LOS(luPreconditioner, new LUSparse());
-var solution = los.Solve(equation, preconditionMatrix);
+var los = new LOS(luPreconditioner, new LUSparse(), preconditionMatrix);
+var solution = los.Solve(equation);
 
 var femSolution = new FEMSolution(grid, solution, localBasisFunctionsProvider, omega);
 

@@ -99,8 +99,9 @@ public class SparseMatrix
             throw new ArgumentOutOfRangeException(
                 $"{nameof(matrix)} and {nameof(vector)} must have same size");
 
-        result ??= new Vector(matrix.Count);
-
+        if (result == null) result = new Vector(matrix.Count);
+        else result.Clear();
+        
         for (var i = 0; i < matrix.Count; i++)
         {
             result[i] += matrix[i, i] * vector[i];

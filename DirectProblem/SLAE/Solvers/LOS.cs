@@ -9,20 +9,21 @@ public class LOS
 {
     private readonly LUPreconditioner _luPreconditioner;
     private readonly LUSparse _luSparse;
-    private SparseMatrix _preconditionMatrix;
+    private readonly SparseMatrix _preconditionMatrix;
     private Vector _r;
     private Vector _z;
     private Vector _p;
 
-    public LOS(LUPreconditioner luPreconditioner, LUSparse luSparse)
+    public LOS(LUPreconditioner luPreconditioner, LUSparse luSparse, SparseMatrix preconditionMatrix)
     {
         _luPreconditioner = luPreconditioner;
         _luSparse = luSparse;
+        _preconditionMatrix = preconditionMatrix;
     }
 
     private void PrepareProcess(Equation<SparseMatrix> equation)
     {
-        _preconditionMatrix = _luPreconditioner.Decompose(_preconditionMatrix);
+        _luPreconditioner.Decompose(_preconditionMatrix);
         _r = SparseMatrix.Multiply(equation.Matrix, equation.Solution, _r);
         _luSparse.CalcY(_preconditionMatrix, Vector.Subtract(equation.RightPart, _r, _r), _r);
         _z = _luSparse.CalcX(_preconditionMatrix, _r, _z);
@@ -30,9 +31,8 @@ public class LOS
         _luSparse.CalcY(_preconditionMatrix, _p, _p);
     }
 
-    public Vector Solve(Equation<SparseMatrix> equation, SparseMatrix preconditionMatrix)
+    public Vector Solve(Equation<SparseMatrix> equation)
     {
-        _preconditionMatrix = preconditionMatrix;
         PrepareProcess(equation);
         IterationProcess(equation);
         return equation.Solution;
@@ -62,7 +62,7 @@ public class LOS
 
             var beta = -(Vector.ScalarProduct(_p, LAUr) / scalarPP);
 
-            var zNext = Vector.Sum(_luSparse.CalcX(_preconditionMatrix, rNext, bufferVector), Vector.Multiply(beta, _z, _z), _z);
+            var zNext = Vector.Sum(_luSparse.CalcX(_preconditionMatrix, rNext, equation.RightPart), Vector.Multiply(beta, _z, _z), _z);
             var pNext = Vector.Sum(LAUr, Vector.Multiply(beta, _p, _p), _p);
 
             _r = rNext;

@@ -14,16 +14,16 @@ public class GaussExcluder : IGaussExcluder<SparseMatrix>
             equation.RightPart[row] = condition.Values[i];
             equation.Matrix[row, row] = 1d;
 
-            foreach (var columnIndex in equation.Matrix[row])
+            foreach (var j in equation.Matrix[row])
             {
-                equation.Matrix[row, columnIndex] = 0d;
+                equation.Matrix[row, j] = 0d;
             }
 
             for (var column = row + 1; column < equation.Matrix.Count; column++)
             {
-                if (!equation.Matrix[row].Contains(column)) continue;
+                if (!equation.Matrix[column].Contains(row)) continue;
 
-                equation.Matrix[column, row] = 0d;
+                equation.Matrix[row, column] = 0d;
             }
         }
     }
