@@ -95,7 +95,7 @@ public class GlobalAssembler<TNode>
         return _equation;
     }
 
-    public SparseMatrix BuildPreconditionMatrix()
+    public SparseMatrix AllocatePreconditionMatrix()
     {
         _preconditionMatrix = _equation.Matrix.Copy(_preconditionMatrix);
         return _preconditionMatrix;

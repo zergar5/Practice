@@ -190,7 +190,7 @@ var equation = globalAssembler
 
 new Vector(new double[] { 1d, 1d, 2d, 2d, 3d, 3d, 1d, 1d, 0d, 0d, 3d, 3d, 1d, 1d, 2d, 2d, 3d, 3d }).Copy(equation.RightPart);
 
-var preconditionMatrix = globalAssembler.BuildPreconditionMatrix();
+var preconditionMatrix = globalAssembler.AllocatePreconditionMatrix();
 
 var luPreconditioner = new LUPreconditioner();
 
