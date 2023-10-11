@@ -30,13 +30,13 @@ public class SparseMatrix
             if (columnIndex > rowIndex)
             {
                 (rowIndex, columnIndex) = (columnIndex, rowIndex);
-                var index = this[rowIndex].IndexOf(columnIndex);
+                var index = IndexOf(rowIndex, columnIndex);
                 return _upperValues[index];
 
             }
             else
             {
-                var index = this[rowIndex].IndexOf(columnIndex);
+                var index = IndexOf(rowIndex, columnIndex);
                 return _lowerValues[index];
             }
         }
@@ -53,17 +53,20 @@ public class SparseMatrix
             if (columnIndex > rowIndex)
             {
                 (rowIndex, columnIndex) = (columnIndex, rowIndex);
-                var index = this[rowIndex].IndexOf(columnIndex);
+                var index = IndexOf(rowIndex, columnIndex);
                 _upperValues[index] = value;
 
             }
             else
             {
-                var index = this[rowIndex].IndexOf(columnIndex);
+                var index = IndexOf(rowIndex, columnIndex);
                 _lowerValues[index] = value;
             }
         }
     }
+
+    public int IndexOf(int rowIndex, int columnIndex) => Array.IndexOf(_columnsIndexes, columnIndex, RowsIndexes[rowIndex],
+        RowsIndexes[rowIndex + 1] - RowsIndexes[rowIndex]);
 
     public SparseMatrix(int[] rowsIndexes, int[] columnsIndexes)
     {
@@ -98,16 +101,14 @@ public class SparseMatrix
 
         result ??= new Vector(matrix.Count);
 
-        var rowsIndexes = matrix.RowsIndexes;
-
         for (var i = 0; i < matrix.Count; i++)
         {
             result[i] += matrix[i, i] * vector[i];
 
-            for (var j = rowsIndexes[i]; j < rowsIndexes[i + 1]; j++)
+            foreach (var j in matrix[i])
             {
                 result[i] += matrix[i, j] * vector[j];
-                result[j] += matrix[i, j] * vector[i];
+                result[j] += matrix[j, i] * vector[i];
             }
         }
 

@@ -23,10 +23,11 @@ public class LOS
     private void PrepareProcess(Equation<SparseMatrix> equation)
     {
         _preconditionMatrix = _luPreconditioner.Decompose(_preconditionMatrix);
-        SparseMatrix.Multiply(equation.Matrix, equation.Solution, _r);
+        _r = SparseMatrix.Multiply(equation.Matrix, equation.Solution, _r);
         _luSparse.CalcY(_preconditionMatrix, Vector.Subtract(equation.RightPart, _r, _r), _r);
-        _luSparse.CalcX(_preconditionMatrix, _r, _z);
-        _luSparse.CalcY(_preconditionMatrix, SparseMatrix.Multiply(equation.Matrix, _z, _p), _p);
+        _z = _luSparse.CalcX(_preconditionMatrix, _r, _z);
+        _p = SparseMatrix.Multiply(equation.Matrix, _z, _p);
+        _luSparse.CalcY(_preconditionMatrix, _p, _p);
     }
 
     public Vector Solve(Equation<SparseMatrix> equation, SparseMatrix preconditionMatrix)

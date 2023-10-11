@@ -17,4 +17,11 @@ public class MassMatrixTemplateProvider
             { 1d, 1d },
             { 1d, 3d }
         });
+
+    public Matrix RotorMassMatrix => new(
+        new[,]
+        {
+            { -3d, 1d },
+            { 1d, 1d }
+        });
 }

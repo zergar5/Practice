@@ -20,14 +20,14 @@ public class LUPreconditioner : IPreconditioner<SparseMatrix>
                 for (var k = preconditionMatrix.RowsIndexes[i]; k < j; k++)
                 {
                     var iPrev = i - preconditionMatrix.ColumnsIndexes[j];
-                    var kPrev = preconditionMatrix[i - iPrev].IndexOf(preconditionMatrix.ColumnsIndexes[k]);
+                    var kPrev = preconditionMatrix.IndexOf(i - iPrev, preconditionMatrix.ColumnsIndexes[k]);
 
                     if (kPrev == -1) continue;
 
-                    sumL += preconditionMatrix[iPrev, preconditionMatrix.ColumnsIndexes[k]] *
-                            preconditionMatrix[preconditionMatrix.ColumnsIndexes[kPrev], iPrev];
-                    sumU += preconditionMatrix[preconditionMatrix.ColumnsIndexes[k], iPrev] *
-                            preconditionMatrix[iPrev, preconditionMatrix.ColumnsIndexes[kPrev]];
+                    sumL += preconditionMatrix[i, preconditionMatrix.ColumnsIndexes[k]] *
+                            preconditionMatrix[preconditionMatrix.ColumnsIndexes[kPrev], i - iPrev];
+                    sumU += preconditionMatrix[preconditionMatrix.ColumnsIndexes[k], i] *
+                            preconditionMatrix[i - iPrev, preconditionMatrix.ColumnsIndexes[kPrev]];
                 }
 
                 preconditionMatrix[i, preconditionMatrix.ColumnsIndexes[j]] -= sumL;

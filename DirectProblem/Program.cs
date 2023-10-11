@@ -14,6 +14,7 @@ using DirectProblem.TwoDimensional.Parameters;
 using System.Globalization;
 using System.Numerics;
 using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
+using Vector = DirectProblem.Core.Base.Vector;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
@@ -186,6 +187,8 @@ var equation = globalAssembler
     .AssembleEquation(grid)
     .ApplyFirstConditions(conditions)
     .BuildEquation();
+
+new Vector(new double[] { 1d, 1d, 2d, 2d, 3d, 3d, 1d, 1d, 0d, 0d, 3d, 3d, 1d, 1d, 2d, 2d, 3d, 3d }).Copy(equation.RightPart);
 
 var preconditionMatrix = globalAssembler.BuildPreconditionMatrix();
 

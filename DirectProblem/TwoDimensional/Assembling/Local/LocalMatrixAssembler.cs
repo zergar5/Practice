@@ -12,6 +12,7 @@ public class LocalMatrixAssembler : ILocalMatrixAssembler
     private readonly Matrix _stiffnessTemplate;
     private readonly Matrix _massTemplate;
     private readonly Matrix _massRTemplate;
+    private readonly Matrix _rotorMassTemplate;
     private readonly Matrix _stiffness = new(4);
     private readonly Matrix _rotorStiffness = new(2);
     private readonly Matrix _stiffnessR = new(2);
@@ -31,6 +32,7 @@ public class LocalMatrixAssembler : ILocalMatrixAssembler
         _stiffnessTemplate = stiffnessMatrixTemplateProvider.StiffnessMatrix;
         _massTemplate = massMatrixTemplateProvider.MassMatrix;
         _massRTemplate = massMatrixTemplateProvider.MassRMatrix;
+        _rotorMassTemplate = massMatrixTemplateProvider.RotorMassMatrix;
     }
 
     public Matrix AssembleStiffnessMatrix(Element element)
@@ -102,7 +104,7 @@ public class LocalMatrixAssembler : ILocalMatrixAssembler
 
         Matrix.Multiply(Math.Log(1 + 1 / d), _rotorStiffness, _rotorStiffness);
         Matrix.Multiply(-d, _stiffnessTemplate, _stiffnessZ);
-        Matrix.Multiply(0.5, _massRTemplate, _massR);
+        Matrix.Multiply(0.5, _rotorMassTemplate, _massR);
 
         Matrix.Sum(_rotorStiffness, _stiffnessZ, _rotorStiffness);
         Matrix.Sum(_rotorStiffness, _massR, _rotorStiffness);

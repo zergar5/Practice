@@ -56,6 +56,7 @@ public class GlobalAssembler<TNode>
 
             _inserter.InsertMatrix(_equation.Matrix, localMatrix);
         }
+
         return this;
     }
 
