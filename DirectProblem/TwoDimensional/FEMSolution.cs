@@ -4,6 +4,7 @@ using DirectProblem.Core.GridComponents;
 using DirectProblem.FEM;
 using DirectProblem.GridGenerator.Intervals.Core;
 using DirectProblem.TwoDimensional.Assembling.Local;
+using System.Drawing;
 using System.Numerics;
 using Vector = DirectProblem.Core.Base.Vector;
 
@@ -30,7 +31,7 @@ public class FEMSolution
         _omega = omega;
     }
 
-    public (double, double) Calculate(Node2D point)
+    public (double, double) CalculateEMF(Node2D point)
     {
         if (AreaHas(point))
         {
@@ -47,78 +48,31 @@ public class FEMSolution
                 sumC += _solution[element.NodesIndexes[i] * 2 + 1] * basisFunctions[i].Calculate(point);
             }
 
-            CourseHolder.WriteSolution(point, sumS, sumC);
+            sumS *= 2d * Math.PI * point.R;
+            sumC *= 2d * Math.PI * point.R;
 
-            return (sumS, sumC);
+            var values = (sumS, sumC);
+
+            CourseHolder.WriteSolution(point, values);
+
+            return values;
         }
 
         CourseHolder.WriteAreaInfo();
-        CourseHolder.WriteSolution(point, double.NaN, double.NaN);
+        CourseHolder.WriteSolution(point, (double.NaN, double.NaN));
         return (double.NaN, double.NaN);
     }
 
-    public double Calculate(Node2D point, double time)
+    public (double, double)[] CalculateEMFs(Receiver[] receivers)
     {
-        if (AreaHas(point))
+        var emfsValues = new (double, double)[receivers.Length];
+
+        for (var i = 0; i < receivers.Length; i++)
         {
-            var element = _grid.Elements.First(x => ElementHas(x, point));
-
-            var basisFunctions = _localBasisFunctionsProvider.GetBilinearFunctions(element);
-
-            var sumS = 0d;
-            var sumC = 0d;
-
-            for (var i = 0; i < element.NodesIndexes.Length; i++)
-            {
-                sumS += _solution[element.NodesIndexes[i] * 2] * basisFunctions[i].Calculate(point);
-                sumC += _solution[element.NodesIndexes[i] * 2 + 1] * basisFunctions[i].Calculate(point);
-            }
-
-            var result = sumS * Math.Sin(_omega * time) + sumC * Math.Cos(_omega * time);
-
-            CourseHolder.WriteSolution(point, time, result);
-
-            return result;
+            emfsValues[i] = CalculateEMF(receivers[i].Point);
         }
 
-        CourseHolder.WriteAreaInfo();
-        CourseHolder.WriteSolution(point, double.NaN, double.NaN);
-        return double.NaN;
-    }
-
-    public double[] CalculateField(double time, double r)
-    {
-        var zInterval = new Interval(_grid.Nodes[0].Z, _grid.Nodes[^1].Z);
-        var numberOfSegments = (int)(zInterval.Length / 0.01d);
-        var fieldValues = new double[numberOfSegments + 1];
-
-        var point = new Node2D(r, zInterval.Begin - 0.01d);
-
-        for (var i = 0; i <= numberOfSegments; i++)
-        {
-            point = point with { Z = point.Z + 0.01d };
-
-            var element = _grid.Elements.First(x => ElementHas(x, point));
-
-            var basisFunctions = _localBasisFunctionsProvider.GetBilinearFunctions(element);
-
-            var sumS = 0d;
-            var sumC = 0d;
-
-            for (var j = 0; j < element.NodesIndexes.Length; j++)
-            {
-                sumS += _solution[element.NodesIndexes[j] * 2] * basisFunctions[j].Calculate(point);
-                sumC += _solution[element.NodesIndexes[j] * 2 + 1] * basisFunctions[j].Calculate(point);
-            }
-
-            var result = (sumS * Math.Sin(_omega * time) + sumC * Math.Cos(_omega * time)) * 2 * Math.PI * r;
-
-            CourseHolder.WriteSolution(point, time, result);
-
-            fieldValues[i] = result;
-        }
-
-        return fieldValues;
+        return emfsValues;
     }
 
     public double CalcError(Func<Node2D, Complex> u)

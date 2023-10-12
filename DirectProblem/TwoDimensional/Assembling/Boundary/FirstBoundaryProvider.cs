@@ -53,7 +53,6 @@ public class FirstBoundaryProvider
                 for (var k = 0; k < indexes.Length; k++)
                 {
                     _indexes[j][k] = indexes[k] * 2 + i;
-                    _values[j][k] = _grid.Nodes[indexes[k]].R;
                 }
 
                 conditionsValues[j] = new FirstConditionValue(new LocalVector(_indexes[j], _values[j]));
