@@ -11,7 +11,7 @@ public class CourseHolder
 
     public static void WriteSolution(Node2D point, (double sValue, double cValue) values)
     {
-        Console.WriteLine($"({point.R:F2},{point.Z:F2}) As = {values.sValue:E14} Ac = {values.cValue:E14}");
+        Console.WriteLine($"({point.R:F2},{point.Z:F2}) EMFs = {values.sValue:E14} EMFc = {values.cValue:E14}");
     }
 
     public static void WriteSolution(Node2D point, double time, double value)

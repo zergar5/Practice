@@ -11,7 +11,7 @@ public class ProportionalSplitter : IIntervalSplitter
 
     public ProportionalSplitter(int steps, double dischargeRatio)
     {
-        if (Math.Abs(DischargeRatio - 1d) < 1e-16)
+        if (Math.Abs(dischargeRatio - 1d) < 1e-16)
             throw new NotSupportedException();
 
         Steps = steps;

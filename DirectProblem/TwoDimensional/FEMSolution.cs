@@ -53,7 +53,7 @@ public class FEMSolution
 
             var values = (sumS, sumC);
 
-            CourseHolder.WriteSolution(point, values);
+            //CourseHolder.WriteSolution(point, values);
 
             return values;
         }
@@ -63,13 +63,13 @@ public class FEMSolution
         return (double.NaN, double.NaN);
     }
 
-    public (double, double)[] CalculateEMFs(Receiver[] receivers)
+    public (double, double)[] CalculateEMFs(Node2D[] points)
     {
-        var emfsValues = new (double, double)[receivers.Length];
+        var emfsValues = new (double, double)[points.Length];
 
-        for (var i = 0; i < receivers.Length; i++)
+        for (var i = 0; i < points.Length; i++)
         {
-            emfsValues[i] = CalculateEMF(receivers[i].Point);
+            emfsValues[i] = CalculateEMF(points[i]);
         }
 
         return emfsValues;

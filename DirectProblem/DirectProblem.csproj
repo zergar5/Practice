@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="IO\" />
+    <Folder Include="Results\" />
+  </ItemGroup>
+
 </Project>

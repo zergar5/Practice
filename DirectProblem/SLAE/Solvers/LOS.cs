@@ -9,16 +9,21 @@ public class LOS
 {
     private readonly LUPreconditioner _luPreconditioner;
     private readonly LUSparse _luSparse;
-    private readonly SparseMatrix _preconditionMatrix;
+    private SparseMatrix _preconditionMatrix;
     private Vector _r;
     private Vector _z;
     private Vector _p;
 
-    public LOS(LUPreconditioner luPreconditioner, LUSparse luSparse, SparseMatrix preconditionMatrix)
+    public LOS(LUPreconditioner luPreconditioner, LUSparse luSparse)
     {
         _luPreconditioner = luPreconditioner;
         _luSparse = luSparse;
+    }
+
+    public LOS SetPrecondition(SparseMatrix preconditionMatrix)
+    {
         _preconditionMatrix = preconditionMatrix;
+        return this;
     }
 
     private void PrepareProcess(Equation<SparseMatrix> equation)
@@ -40,7 +45,7 @@ public class LOS
 
     private void IterationProcess(Equation<SparseMatrix> equation)
     {
-        Console.WriteLine("LOS");
+        //Console.WriteLine("LOS");
 
         var residual = Vector.ScalarProduct(_r, _r);
         var residualNext = residual;
@@ -71,9 +76,9 @@ public class LOS
 
             residualNext = Vector.ScalarProduct(_r, _r) / residual;
 
-            CourseHolder.GetInfo(i, residualNext);
+            //CourseHolder.GetInfo(i, residualNext);
         }
 
-        Console.WriteLine();
+        //Console.WriteLine();
     }
 }

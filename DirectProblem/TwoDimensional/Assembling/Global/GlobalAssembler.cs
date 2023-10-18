@@ -60,22 +60,18 @@ public class GlobalAssembler<TNode>
         return this;
     }
 
-    public GlobalAssembler<TNode> ApplySources(FocusedSource[] sources)
+    public GlobalAssembler<TNode> ApplySources(FocusedSource source)
     {
-        foreach (var source in sources)
+        var element = _grid.Elements.First(x => ElementHas(x, source.Point));
+
+        var basisFunctions = _localBasisFunctionsProvider.GetBilinearFunctions(element);
+
+        for (var i = 0; i < element.NodesIndexes.Length; i++)
         {
-            var element = _grid.Elements.First(x => ElementHas(x, source.Point));
-
-            var basisFunctions = _localBasisFunctionsProvider.GetBilinearFunctions(element);
-
-            for (var i = 0; i < element.NodesIndexes.Length; i++)
-            {
-                _bufferVector[i] = source.Current * basisFunctions[i].Calculate(source.Point);
-            }
-
-            _inserter.InsertVector(_equation.RightPart, new LocalVector(element.NodesIndexes, _bufferVector));
+            _bufferVector[i] = source.Current * basisFunctions[i].Calculate(source.Point);
         }
 
+        _inserter.InsertVector(_equation.RightPart, new LocalVector(element.NodesIndexes, _bufferVector));
 
         return this;
     }
