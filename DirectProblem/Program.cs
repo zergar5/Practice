@@ -95,9 +95,9 @@ var sources = new FocusedSource[]
 var firstBoundaryProvider = new FirstBoundaryProvider(grid);
 var conditions = firstBoundaryProvider.GetConditions(20, 40);
 
-var points = new Node2D[120];
+var points = new Node2D[119];
 
-for (var i = 1; i <= 120; i++)
+for (var i = 1; i <= 119; i++)
 {
     points[i-1] = new Node2D(0.0495d, -0.1 * i);
 }
