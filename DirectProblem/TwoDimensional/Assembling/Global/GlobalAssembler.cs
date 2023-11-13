@@ -20,7 +20,8 @@ public class GlobalAssembler<TNode>
     private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
     private Equation<SparseMatrix> _equation;
     private SparseMatrix _preconditionMatrix;
-    private Vector _bufferVector = new(4);
+    private readonly Vector _bufferVector = new(8);
+    private int[] _complexIndexes = new int[8];
 
     public GlobalAssembler
     (
@@ -66,12 +67,15 @@ public class GlobalAssembler<TNode>
 
         var basisFunctions = _localBasisFunctionsProvider.GetBilinearFunctions(element);
 
+        _complexIndexes = GetComplexIndexes(element);
+
         for (var i = 0; i < element.NodesIndexes.Length; i++)
         {
-            _bufferVector[i] = source.Current * basisFunctions[i].Calculate(source.Point);
+            _bufferVector[i * 2] = source.Current * basisFunctions[i].Calculate(source.Point);
+            _bufferVector[i * 2 + 1] = 0;
         }
 
-        _inserter.InsertVector(_equation.RightPart, new LocalVector(element.NodesIndexes, _bufferVector));
+        _inserter.InsertVector(_equation.RightPart, new LocalVector(_complexIndexes, _bufferVector));
 
         return this;
     }
@@ -103,5 +107,16 @@ public class GlobalAssembler<TNode>
         var rightCornerNode = _grid.Nodes[element.NodesIndexes[^1]];
         return node.R >= leftCornerNode.R && node.Z >= leftCornerNode.Z &&
                node.R <= rightCornerNode.R && node.Z <= rightCornerNode.Z;
+    }
+
+    private int[] GetComplexIndexes(Element element)
+    {
+        for (var i = 0; i < element.NodesIndexes.Length; i++)
+        {
+            _complexIndexes[i * 2] = 2 * element.NodesIndexes[i];
+            _complexIndexes[i * 2 + 1] = _complexIndexes[i * 2] + 1;
+        }
+
+        return _complexIndexes;
     }
 }

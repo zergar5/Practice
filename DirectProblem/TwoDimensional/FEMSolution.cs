@@ -31,7 +31,7 @@ public class FEMSolution
         _omega = omega;
     }
 
-    public (double, double) CalculateEMF(Node2D point)
+    public Complex Calculate(Node2D point)
     {
         if (AreaHas(point))
         {
@@ -48,10 +48,7 @@ public class FEMSolution
                 sumC += _solution[element.NodesIndexes[i] * 2 + 1] * basisFunctions[i].Calculate(point);
             }
 
-            sumS *= 2d * Math.PI * point.R;
-            sumC *= 2d * Math.PI * point.R;
-
-            var values = (sumS, sumC);
+            var values = new Complex(sumS, sumC);
 
             //CourseHolder.WriteSolution(point, values);
 
@@ -60,12 +57,19 @@ public class FEMSolution
 
         CourseHolder.WriteAreaInfo();
         CourseHolder.WriteSolution(point, (double.NaN, double.NaN));
-        return (double.NaN, double.NaN);
+        return new Complex(double.NaN, double.NaN);
     }
 
-    public (double, double)[] CalculateEMFs(Node2D[] points)
+    public Complex CalculateEMF(Node2D point)
     {
-        var emfsValues = new (double, double)[points.Length];
+        var emfs = 2d * Math.PI * point.R * Calculate(point);
+
+        return emfs;
+    }
+
+    public Complex[] CalculateEMFs(Node2D[] points)
+    {
+        var emfsValues = new Complex[points.Length];
 
         for (var i = 0; i < points.Length; i++)
         {

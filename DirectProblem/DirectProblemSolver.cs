@@ -1,4 +1,5 @@
 ﻿using DirectProblem.Core;
+using DirectProblem.Core.Base;
 using DirectProblem.Core.Boundary;
 using DirectProblem.Core.Global;
 using DirectProblem.Core.GridComponents;
@@ -29,7 +30,6 @@ public class DirectProblemSolver
     private readonly MaterialFactory _materialFactory;
     private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
     private readonly FirstConditionValue[] _firstConditions;
-    private readonly Node2D[] _points;
     private double _omega;
     private FocusedSource _focusedSource;
     private Equation<SparseMatrix> _equation;
@@ -38,15 +38,13 @@ public class DirectProblemSolver
     (
         Grid<Node2D> grid, 
         MaterialFactory materialFactory,
-        FirstConditionValue[] firstConditions,
-        Node2D[] points
+        FirstConditionValue[] firstConditions
     )
     {
         _grid = grid;
         _materialFactory = materialFactory;
         _localBasisFunctionsProvider = new LocalBasisFunctionsProvider(grid, LinearFunctionsProvider);
         _firstConditions = firstConditions;
-        _points = points;
     }
 
     public DirectProblemSolver SetOmega(double omega)
@@ -85,14 +83,10 @@ public class DirectProblemSolver
         return this;
     }
 
-    public (double, double)[] Solve()
+    public Vector Solve()
     {
         var solution = LOS.Solve(_equation);
 
-        var femSolution = new FEMSolution(_grid, solution, _localBasisFunctionsProvider, _omega);
-
-        var emfsValues = femSolution.CalculateEMFs(_points);
-
-        return emfsValues;
+        return solution;
     }
 }
