@@ -7,6 +7,8 @@ using DirectProblem.Core.Local;
 using DirectProblem.FEM.Assembling;
 using DirectProblem.FEM.Assembling.Local;
 using DirectProblem.TwoDimensional.Assembling.Local;
+using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
+using System.Xml.Linq;
 
 namespace DirectProblem.TwoDimensional.Assembling.Global;
 
@@ -18,10 +20,14 @@ public class GlobalAssembler<TNode>
     private readonly IInserter<SparseMatrix> _inserter;
     private readonly GaussExcluder _gaussExсluder;
     private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
+    private readonly Matrix _massTemplate;
+    private readonly int[] _indexes = new int[2];
+    private readonly Vector _bufferThetaVector = new(2);
+    private readonly Vector _bufferVector = new(2);
+    private readonly Vector _complexVector = new(4);
+    private int[] _complexIndexes = new int[4];
     private Equation<SparseMatrix> _equation;
     private SparseMatrix _preconditionMatrix;
-    private readonly Vector _bufferVector = new(8);
-    private int[] _complexIndexes = new int[8];
 
     public GlobalAssembler
     (
@@ -39,6 +45,7 @@ public class GlobalAssembler<TNode>
         _inserter = inserter;
         _gaussExсluder = gaussExсluder;
         _localBasisFunctionsProvider = localBasisFunctionsProvider;
+        _massTemplate = MassMatrixTemplateProvider.MassMatrix;
     }
 
     public GlobalAssembler<TNode> AssembleEquation(Grid<TNode> grid)
@@ -65,17 +72,29 @@ public class GlobalAssembler<TNode>
     {
         var element = _grid.Elements.First(x => ElementHas(x, source.Point));
 
-        var basisFunctions = _localBasisFunctionsProvider.GetBilinearFunctions(element);
+        var theta = source.Current / (2 * Math.PI * source.Point.R * element.Height);
 
-        _complexIndexes = GetComplexIndexes(element);
+        element.GetBoundNodeIndexes(Bound.Right, _indexes);
 
-        for (var i = 0; i < element.NodesIndexes.Length; i++)
+        for (var i = 0; i < _bufferThetaVector.Count; i++)
         {
-            _bufferVector[i * 2] = source.Current * basisFunctions[i].Calculate(source.Point);
-            _bufferVector[i * 2 + 1] = 0;
+            _bufferThetaVector[i] = theta;
         }
 
-        _inserter.InsertVector(_equation.RightPart, new LocalVector(_complexIndexes, _bufferVector));
+        var mass = Matrix.Multiply(element.Height * source.Point.R / 6d,
+            _massTemplate);
+
+        Matrix.Multiply(mass, _bufferThetaVector, _bufferVector);
+
+        _complexIndexes = GetComplexIndexes(_indexes);
+
+        for (var i = 0; i < _indexes.Length; i++)
+        {
+            _complexVector[i * 2] = _bufferVector[i];
+            _complexVector[i * 2 + 1] = 0d;
+        }
+
+        _inserter.InsertVector(_equation.RightPart, new LocalVector(_complexIndexes, _complexVector));
 
         return this;
     }
@@ -109,11 +128,11 @@ public class GlobalAssembler<TNode>
                node.R <= rightCornerNode.R && node.Z <= rightCornerNode.Z;
     }
 
-    private int[] GetComplexIndexes(Element element)
+    private int[] GetComplexIndexes(int[] indexes)
     {
-        for (var i = 0; i < element.NodesIndexes.Length; i++)
+        for (var i = 0; i < indexes.Length; i++)
         {
-            _complexIndexes[i * 2] = 2 * element.NodesIndexes[i];
+            _complexIndexes[i * 2] = 2 * indexes[i];
             _complexIndexes[i * 2 + 1] = _complexIndexes[i * 2] + 1;
         }
 

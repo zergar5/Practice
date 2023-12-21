@@ -1,4 +1,6 @@
-﻿namespace DirectProblem.Core.GridComponents;
+﻿using DirectProblem.SLAE;
+
+namespace DirectProblem.Core.GridComponents;
 
 public class Area
 {
@@ -27,9 +29,15 @@ public class Area
         ElementsIndexes.Add(index);
     }
 
-    public bool AreaHas(Node2D elementLowerLeftCorner, Node2D elementUpperRightCorner)
+    public bool Has(Node2D elementLowerLeftCorner, Node2D elementUpperRightCorner)
     {
-        return elementLowerLeftCorner.R >= LowerLeftCorner.R && elementLowerLeftCorner.Z >= LowerLeftCorner.Z &&
-               elementUpperRightCorner.R <= UpperRightCorner.R && elementUpperRightCorner.Z <= UpperRightCorner.Z;
+        return (elementLowerLeftCorner.R > LowerLeftCorner.R ||
+                Math.Abs(elementLowerLeftCorner.R - LowerLeftCorner.R) < MethodsConfig.EpsDouble) &&
+               (elementLowerLeftCorner.Z > LowerLeftCorner.Z ||
+                Math.Abs(elementLowerLeftCorner.Z - LowerLeftCorner.Z) < MethodsConfig.EpsDouble) &&
+               (elementUpperRightCorner.R < UpperRightCorner.R ||
+                Math.Abs(elementUpperRightCorner.R - UpperRightCorner.R) < MethodsConfig.EpsDouble) &&
+               (elementUpperRightCorner.Z < UpperRightCorner.Z ||
+                Math.Abs(elementUpperRightCorner.Z - UpperRightCorner.Z) < MethodsConfig.EpsDouble);
     }
 }

@@ -128,7 +128,7 @@ public class GridBuilder2D : IGridBuilder<Node2D>
         if (_areas != null)
         {
             var area = _areas.First(a => a
-                .AreaHas(lowerLeftCornerNode, upperRightCornerNode));
+                .Has(lowerLeftCornerNode, upperRightCornerNode));
             area.Add(elementIndex);
 
             return area.MaterialId;

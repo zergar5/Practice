@@ -16,6 +16,8 @@ with open(path + 'emfs.txt', 'r') as file:
     emfCos3 = [float(x) for x in file.readline().split()]
     emfCos4 = [float(x) for x in file.readline().split()]
 
+sin_min = min([min(emfSin1), min(emfSin2), min(emfSin3), min(emfSin4)])
+
 plt.plot(pointsZ, emfSin1, label=f'{frequencies[0]} MHz sin')
 plt.plot(pointsZ, emfSin2, label=f'{frequencies[1]} MHz sin')
 plt.plot(pointsZ, emfSin3, label=f'{frequencies[2]} MHz sin')
@@ -24,13 +26,15 @@ plt.plot(pointsZ, emfSin4, label=f'{frequencies[3]} MHz sin')
 plt.xlabel('Z')
 plt.ylabel('EMF')
 
-#plt.xlim(-1e-3, 1e-3)
 #plt.xticks([-1e-2, -1e-10, -1e-20, 0, 1e-20, 1e-10, 1e-2])
-plt.xlim(-12, 0)
+plt.xlim(-160, -100)
+#plt.ylim(sin_min, abs(sin_min))
 
 plt.legend()
 
 plt.show()
+
+cos_min = min([min(emfCos1), min(emfCos2), min(emfCos3), min(emfCos4)])
 
 plt.plot(pointsZ, emfCos1, label=f'{frequencies[0]} MHz cos')
 plt.plot(pointsZ, emfCos2, label=f'{frequencies[1]} MHz cos')
@@ -40,9 +44,9 @@ plt.plot(pointsZ, emfCos4, label=f'{frequencies[3]} MHz cos')
 plt.xlabel('Z')
 plt.ylabel('EMF')
 
-#plt.xlim(-1e-3, 1e-3)
 #plt.xticks([-1e-2, -1e-10, -1e-20, 0, 1e-20, 1e-10, 1e-2])
-plt.xlim(-12, 0)
+plt.xlim(-160, -100)
+#plt.ylim(cos_min, abs(cos_min))
 
 plt.legend()
 
@@ -64,9 +68,8 @@ plt.plot(pointsZ, phaseDifferences4, label=f'{frequencies[3]} MHz phase differen
 plt.xlabel('Z')
 plt.ylabel('EMF')
 
-#plt.xlim(-1e-3, 1e-3)
 #plt.xticks([-1e-2, -1e-10, -1e-20, 0, 1e-20, 1e-10, 1e-2])
-plt.xlim(-12, 0)
+plt.xlim(-160, -100)
 
 plt.legend()
 

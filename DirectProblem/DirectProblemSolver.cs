@@ -20,8 +20,6 @@ namespace DirectProblem;
 public class DirectProblemSolver
 {
     private static readonly MatrixPortraitBuilder MatrixPortraitBuilder = new();
-    private static readonly StiffnessMatrixTemplatesProvider StiffnessMatrixTemplatesProvider = new();
-    private static readonly MassMatrixTemplateProvider MassMatrixTemplateProvider = new();
     private static readonly Inserter Inserter = new();
     private static readonly LinearFunctionsProvider LinearFunctionsProvider = new();
     private static readonly GaussExcluder GaussExcluder = new();
@@ -65,7 +63,7 @@ public class DirectProblemSolver
     {
         var localAssembler =
             new LocalAssembler(
-                new LocalMatrixAssembler(_grid, StiffnessMatrixTemplatesProvider, MassMatrixTemplateProvider),
+                new LocalMatrixAssembler(_grid),
                 _materialFactory, _omega);
 
         var globalAssembler = new GlobalAssembler<Node2D>(_grid, MatrixPortraitBuilder, localAssembler, Inserter,

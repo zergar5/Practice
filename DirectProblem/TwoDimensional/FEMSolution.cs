@@ -3,6 +3,7 @@ using DirectProblem.Core.Base;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.FEM;
 using DirectProblem.GridGenerator.Intervals.Core;
+using DirectProblem.SLAE;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using System.Drawing;
 using System.Numerics;
@@ -97,17 +98,29 @@ public class FEMSolution
 
     private bool ElementHas(Element element, Node2D node)
     {
-        var leftCornerNode = _grid.Nodes[element.NodesIndexes[0]];
-        var rightCornerNode = _grid.Nodes[element.NodesIndexes[^1]];
-        return node.R >= leftCornerNode.R && node.Z >= leftCornerNode.Z &&
-               node.R <= rightCornerNode.R && node.Z <= rightCornerNode.Z;
+        var lowerLeftCorner = _grid.Nodes[element.NodesIndexes[0]];
+        var upperRightCorner = _grid.Nodes[element.NodesIndexes[^1]];
+        return (node.R > lowerLeftCorner.R ||
+                Math.Abs(node.R - lowerLeftCorner.R) < MethodsConfig.EpsDouble) &&
+               (node.Z > lowerLeftCorner.Z ||
+                Math.Abs(node.Z - lowerLeftCorner.Z) < MethodsConfig.EpsDouble) &&
+               (node.R < upperRightCorner.R ||
+                Math.Abs(node.R - upperRightCorner.R) < MethodsConfig.EpsDouble) &&
+               (node.Z < upperRightCorner.Z ||
+                Math.Abs(node.Z - upperRightCorner.Z) < MethodsConfig.EpsDouble);
     }
 
     private bool AreaHas(Node2D node)
     {
-        var leftCornerNode = _grid.Nodes[0];
-        var rightCornerNode = _grid.Nodes[^1];
-        return node.R >= leftCornerNode.R && node.Z >= leftCornerNode.Z &&
-               node.R <= rightCornerNode.R && node.Z <= rightCornerNode.Z;
+        var lowerLeftCorner = _grid.Nodes[0];
+        var upperRightCorner = _grid.Nodes[^1];
+        return (node.R > lowerLeftCorner.R ||
+                Math.Abs(node.R - lowerLeftCorner.R) < MethodsConfig.EpsDouble) &&
+               (node.Z > lowerLeftCorner.Z ||
+                Math.Abs(node.Z - lowerLeftCorner.Z) < MethodsConfig.EpsDouble) &&
+               (node.R < upperRightCorner.R ||
+                Math.Abs(node.R - upperRightCorner.R) < MethodsConfig.EpsDouble) &&
+               (node.Z < upperRightCorner.Z ||
+                Math.Abs(node.Z - upperRightCorner.Z) < MethodsConfig.EpsDouble);
     }
 }

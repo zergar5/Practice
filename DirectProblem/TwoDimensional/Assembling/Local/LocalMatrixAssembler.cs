@@ -23,16 +23,14 @@ public class LocalMatrixAssembler : ILocalMatrixAssembler
 
     public LocalMatrixAssembler
     (
-        Grid<Node2D> grid,
-        StiffnessMatrixTemplatesProvider stiffnessMatrixTemplateProvider,
-        MassMatrixTemplateProvider massMatrixTemplateProvider
+        Grid<Node2D> grid
     )
     {
         _grid = grid;
-        _stiffnessTemplate = stiffnessMatrixTemplateProvider.StiffnessMatrix;
-        _massTemplate = massMatrixTemplateProvider.MassMatrix;
-        _massRTemplate = massMatrixTemplateProvider.MassRMatrix;
-        _rotorMassTemplate = massMatrixTemplateProvider.RotorMassMatrix;
+        _stiffnessTemplate = StiffnessMatrixTemplatesProvider.StiffnessMatrix;
+        _massTemplate = MassMatrixTemplateProvider.MassMatrix;
+        _massRTemplate = MassMatrixTemplateProvider.MassRMatrix;
+        _rotorMassTemplate = MassMatrixTemplateProvider.RotorMassMatrix;
     }
 
     public Matrix AssembleStiffnessMatrix(Element element)
