@@ -17,6 +17,7 @@ using DirectProblem;
 using DirectProblem.IO;
 using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
 using Vector = DirectProblem.Core.Base.Vector;
+using System.Xml.XPath;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
@@ -44,26 +45,26 @@ var grid = gridBuilder2D
        )
    )
    //искомый объект вплотную к скважине
-   //.SetAreas(new Area[]
-   //{
-   //    //скважина
-   //    new(0, new Node2D(1e-16, -260d), new Node2D(0.1, 0d)),
-   //    //первый слой
-   //    new(1, new Node2D(0.1, -100d), new Node2D(70.1, 0d)),
-   //    new(3, new Node2D(70.1, -100d), new Node2D(100.1, 0d)),
-   //    //второй слой
-   //    new(3, new Node2D(0.1, -120.03858175448441), new Node2D(20.1, -100d)),
-   //    new(3, new Node2D(20.1, -130d), new Node2D(60.1, -100d)),
-   //    new(1, new Node2D(60.1, -130d), new Node2D(100.1, -100d)),
-   //    //искомый элемент
-   //    new(4, new Node2D(0.1, -140.11800433374964), new Node2D(20.1, -120.03858175448441)),
-   //    //третий слой
-   //    new(2, new Node2D(0.1, -160d), new Node2D(20.1, -140.11800433374964)),
-   //    new(2, new Node2D(20.1, -160d), new Node2D(100.1, -130d)),
-   //    //четвертый слой
-   //    new(3, new Node2D(0.1, -260d), new Node2D(30.1, -160d)),
-   //    new(1, new Node2D(30.1, -260d), new Node2D(100.1, -160d))
-   //})
+   .SetAreas(new Area[]
+   {
+       //скважина
+       new(0, new Node2D(1e-16, -260d), new Node2D(0.1, 0d)),
+       //первый слой
+       new(1, new Node2D(0.1, -100d), new Node2D(70.1, 0d)),
+       new(3, new Node2D(70.1, -100d), new Node2D(100.1, 0d)),
+       //второй слой
+       new(3, new Node2D(0.1, -120.03858175448441), new Node2D(20.1, -100d)),
+       new(3, new Node2D(20.1, -130d), new Node2D(60.1, -100d)),
+       new(1, new Node2D(60.1, -130d), new Node2D(100.1, -100d)),
+       //искомый элемент
+       new(4, new Node2D(0.1, -140.11800433374964), new Node2D(20.1, -120.03858175448441)),
+       //третий слой
+       new(2, new Node2D(0.1, -160d), new Node2D(20.1, -140.11800433374964)),
+       new(2, new Node2D(20.1, -160d), new Node2D(100.1, -130d)),
+       //четвертый слой
+       new(3, new Node2D(0.1, -260d), new Node2D(30.1, -160d)),
+       new(1, new Node2D(30.1, -260d), new Node2D(100.1, -160d))
+   })
    //искомый объект близко к скважине (R = 10.1)
    //.SetAreas(new Area[]
    //{
@@ -110,30 +111,30 @@ var grid = gridBuilder2D
    //    new(1, new Node2D(30.1, -260d), new Node2D(100.1, -160d))
    //})
    //искомые объекты вплотную к скважине
-   .SetAreas(new Area[]
-   {
-       //скважина
-       new(0, new Node2D(1e-3, -260d), new Node2D(0.1, 0d)),
-       //первый слой
-       new(1, new Node2D(0.1, -100d), new Node2D(70.1, 0d)),
-       new(3, new Node2D(70.1, -100d), new Node2D(100.1, 0d)),
-       //второй слой
-       new(3, new Node2D(0.1, -120.03858175448441), new Node2D(20.1, -100d)),
-       new(3, new Node2D(20.1, -130d), new Node2D(60.1, -100d)),
-       new(1, new Node2D(60.1, -130d), new Node2D(100.1, -100d)),
-       //искомый элемент
-       new(4, new Node2D(0.1, -130d), new Node2D(20.1, -120.03858175448441)),
-       //искомый элемент
-       new(4, new Node2D(0.1, -149.95696963486563), new Node2D(20.1, -140.11800433374964)),
-       //третий слой
-       new(2, new Node2D(0.1, -140.11800433374964), new Node2D(20.1, -130d)),
-       new(2, new Node2D(0.1, -160d), new Node2D(20.1, -149.95696963486563)),
-       new(2, new Node2D(0.1, -160d), new Node2D(20.1, -130d)),
-       new(2, new Node2D(20.1, -160d), new Node2D(100.1, -130d)),
-       //четвертый слой
-       new(3, new Node2D(0.1, -260d), new Node2D(30.1, -160d)),
-       new(1, new Node2D(30.1, -260d), new Node2D(100.1, -160d))
-   })
+   //.SetAreas(new Area[]
+   //{
+   //    //скважина
+   //    new(0, new Node2D(1e-3, -260d), new Node2D(0.1, 0d)),
+   //    //первый слой
+   //    new(1, new Node2D(0.1, -100d), new Node2D(70.1, 0d)),
+   //    new(3, new Node2D(70.1, -100d), new Node2D(100.1, 0d)),
+   //    //второй слой
+   //    new(3, new Node2D(0.1, -120.03858175448441), new Node2D(20.1, -100d)),
+   //    new(3, new Node2D(20.1, -130d), new Node2D(60.1, -100d)),
+   //    new(1, new Node2D(60.1, -130d), new Node2D(100.1, -100d)),
+   //    //искомый элемент
+   //    new(4, new Node2D(0.1, -130d), new Node2D(20.1, -120.03858175448441)),
+   //    //искомый элемент
+   //    new(4, new Node2D(0.1, -149.95696963486563), new Node2D(20.1, -140.11800433374964)),
+   //    //третий слой
+   //    new(2, new Node2D(0.1, -140.11800433374964), new Node2D(20.1, -130d)),
+   //    new(2, new Node2D(0.1, -160d), new Node2D(20.1, -149.95696963486563)),
+   //    new(2, new Node2D(0.1, -160d), new Node2D(20.1, -130d)),
+   //    new(2, new Node2D(20.1, -160d), new Node2D(100.1, -130d)),
+   //    //четвертый слой
+   //    new(3, new Node2D(0.1, -260d), new Node2D(30.1, -160d)),
+   //    new(1, new Node2D(30.1, -260d), new Node2D(100.1, -160d))
+   //})
    //искомые объекы близко к скважине (R = 10.1)
    //.SetAreas(new Area[]
    //{
@@ -191,6 +192,12 @@ var grid = gridBuilder2D
    //})
    .Build();
 
+var gridO = new GridIO("../DirectProblem/Results/");
+
+gridO.WriteMaterials(grid, "nvkat2d.dat");
+gridO.WriteElements(grid, "nvtr.dat");
+gridO.WriteNodes(grid, "rz.dat");
+
 var materialFactory = new MaterialFactory
 (
     new List<double> { 1d, 1d, 1d, 1d, 1d, 1d, 1d, 1d },
@@ -224,34 +231,37 @@ var resultO = new ResultIO("../DirectProblem/Results/");
 
 var localBasisFunctionsProvider = new LocalBasisFunctionsProvider(grid, new LinearFunctionsProvider());
 
-for (var i = 0; i < sources.Length; i++)
-{
-    for (var j = 0; j < omegas.Length; j++)
-    {
+//for (var i = 0; i < sources.Length; i++)
+//{
+//    for (var j = 0; j < omegas.Length; j++)
+//    {
         var solution = directProblemSolver
-            .SetOmega(omegas[j])
-            .SetSource(sources[i])
+            .SetOmega(omegas[0])
+            .SetSource(sources[29])
             .AssembleSLAE()
             .Solve();
 
-        var femSolution = new FEMSolution(grid, solution, localBasisFunctionsProvider, omegas[j]);
+        //var femSolution = new FEMSolution(grid, solution, localBasisFunctionsProvider, omegas[0]);
 
-        var potentialM = femSolution.Calculate(receiverLines[i].PointM);
-        var potentialN = femSolution.Calculate(receiverLines[i].PointN);
+resultO.WriteSinuses(solution, "v2s.dat");
+resultO.WriteCosinuses(solution, "v2c.dat");
 
-        emfs[i, j] = 2 * Math.PI * receiverLines[i].PointM.R * potentialN;
+//var potentialM = femSolution.Calculate(receiverLines[0].PointM);
+//var potentialN = femSolution.Calculate(receiverLines[0].PointN);
 
-        phaseDifferences[i, j] = (potentialM.Phase - potentialN.Phase) * 180d / Math.PI;
+//emfs[i, j] = 2 * Math.PI * receiverLines[0].PointM.R * potentialN;
 
-        //var magnitudeM = potentialM.Magnitude;
-        //var magnitudeN = potentialN.Magnitude;
+//phaseDifferences[i, j] = (potentialM.Phase - potentialN.Phase) * 180d / Math.PI;
 
-        //var potentialDifference = potentialM - potentialN;
+//var magnitudeM = potentialM.Magnitude;
+//var magnitudeN = potentialN.Magnitude;
 
-        //resultO.Write($"omega{j} sin.txt", omegas[j], points, result);
-        //resultO.Write($"omega{j} cos.txt", omegas[j], points, result);
-    }
-}
+//var potentialDifference = potentialM - potentialN;
 
-resultO.Write("emfs.txt", omegas, centersZ, emfs);
-resultO.Write("phaseDifferences.txt", omegas, centersZ, phaseDifferences);
+//resultO.Write($"omega{j} sin.txt", omegas[j], points, result);
+//resultO.Write($"omega{j} cos.txt", omegas[j], points, result);
+//    }
+//}
+
+//resultO.Write("emfs.txt", omegas, centersZ, emfs);
+//resultO.Write("phaseDifferences.txt", omegas, centersZ, phaseDifferences);
