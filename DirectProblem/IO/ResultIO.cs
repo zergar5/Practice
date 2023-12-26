@@ -18,30 +18,6 @@ public class ResultIO
         _path = path;
     }
 
-    public void Write(string fileName, double omega, Node2D[] points, (double, double)[] emfs)
-    {
-        using var streamWriter = new StreamWriter(_path + fileName);
-
-        streamWriter.WriteLine(omega / 1000000d);
-
-        foreach (var point in points)
-        {
-            streamWriter.Write($"{point.Z} ");
-        }
-        streamWriter.WriteLine();
-
-        foreach (var emfSin in emfs)
-        {
-            streamWriter.Write($"{emfSin.Item1} ");
-        }
-        streamWriter.WriteLine();
-
-        foreach (var emfCos in emfs)
-        {
-            streamWriter.Write($"{emfCos.Item1} ");
-        }
-    }
-
     public void Write(string fileName, double[] omegas, double[] centersZ, Complex[,] emfs)
     {
         using var streamWriter = new StreamWriter(_path + fileName);
@@ -81,6 +57,32 @@ public class ResultIO
         }
     }
 
+    public void WriteSinEMFs(string fileName, double[] centersZ, int number, Complex[,] emfs)
+    {
+        using var streamWriter = new StreamWriter(_path + fileName);
+
+        streamWriter.WriteLine();
+        streamWriter.WriteLine();
+
+        for (int i = 0; i < centersZ.Length; i++)
+        {
+            streamWriter.WriteLine($"{centersZ[i]} {emfs[i, number].Real}");
+        }
+    }
+
+    public void WriteCosEMFs(string fileName, double[] centersZ, int number, Complex[,] emfs)
+    {
+        using var streamWriter = new StreamWriter(_path + fileName);
+
+        streamWriter.WriteLine();
+        streamWriter.WriteLine();
+
+        for (int i = 0; i < centersZ.Length; i++)
+        {
+            streamWriter.WriteLine($"{centersZ[i]} {emfs[i, number].Imaginary}");
+        }
+    }
+
     public void Write(string fileName, double[] omegas, double[] centersZ, double[,] phaseDifferences)
     {
         using var streamWriter = new StreamWriter(_path + fileName);
@@ -107,6 +109,19 @@ public class ResultIO
             }
 
             streamWriter.WriteLine();
+        }
+    }
+
+    public void Write(string fileName, double[] centersZ, int number, double[,] phaseDifferences)
+    {
+        using var streamWriter = new StreamWriter(_path + fileName);
+
+        streamWriter.WriteLine();
+        streamWriter.WriteLine();
+
+        for (int i = 0; i < centersZ.Length; i++)
+        {
+            streamWriter.WriteLine($"{centersZ[i]} {phaseDifferences[i, number]}");
         }
     }
 
