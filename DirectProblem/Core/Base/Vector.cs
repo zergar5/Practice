@@ -1,4 +1,6 @@
-﻿namespace DirectProblem.Core.Base;
+﻿using DirectProblem.Core.Local;
+
+namespace DirectProblem.Core.Base;
 
 public class Vector
 {
@@ -19,6 +21,7 @@ public class Vector
 
     public int Count => Values.Length;
     public double Norm => Math.Sqrt(ScalarProduct(this, this));
+    public double ParallelNorm => Math.Sqrt(ParallelScalarProduct(this, this));
 
     public static double ScalarProduct(Vector vector1, Vector vector2)
     {
@@ -30,9 +33,24 @@ public class Vector
         return result;
     }
 
+    public static double ParallelScalarProduct(Vector vector1, Vector vector2)
+    {
+        var result = 0d;
+        Parallel.For(0, vector1.Count, i =>
+        {
+            result += vector1[i] * vector2[i];
+        });
+        return result;
+    }
+
     public double ScalarProduct(Vector vector)
     {
         return ScalarProduct(this, vector);
+    }
+
+    public double ParallelScalarProduct(Vector vector)
+    {
+        return ParallelScalarProduct(this, vector);
     }
 
     public static Vector Sum(Vector vector1, Vector vector2, Vector? result = null)
@@ -47,6 +65,22 @@ public class Vector
         {
             result[i] = vector1[i] + vector2[i];
         }
+
+        return result;
+    }
+
+    public static Vector ParallelSum(Vector vector1, Vector vector2, Vector? result = null)
+    {
+        if (vector1.Count != vector2.Count)
+            throw new ArgumentOutOfRangeException(
+                $"{nameof(vector1)} and {nameof(vector2)} must have same size");
+
+        result ??= new Vector(vector1.Values);
+
+        Parallel.For(0, vector1.Count, i =>
+        {
+            result[i] = vector1[i] + vector2[i];
+        });
 
         return result;
     }
@@ -67,6 +101,22 @@ public class Vector
         return result;
     }
 
+    public static Vector ParallelSubtract(Vector vector1, Vector vector2, Vector? result = null)
+    {
+        result ??= new Vector(vector1.Count);
+
+        if (vector1.Count != vector2.Count)
+            throw new ArgumentOutOfRangeException(
+                $"{nameof(vector1)} and {nameof(vector2)} must have same size");
+
+        Parallel.For(0, vector1.Count, i =>
+        {
+            result[i] = vector1[i] - vector2[i];
+        });
+
+        return result;
+    }
+
     public static Vector Multiply(double number, Vector localVector, Vector? result = null)
     {
         result ??= new Vector(localVector.Values);
@@ -75,6 +125,18 @@ public class Vector
         {
             result[i] = number * localVector[i];
         }
+
+        return result;
+    }
+
+    public static Vector ParallelMultiply(double number, Vector localVector, Vector? result = null)
+    {
+        result ??= new Vector(localVector.Values);
+
+        Parallel.For(0, localVector.Count, i =>
+        {
+            result[i] = number * localVector[i];
+        });
 
         return result;
     }

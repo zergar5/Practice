@@ -14,6 +14,7 @@ using DirectProblem.TwoDimensional.Assembling.Global;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
 using DirectProblem.TwoDimensional.Parameters;
+using System.Diagnostics;
 
 namespace DirectProblem;
 

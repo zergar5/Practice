@@ -4,6 +4,7 @@ using DirectProblem.Core.GridComponents;
 using System;
 using DirectProblem.Core.Base;
 using DirectProblem.Core.Local;
+using System.Diagnostics;
 
 namespace DirectProblem.TwoDimensional.Assembling.Boundary;
 
@@ -44,6 +45,7 @@ public class FirstBoundaryProvider
         }
 
         var j = 0;
+
         foreach (var condition in conditions)
         {
             var (indexes, _) = _grid.Elements[condition.ElementIndex].GetBoundNodeIndexes(condition.Bound, _indexesBuffer);
@@ -67,6 +69,7 @@ public class FirstBoundaryProvider
         var conditions = new FirstCondition[2 * (elementsByLength + elementsByHeight)];
 
         var j = 0;
+
         for (var i = 0; i < elementsByLength; i++, j++)
         {
             conditions[j] = new FirstCondition(i, Bound.Lower);

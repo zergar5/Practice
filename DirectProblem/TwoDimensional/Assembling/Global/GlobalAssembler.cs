@@ -1,4 +1,5 @@
-﻿using DirectProblem.Core;
+﻿using System.Diagnostics;
+using DirectProblem.Core;
 using DirectProblem.Core.Base;
 using DirectProblem.Core.Boundary;
 using DirectProblem.Core.Global;
@@ -58,6 +59,38 @@ public class GlobalAssembler<TNode>
             new Vector(grid.Nodes.Length * 2)
         );
 
+        //var threadsCount = ThreadPool.ThreadCount;
+
+        //var tasks = new Task[threadsCount];
+
+        //var thread = new Thread(() => { });
+
+        //Action<object> ktok = (element) =>
+        //{
+        //    var localMatrix = _localAssembler.AssembleMatrix((Element)element);
+
+        //    _inserter.InsertMatrix(_equation.Matrix, localMatrix);
+        //};
+
+        //for (var i = 0; i < threadsCount; i++)
+        //{
+        //    tasks[i] = new Task(() => {});
+        //    tasks[i].Start();
+        //}
+
+        //foreach (var element in grid)
+        //{
+        //    var task = Task.WhenAny(tasks);
+        //    task.ContinueWith((_, element) =>
+        //    {
+        //        var localMatrix = _localAssembler.AssembleMatrix((Element)element);
+
+        //        _inserter.InsertMatrix(_equation.Matrix, localMatrix);
+        //    }, element);
+        //    //var task = new Task(ktok, element);
+        //    //Task.WhenAny()
+        //}
+
         foreach (var element in grid)
         {
             var localMatrix = _localAssembler.AssembleMatrix(element);
@@ -101,10 +134,17 @@ public class GlobalAssembler<TNode>
 
     public GlobalAssembler<TNode> ApplyFirstConditions(FirstConditionValue[] conditions)
     {
-        foreach (var condition in conditions)
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        Parallel.ForEach(conditions, condition =>
         {
             _gaussExсluder.Exclude(_equation, condition);
-        }
+        });
+
+        stopwatch.Stop();
+
+        var time = (double)stopwatch.ElapsedMilliseconds / 1000;
 
         return this;
     }

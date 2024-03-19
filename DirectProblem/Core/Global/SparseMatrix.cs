@@ -101,7 +101,7 @@ public class SparseMatrix
 
         if (result == null) result = new Vector(matrix.Count);
         else result.Clear();
-        
+
         for (var i = 0; i < matrix.Count; i++)
         {
             result[i] += matrix[i, i] * vector[i];
@@ -112,6 +112,29 @@ public class SparseMatrix
                 result[j] += matrix[j, i] * vector[i];
             }
         }
+
+        return result;
+    }
+
+    public static Vector ParallelMultiply(SparseMatrix matrix, Vector vector, Vector? result = null)
+    {
+        if (matrix.Count != vector.Count)
+            throw new ArgumentOutOfRangeException(
+                $"{nameof(matrix)} and {nameof(vector)} must have same size");
+
+        if (result == null) result = new Vector(matrix.Count);
+        else result.Clear();
+
+        Parallel.For(0, matrix.Count, i =>
+        {
+            result[i] += matrix[i, i] * vector[i];
+
+            foreach (var j in matrix[i])
+            {
+                result[i] += matrix[i, j] * vector[j];
+                result[j] += matrix[j, i] * vector[i];
+            }
+        });
 
         return result;
     }

@@ -24,6 +24,25 @@ public class LUSparse
         return y;
     }
 
+    //public Vector ParallelCalcY(SparseMatrix sparseMatrix, Vector b, Vector? y = null)
+    //{
+    //    y ??= new Vector(b.Count);
+
+    //    for (var i = 0; i < sparseMatrix.Count; i++)
+    //    {
+    //        var sum = 0.0;
+
+    //        Parallel.ForEach<int>(sparseMatrix[i],  =>
+    //        {
+    //            sum += sparseMatrix[i, j] * y[j];
+    //        });
+
+    //        y[i] = (b[i] - sum) / sparseMatrix[i, i];
+    //    }
+
+    //    return y;
+    //}
+
     public Vector CalcX(SparseMatrix sparseMatrix, Vector y, Vector? x = null)
     {
         x = x == null ? y.Clone() : y.Copy(x);
