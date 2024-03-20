@@ -1,4 +1,6 @@
-﻿using DirectProblem.Core;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Drawing;
+using DirectProblem.Core;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.GridGenerator.Intervals.Splitting;
 
@@ -10,9 +12,6 @@ public class GridBuilder2D : IGridBuilder<Node2D>
     private AxisSplitParameter _zAxisSplitParameter;
     private int[]? _materialsId;
     private Area[]? _areas;
-
-    private int GetTotalRElements => _rAxisSplitParameter.Splitters.Sum(r => r.Steps);
-    private int GetTotalZElements => _zAxisSplitParameter.Splitters.Sum(z => z.Steps);
 
     public GridBuilder2D SetRAxis(AxisSplitParameter splitParameter)
     {
@@ -40,87 +39,58 @@ public class GridBuilder2D : IGridBuilder<Node2D>
 
     public Grid<Node2D> Build()
     {
+        var points = CreatePoints();
+
+        var elements = CreateElements(points);
+
+        return new Grid<Node2D>(
+            points,
+            elements,
+            _areas
+        );
+    }
+
+    private PointsCollection CreatePoints()
+    {
         if (_rAxisSplitParameter == null || _zAxisSplitParameter == null)
             throw new ArgumentNullException();
 
-        var totalRElements = GetTotalRElements;
+        var xNodes = _rAxisSplitParameter.CreateAxis().ToArray();
+        var yNodes = _zAxisSplitParameter.CreateAxis().ToArray();
 
-        var totalNodes = GetTotalNodes();
-        var totalElements = GetTotalElements();
+        return new PointsCollection(xNodes, yNodes);
+    }
 
-        var nodes = new Node2D[totalNodes];
+    private Element[] CreateElements(PointsCollection nodes)
+    {
+        var totalXElements = nodes.RLength - 1;
+        var totalYElements = nodes.ZLength - 1;
+        var totalElements = totalXElements * totalYElements;
+
         var elements = new Element[totalElements];
 
-        var i = 0;
-
-        foreach (var (zSection, zSplitter) in _zAxisSplitParameter.SectionWithParameter)
+        for (var topRow = 1; topRow < nodes.ZLength; topRow++)
         {
-            var zValues = zSplitter.EnumerateValues(zSection);
-            if (i > 0) zValues = zValues.Skip(1);
-
-            foreach (var z in zValues)
+            for (var rightColumn = 1; rightColumn < nodes.RLength; rightColumn++)
             {
-                var j = 0;
+                var elementIndex = rightColumn - 1 + (topRow - 1) * totalXElements;
+                var indexes = GetNodesIndexes(topRow - 1, rightColumn - 1, totalXElements);
 
-                foreach (var (rSection, rSplitter) in _rAxisSplitParameter.SectionWithParameter)
-                {
-                    var rValues = rSplitter.EnumerateValues(rSection);
-                    if (j > 0) rValues = rValues.Skip(1);
+                var leftBottom = nodes[indexes[0]];
+                var leftTop = nodes[indexes[2]];
+                var rightBottom = nodes[indexes[1]];
+                var rightTop = nodes[indexes[3]];
 
-                    foreach (var r in rValues)
-                    {
-                        var nodeIndex = j + i * (totalRElements + 1);
+                var length = rightBottom.R - leftBottom.R;
+                var height = leftTop.Z - leftBottom.Z;
 
-                        nodes[nodeIndex] = new Node2D(r, z);
+                var materialId = GetElementMaterial(elementIndex, leftBottom, rightTop);
 
-                        if (i > 0 && j > 0)
-                        {
-                            var elementIndex = j - 1 + (i - 1) * totalRElements;
-                            var nodesIndexes = GetCurrentElementIndexes(i - 1, j - 1);
-                            var materialId = GetElementMaterial(elementIndex, nodes[nodesIndexes[0]], nodes[nodesIndexes[^1]]);
-
-                            elements[elementIndex] = new Element(
-                                nodesIndexes,
-                                nodes[nodesIndexes[1]].R - nodes[nodesIndexes[0]].R,
-                                nodes[nodesIndexes[2]].Z - nodes[nodesIndexes[0]].Z,
-                                materialId
-                                );
-                        }
-
-                        j++;
-                    }
-                }
-
-                i++;
+                elements[elementIndex] = CreateElement(indexes, length, height, materialId);
             }
         }
 
-        return new Grid<Node2D>(nodes, elements, _areas);
-    }
-
-    private int GetTotalNodes()
-    {
-        return (GetTotalRElements + 1) * (GetTotalZElements + 1);
-    }
-
-    private int GetTotalElements()
-    {
-        return GetTotalRElements * GetTotalZElements;
-    }
-
-    private int[] GetCurrentElementIndexes(int j, int k)
-    {
-        var totalRElements = GetTotalRElements;
-
-        var indexes = new[]
-        {
-            k + j * (totalRElements + 1),
-            k + 1 + j * (totalRElements + 1),
-            k + (j + 1) * (totalRElements + 1),
-            k + 1 + (j + 1) * (totalRElements + 1)
-        };
-
-        return indexes;
+        return elements;
     }
 
     private int GetElementMaterial(int elementIndex, Node2D lowerLeftCornerNode, Node2D upperRightCornerNode)
@@ -138,5 +108,24 @@ public class GridBuilder2D : IGridBuilder<Node2D>
             return _materialsId[elementIndex];
         }
         return 0;
+    }
+
+    private int[] GetNodesIndexes(int bottomRow, int leftColumn, int totalXElements)
+    {
+        var indexes = new int[4];
+
+        indexes[0] = leftColumn + bottomRow * (totalXElements + 1);
+        indexes[1] = leftColumn + 1 + bottomRow * (totalXElements + 1);
+        indexes[2] = leftColumn + (bottomRow + 1) * (totalXElements + 1);
+        indexes[3] = leftColumn + 1 + (bottomRow + 1) * (totalXElements + 1);
+
+        return indexes;
+    }
+
+    private Element CreateElement(int[] nodesIndexes, double length, double height, int materialId)
+    {
+        var element = new Element(nodesIndexes, length, height, materialId);
+
+        return element;
     }
 }

@@ -26,20 +26,22 @@ var gridBuilder2D = new GridBuilder2D();
 
 var grid = gridBuilder2D
     .SetRAxis(new AxisSplitParameter(
-            new[] { 1e-16, 0.1, 10 },
-            new UniformSplitter(16),
+            new[] { 1e-4, 0.1, 10 },
+            new UniformSplitter(4),
             //new UniformSplitter(1)
-            new ProportionalSplitter(150, 1.05)
+            new StepProportionalSplitter(0.025, 1.05)
         )
     )
     .SetZAxis(new AxisSplitParameter(
             new[] { -10d, -6d, -5d, -4d, 0d },
-            new ProportionalSplitter(60, Math.Pow(0.95, 1)),
-            //new ProportionalSplitter(60, Math.Pow(0.95, 1)),
-            //new ProportionalSplitter(60, Math.Pow(1.05, 1)),
-            new UniformSplitter(40),
-            new UniformSplitter(40),
-            new ProportionalSplitter(60, Math.Pow(1.05, 1))
+            new StepProportionalSplitter(0.025, 1/1.05),
+            new StepUniformSplitter(0.025),
+            new StepUniformSplitter(0.025),
+            new StepProportionalSplitter(0.025, 1.05)
+        //new UniformSplitter(1),
+        //new UniformSplitter(1),
+        //new UniformSplitter(1),
+        //new UniformSplitter(1)
         )
     )
    //искомый объект вплотную к скважине
@@ -172,7 +174,7 @@ var grid = gridBuilder2D
    //})
    .SetAreas(new Area[]
    {
-       new(6, new Node2D(1e-16, -10d), new Node2D(10d, 0d)),
+       new(6, new Node2D(1e-4, -10d), new Node2D(10d, 0d)),
    })
    .Build();
 
@@ -207,7 +209,7 @@ for (var i = 0; i < sources.Length; i++)
 }
 
 var firstBoundaryProvider = new FirstBoundaryProvider(grid);
-var conditions = firstBoundaryProvider.GetConditions(166, 200);
+var conditions = firstBoundaryProvider.GetConditions(grid.Nodes.RLength - 1, grid.Nodes.ZLength - 1);
 
 var directProblemSolver = new DirectProblemSolver(grid, materialFactory, conditions);
 
