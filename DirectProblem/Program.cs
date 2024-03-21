@@ -179,7 +179,7 @@ Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 //   //})
 //   .Build();
 
-var grid = Grids.GetUniformGridWith0Dot025Step();
+var grid = Grids.GetGridWith0Dot025StepWithElementsCloseToWellAndNearToWell();
 
 var gridO = new GridIO("../DirectProblem/Results/");
 
@@ -187,9 +187,11 @@ gridO.WriteMaterials(grid, "nvkat2d.dat");
 gridO.WriteElements(grid, "nvtr.dat");
 gridO.WriteNodes(grid, "rz.dat");
 
+var mu = 4 * Math.PI * 10e-7;
+
 var materialFactory = new MaterialFactory
 (
-    new List<double> { 1d, 1d, 1d, 1d, 1d, 1d, 1d, 1d },
+    new List<double> { mu, mu, mu, mu, mu, mu, mu },
     new List<double> { 0.5, 0.1, 0.05, 0.2, 1d/3d, 0d, 1d }
 );
 
