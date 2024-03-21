@@ -13,7 +13,7 @@ public class Grids
     {
         var grid = GridBuilder
             .SetRAxis(new AxisSplitParameter(
-                    new[] { 1e-4, 0.1, 1, 10 },
+                    new[] { 1e-4, 0.1, 10 },
                     new UniformSplitter(4),
                     new StepProportionalSplitter(0.025, 1.05)
                 )
@@ -39,7 +39,7 @@ public class Grids
     {
         var grid = GridBuilder
             .SetRAxis(new AxisSplitParameter(
-                    new[] { 1e-4, 0.1, 1, 10 },
+                    new[] { 1e-4, 0.1, 10 },
                     new UniformSplitter(8),
                     new StepProportionalSplitter(0.0125, 1.05)
                 )
@@ -65,7 +65,7 @@ public class Grids
     {
         var grid = GridBuilder
             .SetRAxis(new AxisSplitParameter(
-                    new[] { 1e-4, 0.1, 1, 10 },
+                    new[] { 1e-4, 0.1, 10 },
                     new UniformSplitter(16),
                     new StepProportionalSplitter(0.00625, 1.05)
                 )
@@ -91,7 +91,7 @@ public class Grids
     {
         var grid = GridBuilder
             .SetRAxis(new AxisSplitParameter(
-                    new[] { 1e-4, 0.1, 1, 10 },
+                    new[] { 1e-4, 0.1, 10 },
                     new UniformSplitter(16),
                     new StepProportionalSplitter(0.003125, 1.05)
                 )
