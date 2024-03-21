@@ -22,161 +22,164 @@ using System.Diagnostics;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var gridBuilder2D = new GridBuilder2D();
+//var gridBuilder2D = new GridBuilder2D();
 
-var grid = gridBuilder2D
-    .SetRAxis(new AxisSplitParameter(
-            new[] { 1e-4, 0.1, 10 },
-            new UniformSplitter(4),
-            //new UniformSplitter(1)
-            new StepProportionalSplitter(0.025, 1.05)
-        )
-    )
-    .SetZAxis(new AxisSplitParameter(
-            new[] { -10d, -6d, -5d, -4d, 0d },
-            new StepProportionalSplitter(0.025, 1/1.05),
-            new StepUniformSplitter(0.025),
-            new StepUniformSplitter(0.025),
-            new StepProportionalSplitter(0.025, 1.05)
-        //new UniformSplitter(1),
-        //new UniformSplitter(1),
-        //new UniformSplitter(1),
-        //new UniformSplitter(1)
-        )
-    )
-   //искомый объект вплотную к скважине
-   //.SetAreas(new Area[]
-   //{
-   //    //скважина
-   //    new(0, new Node2D(1e-16, -10d), new Node2D(0.1, 0d)),
-   //    //первый слой
-   //    new(2, new Node2D(0.1, -4d), new Node2D(10d, 0d)),
-   //    //второй слой
-   //    new(1, new Node2D(0.1, -4.744557504251738), new Node2D(2.0390183336830607, -4d)),
-   //    new(1, new Node2D(2.0390183336830607, -5d), new Node2D(10d, -4d)),
-   //    //искомый элемент
-   //    new(4, new Node2D(0.1, -5.2577958272949745), new Node2D(2.0390183336830607, -4.744557504251738)),
-   //    //третий слой
-   //    new(3, new Node2D(0.1, -6d), new Node2D(2.0390183336830607, -5.2577958272949745)),
-   //    new(3, new Node2D(2.0390183336830607, -6d), new Node2D(10d, -5d)),
-   //    //четвертый слой
-   //    new(2, new Node2D(0.1, -10d), new Node2D(10d, -6d))
-   //})
-   //искомый объект близко к скважине (R = 10.1)
-   //.SetAreas(new Area[]
-   //{
-   //    //скважина
-   //    new(0, new Node2D(1e-16, -10d), new Node2D(0.1, 0d)),
-   //    //первый слой
-   //    new(2, new Node2D(0.1, -4d), new Node2D(10, 0d)),
-   //    //второй слой
-   //    new(1, new Node2D(0.1, -5d), new Node2D(0.9915017244268906, -4d)),
-   //    new(1, new Node2D(0.9915017244268906, -4.744557504251738), new Node2D(2.950282033163873, -4d)),
-   //    new(1, new Node2D(2.950282033163873, -5), new Node2D(10, -4d)),
-   //    //искомый элемент
-   //    new(4, new Node2D(0.9915017244268906, -5.2577958272949745), new Node2D(2.950282033163873, -4.744557504251738)),
-   //    //третий слой
-   //    new(3, new Node2D(0.1, -6d), new Node2D(0.9915017244268906, -5d)),
-   //    new(3, new Node2D(0.9915017244268906, -6d), new Node2D(2.950282033163873, -5.2577958272949745)),
-   //    new(3, new Node2D(2.950282033163873, -6d), new Node2D(10, -5d)),
-   //    //четвертый слой
-   //    new(2, new Node2D(0.1, -10d), new Node2D(10d, -6d))
-   //})
-   //искомый объект далеко от скважины (R = 40.1)
-   //.SetAreas(new Area[]
-   //{
-   //    //скважина
-   //    new(0, new Node2D(1e-16, -10d), new Node2D(0.1, 0d)),
-   //    //первый слой
-   //    new(2, new Node2D(0.1, -4d), new Node2D(10, 0d)),
-   //    //второй слой
-   //    new(1, new Node2D(0.1, -5d), new Node2D(3.901831206569741, -4d)),
-   //    new(1, new Node2D(3.901831206569741, -4.744557504251738), new Node2D(6.237837884740006, -4d)),
-   //    new(1, new Node2D(6.237837884740006, -5d), new Node2D(10, -4d)),
-   //    //искомый элемент
-   //    new(4, new Node2D(3.901831206569741, -5.2577958272949745), new Node2D(6.237837884740006, -4.744557504251738)),
-   //    //третий слой
-   //    new(3, new Node2D(0.1, -6d), new Node2D(3.901831206569741, -5d)),
-   //    new(3, new Node2D(3.901831206569741, -6d), new Node2D(6.237837884740006, -5.2577958272949745)),
-   //    new(3, new Node2D(6.237837884740006, -6d), new Node2D(10, -5d)),
-   //    //четвертый слой
-   //    new(2, new Node2D(0.1, -10d), new Node2D(10d, -6d))
-   //})
-   //искомые объекты вплотную к скважине
-   //.SetAreas(new Area[]
-   //{
-   //    //скважина
-   //    new(0, new Node2D(1e-16, -10d), new Node2D(0.1, 0d)),
-   //    //первый слой
-   //    new(2, new Node2D(0.1, -4d), new Node2D(10d, 0d)),
-   //    //второй слой
-   //    new(1, new Node2D(0.1, -4.268139597133065), new Node2D(2.0390183336830607, -4d)),
-   //    new(1, new Node2D(0.1, -5d), new Node2D(2.0390183336830607, -4.744557504251738)),
-   //    new(1, new Node2D(2.0390183336830607, -5d), new Node2D(10d, -4d)),
-   //    //искомый элемент
-   //    new(4, new Node2D(0.1, -4.744557504251738), new Node2D(2.0390183336830607, -4.268139597133065)),
-   //    //искомый элемент
-   //    new(4, new Node2D(0.1, -5.762855749550898), new Node2D(2.0390183336830607, -5.2577958272949745)),
-   //    //третий слой
-   //    new(3, new Node2D(0.1, -6d), new Node2D(2.0390183336830607, -5.762855749550898)),
-   //    new(3, new Node2D(0.1, -5.2577958272949745), new Node2D(2.0390183336830607, -5d)),
-   //    new(3, new Node2D(2.0390183336830607, -6d), new Node2D(10d, -5d)),
-   //    //четвертый слой
-   //    new(2, new Node2D(0.1, -10d), new Node2D(10d, -6d))
-   //})
-   //искомые объекы близко к скважине (R = 10.1)
-   //.SetAreas(new Area[]
-   //{
-   //    //скважина
-   //    new(0, new Node2D(1e-16, -10d), new Node2D(0.1, 0d)),
-   //    //первый слой
-   //    new(2, new Node2D(0.1, -4d), new Node2D(10d, 0d)),
-   //    //второй слой
-   //    new(1, new Node2D(0.1, -5d), new Node2D(0.9915017244268906, -4d)),
-   //    new(1, new Node2D(0.9915017244268906, -5d), new Node2D(2.950282033163873, -4.744557504251738)),
-   //    new(1, new Node2D(0.9915017244268906, -4.268139597133065), new Node2D(2.950282033163873, -4d)),
-   //    new(1, new Node2D(2.950282033163873, -5d), new Node2D(10d, -4d)),
-   //    //искомый элемент
-   //    new(4, new Node2D(0.9915017244268906, -4.744557504251738), new Node2D(2.950282033163873, -4.268139597133065)),
-   //    //искомый элемент
-   //    new(4, new Node2D(0.9915017244268906, -5.762855749550898), new Node2D(2.950282033163873, -5.2577958272949745)),
-   //    //третий слой
-   //    new(3, new Node2D(0.1, -6d), new Node2D(0.9915017244268906, -5d)),
-   //    new(3, new Node2D(0.9915017244268906, -6d), new Node2D(2.950282033163873, -5.762855749550898)),
-   //    new(3, new Node2D(0.9915017244268906, -5.2577958272949745), new Node2D(2.950282033163873, -5d)),
-   //    new(3, new Node2D(2.950282033163873, -6d), new Node2D(10d, -5d)),
-   //    //четвертый слой
-   //    new(2, new Node2D(0.1, -10d), new Node2D(10d, -6d))
-   //})
-   //искомые объекты далеко от скважины (R = 40.1)
-   //.SetAreas(new Area[]
-   //{
-   //    //скважина
-   //    new(0, new Node2D(1e-16, -10d), new Node2D(0.1, 0d)),
-   //    //первый слой
-   //    new(2, new Node2D(0.1, -4d), new Node2D(10d, 0d)),
-   //    //второй слой
-   //    new(1, new Node2D(0.1, -5d), new Node2D(3.901831206569741, -4d)),
-   //    new(1, new Node2D(3.901831206569741, -5d), new Node2D(6.237837884740006, -4.744557504251738)),
-   //    new(1, new Node2D(3.901831206569741, -4.268139597133065), new Node2D(6.237837884740006, -4d)),
-   //    new(1, new Node2D(6.237837884740006, -5d), new Node2D(10d , -4d)),
-   //    //искомый элемент
-   //    new(4, new Node2D(3.901831206569741, -4.744557504251738), new Node2D(6.237837884740006, -4.268139597133065)),
-   //    //искомый элемент
-   //    new(4, new Node2D(3.901831206569741, -5.762855749550898), new Node2D(6.237837884740006, -5.2577958272949745)),
-   //    //третий слой
-   //    new(3, new Node2D(0.1, -6d), new Node2D(3.901831206569741, -5d)),
-   //    new(3, new Node2D(3.901831206569741, -6d), new Node2D(6.237837884740006, -5.762855749550898)),
-   //    new(3, new Node2D(3.901831206569741, -5.2577958272949745), new Node2D(6.237837884740006, -5d)),
-   //    new(3, new Node2D(6.237837884740006, -6d), new Node2D(10d, -5d)),
-   //    //четвертый слой
-   //    new(2, new Node2D(0.1, -10d), new Node2D(10d, -6d))
-   //})
-   .SetAreas(new Area[]
-   {
-       new(6, new Node2D(1e-4, -10d), new Node2D(10d, 0d)),
-   })
-   .Build();
+//var grid = gridBuilder2D
+//    .SetRAxis(new AxisSplitParameter(
+//            new[] { 1e-4, 0.1, 1, 10 },
+//            new UniformSplitter(32),
+//            //new UniformSplitter(1)
+//            new StepProportionalSplitter(0.003125, 1.05),
+//            new StepProportionalSplitter(0.0021, 1.15)
+//        )
+//    )
+//    .SetZAxis(new AxisSplitParameter(
+//            new[] { -10d, -6d, -5d, -4d, 0d },
+//            new StepProportionalSplitter(0.003125, 1/1.05),
+//            new StepUniformSplitter(0.003125),
+//            new StepUniformSplitter(0.003125),
+//            new StepProportionalSplitter(0.003125, 1.05)
+//        //new UniformSplitter(1),
+//        //new UniformSplitter(1),
+//        //new UniformSplitter(1),
+//        //new UniformSplitter(1)
+//        )
+//    )
+//   //искомый объект вплотную к скважине
+//   .SetAreas(new Area[]
+//   {
+//       //скважина
+//       new(0, new Node2D(1e-4, -10d), new Node2D(0.1, 0d)),
+//       //первый слой
+//       new(2, new Node2D(0.1, -4d), new Node2D(10d, 0d)),
+//       //второй слой
+//       new(1, new Node2D(0.1, -4.75), new Node2D(1, -4d)),
+//       new(1, new Node2D(1, -5d), new Node2D(10d, -4d)),
+//       //искомый элемент
+//       new(4, new Node2D(0.1, -5.25), new Node2D(1, -4.75)),
+//       //третий слой
+//       new(3, new Node2D(0.1, -6d), new Node2D(1, -5.25)),
+//       new(3, new Node2D(1, -6d), new Node2D(10d, -5d)),
+//       //четвертый слой
+//       new(2, new Node2D(0.1, -10d), new Node2D(10d, -6d))
+//   })
+//   //искомый объект близко к скважине (R = 10.1)
+//   //.SetAreas(new Area[]
+//   //{
+//   //    //скважина
+//   //    new(0, new Node2D(1e-16, -10d), new Node2D(0.1, 0d)),
+//   //    //первый слой
+//   //    new(2, new Node2D(0.1, -4d), new Node2D(10, 0d)),
+//   //    //второй слой
+//   //    new(1, new Node2D(0.1, -5d), new Node2D(0.9915017244268906, -4d)),
+//   //    new(1, new Node2D(0.9915017244268906, -4.744557504251738), new Node2D(2.950282033163873, -4d)),
+//   //    new(1, new Node2D(2.950282033163873, -5), new Node2D(10, -4d)),
+//   //    //искомый элемент
+//   //    new(4, new Node2D(0.9915017244268906, -5.2577958272949745), new Node2D(2.950282033163873, -4.744557504251738)),
+//   //    //третий слой
+//   //    new(3, new Node2D(0.1, -6d), new Node2D(0.9915017244268906, -5d)),
+//   //    new(3, new Node2D(0.9915017244268906, -6d), new Node2D(2.950282033163873, -5.2577958272949745)),
+//   //    new(3, new Node2D(2.950282033163873, -6d), new Node2D(10, -5d)),
+//   //    //четвертый слой
+//   //    new(2, new Node2D(0.1, -10d), new Node2D(10d, -6d))
+//   //})
+//   //искомый объект далеко от скважины (R = 40.1)
+//   //.SetAreas(new Area[]
+//   //{
+//   //    //скважина
+//   //    new(0, new Node2D(1e-16, -10d), new Node2D(0.1, 0d)),
+//   //    //первый слой
+//   //    new(2, new Node2D(0.1, -4d), new Node2D(10, 0d)),
+//   //    //второй слой
+//   //    new(1, new Node2D(0.1, -5d), new Node2D(3.901831206569741, -4d)),
+//   //    new(1, new Node2D(3.901831206569741, -4.744557504251738), new Node2D(6.237837884740006, -4d)),
+//   //    new(1, new Node2D(6.237837884740006, -5d), new Node2D(10, -4d)),
+//   //    //искомый элемент
+//   //    new(4, new Node2D(3.901831206569741, -5.2577958272949745), new Node2D(6.237837884740006, -4.744557504251738)),
+//   //    //третий слой
+//   //    new(3, new Node2D(0.1, -6d), new Node2D(3.901831206569741, -5d)),
+//   //    new(3, new Node2D(3.901831206569741, -6d), new Node2D(6.237837884740006, -5.2577958272949745)),
+//   //    new(3, new Node2D(6.237837884740006, -6d), new Node2D(10, -5d)),
+//   //    //четвертый слой
+//   //    new(2, new Node2D(0.1, -10d), new Node2D(10d, -6d))
+//   //})
+//   //искомые объекты вплотную к скважине
+//   //.SetAreas(new Area[]
+//   //{
+//   //    //скважина
+//   //    new(0, new Node2D(1e-16, -10d), new Node2D(0.1, 0d)),
+//   //    //первый слой
+//   //    new(2, new Node2D(0.1, -4d), new Node2D(10d, 0d)),
+//   //    //второй слой
+//   //    new(1, new Node2D(0.1, -4.268139597133065), new Node2D(2.0390183336830607, -4d)),
+//   //    new(1, new Node2D(0.1, -5d), new Node2D(2.0390183336830607, -4.744557504251738)),
+//   //    new(1, new Node2D(2.0390183336830607, -5d), new Node2D(10d, -4d)),
+//   //    //искомый элемент
+//   //    new(4, new Node2D(0.1, -4.744557504251738), new Node2D(2.0390183336830607, -4.268139597133065)),
+//   //    //искомый элемент
+//   //    new(4, new Node2D(0.1, -5.762855749550898), new Node2D(2.0390183336830607, -5.2577958272949745)),
+//   //    //третий слой
+//   //    new(3, new Node2D(0.1, -6d), new Node2D(2.0390183336830607, -5.762855749550898)),
+//   //    new(3, new Node2D(0.1, -5.2577958272949745), new Node2D(2.0390183336830607, -5d)),
+//   //    new(3, new Node2D(2.0390183336830607, -6d), new Node2D(10d, -5d)),
+//   //    //четвертый слой
+//   //    new(2, new Node2D(0.1, -10d), new Node2D(10d, -6d))
+//   //})
+//   //искомые объекы близко к скважине (R = 10.1)
+//   //.SetAreas(new Area[]
+//   //{
+//   //    //скважина
+//   //    new(0, new Node2D(1e-16, -10d), new Node2D(0.1, 0d)),
+//   //    //первый слой
+//   //    new(2, new Node2D(0.1, -4d), new Node2D(10d, 0d)),
+//   //    //второй слой
+//   //    new(1, new Node2D(0.1, -5d), new Node2D(0.9915017244268906, -4d)),
+//   //    new(1, new Node2D(0.9915017244268906, -5d), new Node2D(2.950282033163873, -4.744557504251738)),
+//   //    new(1, new Node2D(0.9915017244268906, -4.268139597133065), new Node2D(2.950282033163873, -4d)),
+//   //    new(1, new Node2D(2.950282033163873, -5d), new Node2D(10d, -4d)),
+//   //    //искомый элемент
+//   //    new(4, new Node2D(0.9915017244268906, -4.744557504251738), new Node2D(2.950282033163873, -4.268139597133065)),
+//   //    //искомый элемент
+//   //    new(4, new Node2D(0.9915017244268906, -5.762855749550898), new Node2D(2.950282033163873, -5.2577958272949745)),
+//   //    //третий слой
+//   //    new(3, new Node2D(0.1, -6d), new Node2D(0.9915017244268906, -5d)),
+//   //    new(3, new Node2D(0.9915017244268906, -6d), new Node2D(2.950282033163873, -5.762855749550898)),
+//   //    new(3, new Node2D(0.9915017244268906, -5.2577958272949745), new Node2D(2.950282033163873, -5d)),
+//   //    new(3, new Node2D(2.950282033163873, -6d), new Node2D(10d, -5d)),
+//   //    //четвертый слой
+//   //    new(2, new Node2D(0.1, -10d), new Node2D(10d, -6d))
+//   //})
+//   //искомые объекты далеко от скважины (R = 40.1)
+//   //.SetAreas(new Area[]
+//   //{
+//   //    //скважина
+//   //    new(0, new Node2D(1e-16, -10d), new Node2D(0.1, 0d)),
+//   //    //первый слой
+//   //    new(2, new Node2D(0.1, -4d), new Node2D(10d, 0d)),
+//   //    //второй слой
+//   //    new(1, new Node2D(0.1, -5d), new Node2D(3.901831206569741, -4d)),
+//   //    new(1, new Node2D(3.901831206569741, -5d), new Node2D(6.237837884740006, -4.744557504251738)),
+//   //    new(1, new Node2D(3.901831206569741, -4.268139597133065), new Node2D(6.237837884740006, -4d)),
+//   //    new(1, new Node2D(6.237837884740006, -5d), new Node2D(10d , -4d)),
+//   //    //искомый элемент
+//   //    new(4, new Node2D(3.901831206569741, -4.744557504251738), new Node2D(6.237837884740006, -4.268139597133065)),
+//   //    //искомый элемент
+//   //    new(4, new Node2D(3.901831206569741, -5.762855749550898), new Node2D(6.237837884740006, -5.2577958272949745)),
+//   //    //третий слой
+//   //    new(3, new Node2D(0.1, -6d), new Node2D(3.901831206569741, -5d)),
+//   //    new(3, new Node2D(3.901831206569741, -6d), new Node2D(6.237837884740006, -5.762855749550898)),
+//   //    new(3, new Node2D(3.901831206569741, -5.2577958272949745), new Node2D(6.237837884740006, -5d)),
+//   //    new(3, new Node2D(6.237837884740006, -6d), new Node2D(10d, -5d)),
+//   //    //четвертый слой
+//   //    new(2, new Node2D(0.1, -10d), new Node2D(10d, -6d))
+//   //})
+//   //.SetAreas(new Area[]
+//   //{
+//   //    new(6, new Node2D(1e-4, -10d), new Node2D(10d, 0d)),
+//   //})
+//   .Build();
+
+var grid = Grids.GetGridWith0Dot003125StepWithElementCloseToWell();
 
 var gridO = new GridIO("../DirectProblem/Results/");
 
