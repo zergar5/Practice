@@ -19,6 +19,7 @@ using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
 using Vector = DirectProblem.Core.Base.Vector;
 using System.Xml.XPath;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
@@ -179,7 +180,7 @@ Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 //   //})
 //   .Build();
 
-var grid = Grids.GetGridWith0Dot025StepWithElementsCloseToWellAndNearToWell();
+var grid = Grids.GetUniformGridWith0Dot05Step();
 
 var gridO = new GridIO("../DirectProblem/Results/");
 
@@ -246,9 +247,16 @@ for (var i = 0; i < sources.Length; i++)
         var potentialM = femSolution.Calculate(receiverLines[i].PointM);
         var potentialN = femSolution.Calculate(receiverLines[i].PointN);
 
-        emfs[i, j] = 2 * Math.PI * receiverLines[i].PointM.R * potentialN;
+        emfs[i, j] = 2 * Math.PI * receiverLines[i].PointM.R * potentialM;
 
         phaseDifferences[i, j] = (potentialM.Phase - potentialN.Phase) * 180d / Math.PI;
+
+        //if (i == 20 && j == 0)
+        //{
+        //    Console.WriteLine(femSolution.Calculate(receiverLines[i].PointM));
+        //    Console.WriteLine((potentialM.Phase - potentialN.Phase) * 180d / Math.PI);
+        //    break;
+        //}
 
         Console.Write($"source {i} frequency {j}                                   \r");
     }

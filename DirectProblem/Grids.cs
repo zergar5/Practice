@@ -222,6 +222,32 @@ public class Grids
         return grid;
     }
 
+    public static Grid<Node2D> GetUniformGridWith0Dot0015625Step()
+    {
+        var grid = GridBuilder
+            .SetRAxis(new AxisSplitParameter(
+                    new[] { 1e-4, 0.1, 10 },
+                    new UniformSplitter(32),
+                    new StepProportionalSplitter(0.0015625, 1.05)
+                )
+            )
+            .SetZAxis(new AxisSplitParameter(
+                    new[] { -10d, -6d, -5d, -4d, 0d },
+                    new StepProportionalSplitter(0.0015625, 1/1.05),
+                    new StepUniformSplitter(0.0015625),
+                    new StepUniformSplitter(0.0015625),
+                    new StepProportionalSplitter(0.0015625, 1.05)
+                )
+            )
+            .SetAreas(new Area[]
+            {
+                new(6, new Node2D(1e-4, -10d), new Node2D(10d, 0d)),
+            })
+            .Build();
+
+        return grid;
+    }
+
     public static Grid<Node2D> GetGridWith0Dot003125StepWithElementCloseToWell()
     {
         var grid = GridBuilder
