@@ -180,7 +180,7 @@ Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 //   //})
 //   .Build();
 
-var grid = Grids.GetUniformGridWith0Dot05Step();
+var grid = Grids.GetGridWith0Dot003125StepWithElementsCloseToWellAndNearToWell();
 
 var gridO = new GridIO("../DirectProblem/Results/");
 
