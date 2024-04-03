@@ -27,7 +27,7 @@ plt.xlabel('Z')
 plt.ylabel('EMF')
 
 #plt.xticks([-1e-2, -1e-10, -1e-20, 0, 1e-20, 1e-10, 1e-2])
-plt.xlim(-6, -4)
+plt.xlim(-4, -2)
 #plt.ylim(sin_min, abs(sin_min))
 
 plt.legend()
@@ -45,7 +45,7 @@ plt.xlabel('Z')
 plt.ylabel('EMF')
 
 #plt.xticks([-1e-2, -1e-10, -1e-20, 0, 1e-20, 1e-10, 1e-2])
-plt.xlim(-6, -4)
+plt.xlim(-4, -2)
 #plt.ylim(cos_min, abs(cos_min))
 
 plt.legend()
@@ -69,7 +69,7 @@ plt.xlabel('Z')
 plt.ylabel('EMF')
 
 #plt.xticks([-1e-2, -1e-10, -1e-20, 0, 1e-20, 1e-10, 1e-2])
-plt.xlim(-6, -4)
+plt.xlim(-4, -2)
 
 plt.legend()
 
