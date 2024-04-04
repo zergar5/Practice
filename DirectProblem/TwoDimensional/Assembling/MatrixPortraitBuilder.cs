@@ -1,9 +1,9 @@
-﻿using Practice6Sem.Core;
-using Practice6Sem.Core.Global;
-using Practice6Sem.Core.GridComponents;
-using Practice6Sem.FEM.Assembling;
+﻿using DirectProblem.Core;
+using DirectProblem.Core.Global;
+using DirectProblem.Core.GridComponents;
+using DirectProblem.FEM.Assembling;
 
-namespace Practice6Sem.TwoDimensional.Assembling;
+namespace DirectProblem.TwoDimensional.Assembling;
 
 public class MatrixPortraitBuilder : IMatrixPortraitBuilder<Node2D, SparseMatrix>
 {
@@ -14,10 +14,9 @@ public class MatrixPortraitBuilder : IMatrixPortraitBuilder<Node2D, SparseMatrix
         BuildAdjacencyList(grid);
 
         var amount = 0;
-        var buf = _adjacencyList.Select(nodeSet => amount += nodeSet.Count).ToList();
-        buf.Insert(0, 0);
+        var rowsIndexes = new[] { 0 };
+        rowsIndexes = rowsIndexes.Concat(_adjacencyList.Select(nodeSet => amount += nodeSet.Count)).ToArray();
 
-        var rowsIndexes = buf.ToArray();
         var columnsIndexes = _adjacencyList.SelectMany(nodeList => nodeList).ToArray();
 
         return new SparseMatrix(rowsIndexes, columnsIndexes);

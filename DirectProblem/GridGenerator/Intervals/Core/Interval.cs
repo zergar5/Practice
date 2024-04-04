@@ -1,8 +1,8 @@
-﻿namespace Practice6Sem.GridGenerator.Intervals.Core;
+﻿namespace DirectProblem.GridGenerator.Intervals.Core;
 
 public readonly record struct Interval(double Begin, double End)
 {
-    public double Length => End - Begin;
+    public double Length => Math.Abs(End - Begin);
 
     public bool Has(double value)
     {

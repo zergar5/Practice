@@ -1,6 +1,6 @@
-﻿using Practice6Sem.Core.GridComponents;
+﻿using DirectProblem.Core.GridComponents;
 
-namespace Practice6Sem.TwoDimensional.Assembling.Local;
+namespace DirectProblem.TwoDimensional.Assembling.Local;
 
 public class LocalBasisFunction
 {

@@ -1,15 +1,15 @@
-﻿using Practice6Sem.Core.Base;
+﻿using DirectProblem.Core.Base;
 
-namespace Practice6Sem.Core.Local;
+namespace DirectProblem.Core.Local;
 
 public class LocalVector
 {
     public int[] Indexes { get; }
-    public BaseVector Vector { get; }
+    public Vector Vector { get; }
 
     public int Count => Vector.Count;
 
-    public LocalVector(int[] indexes, BaseVector vector)
+    public LocalVector(int[] indexes, Vector vector)
     {
         Indexes = indexes;
         Vector = vector;

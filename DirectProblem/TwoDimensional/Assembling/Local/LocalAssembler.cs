@@ -1,47 +1,28 @@
-﻿using Practice6Sem.Calculus;
-using Practice6Sem.Core;
-using Practice6Sem.Core.Base;
-using Practice6Sem.Core.GridComponents;
-using Practice6Sem.Core.Local;
-using Practice6Sem.FEM.Assembling.Local;
-using Practice6Sem.FEM.Parameters;
-using Practice6Sem.GridGenerator.Intervals.Core;
-using Practice6Sem.TwoDimensional.Parameters;
+﻿using DirectProblem.Core.Base;
+using DirectProblem.Core.GridComponents;
+using DirectProblem.Core.Local;
+using DirectProblem.FEM.Assembling.Local;
+using DirectProblem.TwoDimensional.Parameters;
 
-namespace Practice6Sem.TwoDimensional.Assembling.Local;
+namespace DirectProblem.TwoDimensional.Assembling.Local;
 
 public class LocalAssembler : ILocalAssembler
 {
-    private readonly Grid<Node2D> _grid;
-    private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
+    private readonly ILocalMatrixAssembler _localMatrixAssembler;
     private readonly MaterialFactory _materialFactory;
-    private readonly IFunctionalParameter _functionalParameter;
-    private readonly DoubleIntegralCalculator _doubleIntegralCalculator;
-    private readonly DerivativeCalculator _derivativeCalculator;
     private readonly double _omega;
-    private readonly BaseMatrix _massMatrix = new(4);
-    private readonly BaseMatrix _stiffnessMatrix = new(4);
-    private readonly BaseMatrix _matrix = new(8);
-    private readonly BaseVector _rightPart = new(8);
+    private readonly Matrix _matrix = new(8);
     private readonly int[] _complexIndexes = new int[8];
 
     public LocalAssembler
     (
-        Grid<Node2D> grid,
-        LocalBasisFunctionsProvider localBasisFunctionsProvider,
+        ILocalMatrixAssembler localMatrixAssembler,
         MaterialFactory materialFactory,
-        IFunctionalParameter functionalParameter,
-        DoubleIntegralCalculator doubleIntegralCalculator,
-        DerivativeCalculator derivativeCalculator,
         double omega
     )
     {
-        _grid = grid;
-        _localBasisFunctionsProvider = localBasisFunctionsProvider;
+        _localMatrixAssembler = localMatrixAssembler;
         _materialFactory = materialFactory;
-        _functionalParameter = functionalParameter;
-        _doubleIntegralCalculator = doubleIntegralCalculator;
-        _derivativeCalculator = derivativeCalculator;
         _omega = omega;
     }
 
@@ -53,86 +34,27 @@ public class LocalAssembler : ILocalAssembler
         return new LocalMatrix(indexes, matrix);
     }
 
-    public LocalVector AssembleRightSide(Element element)
+    private Matrix GetStiffnessMatrix(Element element)
     {
-        var vector = GetComplexRightPart(element);
-        var indexes = GetComplexIndexes(element);
+        var stiffness = _localMatrixAssembler.AssembleStiffnessMatrix(element);
 
-        return new LocalVector(indexes, vector);
+        return stiffness;
     }
 
-    private BaseMatrix GetStiffnessMatrix(Element element)
+    private Matrix GetMassMatrix(Element element)
     {
-        var rInterval = new Interval(_grid.Nodes[element.NodesIndexes[0]].R, _grid.Nodes[element.NodesIndexes[1]].R);
-        var zInterval = new Interval(_grid.Nodes[element.NodesIndexes[0]].Z, _grid.Nodes[element.NodesIndexes[2]].Z);
+        var mass = _localMatrixAssembler.AssembleMassMatrix(element);
 
-        var localBasisFunctions = _localBasisFunctionsProvider.GetBilinearFunctions(element);
-
-        for (var i = 0; i < element.NodesIndexes.Length; i++)
-        {
-            for (var j = 0; j <= i; j++)
-            {
-                _stiffnessMatrix[i, j] = 
-                _doubleIntegralCalculator.Calculate
-                (
-                    rInterval,
-                    zInterval,
-                    (r, z) =>
-                    {
-                        var node = new Node2D(r, z);
-                        return
-                            (_derivativeCalculator.Calculate(localBasisFunctions[i], node, 'r') *
-                             _derivativeCalculator.Calculate(localBasisFunctions[j], node, 'r') +
-                             _derivativeCalculator.Calculate(localBasisFunctions[i], node, 'z') *
-                             _derivativeCalculator.Calculate(localBasisFunctions[j], node, 'z')) * r + 
-                            localBasisFunctions[i].Calculate(node) * localBasisFunctions[j].Calculate(node) / r;
-                    }
-                );
-
-                _stiffnessMatrix[j, i] = _stiffnessMatrix[i, j];
-            }
-        }
-
-        return _stiffnessMatrix;
+        return mass;
     }
 
-    private BaseMatrix GetMassMatrix(Element element)
-    {
-        var rInterval = new Interval(_grid.Nodes[element.NodesIndexes[0]].R, _grid.Nodes[element.NodesIndexes[1]].R);
-        var zInterval = new Interval(_grid.Nodes[element.NodesIndexes[0]].Z, _grid.Nodes[element.NodesIndexes[2]].Z);
-
-        var localBasisFunctions = _localBasisFunctionsProvider.GetBilinearFunctions(element);
-
-        for (var i = 0; i < element.NodesIndexes.Length; i++)
-        {
-            for (var j = 0; j <= i; j++)
-            {
-                _massMatrix[i, j] = _doubleIntegralCalculator.Calculate
-                (
-                    rInterval,
-                    zInterval,
-                    (r, z) =>
-                    {
-                        var node = new Node2D(r, z);
-                        return
-                            localBasisFunctions[i].Calculate(node) * localBasisFunctions[j].Calculate(node) * r;
-                    }
-                );
-
-                _massMatrix[j, i] = _massMatrix[i, j];
-            }
-        }
-
-        return _massMatrix;
-    }
-
-    private BaseMatrix GetComplexMatrix(Element element)
+    private Matrix GetComplexMatrix(Element element)
     {
         var mass = GetMassMatrix(element);
         var stiffness = GetStiffnessMatrix(element);
         var material = _materialFactory.GetById(element.MaterialId);
 
-        BaseMatrix.Multiply(1d / material.Mu, stiffness, stiffness);
+        Matrix.Multiply(1d / material.Mu, stiffness, stiffness);
 
         for (var i = 0; i < element.NodesIndexes.Length; i++)
         {
@@ -147,35 +69,6 @@ public class LocalAssembler : ILocalAssembler
         }
 
         return _matrix;
-    }
-
-    private BaseVector GetComplexRightPart(Element element)
-    {
-        Span<double> fS = stackalloc double[element.NodesIndexes.Length];
-        Span<double> fC = stackalloc double[element.NodesIndexes.Length];
-
-        Span<double> bufferFS = stackalloc double[element.NodesIndexes.Length];
-        Span<double> bufferFC = stackalloc double[element.NodesIndexes.Length];
-
-        var material = _materialFactory.GetById(element.MaterialId);
-
-        for (var i = 0; i < element.NodesIndexes.Length; i++)
-        {
-            var fValue = _functionalParameter.Calculate(element.NodesIndexes[i], material.Mu, material.Sigma);
-            bufferFS[i] = fValue.Real;
-            bufferFC[i] = fValue.Imaginary;
-        }
-
-        BaseMatrix.Multiply(_massMatrix, bufferFS, fS);
-        BaseMatrix.Multiply(_massMatrix, bufferFC, fC);
-
-        for (var i = 0; i < element.NodesIndexes.Length; i++)
-        {
-            _rightPart[i * 2] = fS[i];
-            _rightPart[i * 2 + 1] = fC[i];
-        }
-
-        return _rightPart;
     }
 
     private int[] GetComplexIndexes(Element element)

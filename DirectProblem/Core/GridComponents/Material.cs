@@ -1,3 +1,3 @@
-﻿namespace Practice6Sem.Core.GridComponents;
+﻿namespace DirectProblem.Core.GridComponents;
 
 public readonly record struct Material(double Mu, double Sigma);

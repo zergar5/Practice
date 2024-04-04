@@ -1,18 +1,28 @@
-﻿using Practice6Sem.GridGenerator.Intervals.Core;
+﻿using DirectProblem.GridGenerator.Intervals.Core;
 
-namespace Practice6Sem.GridGenerator.Intervals.Splitting;
+namespace DirectProblem.GridGenerator.Intervals.Splitting;
 
-public readonly record struct UniformSplitter(int Steps) : IIntervalSplitter
+public readonly record struct UniformSplitter : IIntervalSplitter
 {
+    private readonly int _steps;
+
+    public UniformSplitter(int steps)
+    {
+        _steps = steps;
+    }
+
     public IEnumerable<double> EnumerateValues(Interval interval)
     {
-        var step = interval.Length / Steps;
+        var step = interval.Length / _steps;
 
-        for (var stepNumber = 0; stepNumber <= Steps; stepNumber++)
+        var stepNumber = 0;
+        var value = interval.Begin + stepNumber * step;
+
+        while (interval.Has(value))
         {
-            var value = interval.Begin + stepNumber * step;
-
             yield return value;
+            stepNumber++;
+            value = interval.Begin + stepNumber * step;
         }
     }
 }

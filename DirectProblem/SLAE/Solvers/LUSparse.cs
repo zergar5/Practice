@@ -1,43 +1,59 @@
-﻿using Practice6Sem.Core.Global;
-using Practice6Sem.SLAE.Preconditions;
+﻿using DirectProblem.Core.Base;
+using DirectProblem.Core.Global;
 
-namespace Practice6Sem.SLAE.Solvers;
+namespace DirectProblem.SLAE.Solvers;
 
 public class LUSparse
 {
-    private readonly LUPreconditioner _luPreconditioner;
-
-    public LUSparse(LUPreconditioner luPreconditioner)
+    public Vector CalcY(SparseMatrix sparseMatrix, Vector b, Vector? y = null)
     {
-        _luPreconditioner = luPreconditioner;
-    }
+        y ??= new Vector(b.Count);
 
-    public GlobalVector CalcY(SparseMatrix sparseMatrix, GlobalVector b, GlobalVector? y = null)
-    {
-        y ??= new GlobalVector(b.Count);
-
-        for (var i = 0; i < sparseMatrix.CountRows; i++)
+        for (var i = 0; i < sparseMatrix.Count; i++)
         {
             var sum = 0.0;
-            for (var j = sparseMatrix.RowsIndexes[i]; j < sparseMatrix.RowsIndexes[i + 1]; j++)
+
+            foreach (var j in sparseMatrix[i])
             {
-                sum += sparseMatrix.LowerValues[j] * y[sparseMatrix.ColumnsIndexes[j]];
+                sum += sparseMatrix[i, j] * y[j];
             }
-            y[i] = (b[i] - sum) / sparseMatrix.Diagonal[i];
+
+            y[i] = (b[i] - sum) / sparseMatrix[i, i];
         }
 
         return y;
     }
 
-    public GlobalVector CalcX(SparseMatrix sparseMatrix, GlobalVector y, GlobalVector? x = null)
+    public Vector ParallelCalcY(SparseMatrix sparseMatrix, Vector b, Vector? y = null)
     {
-        x ??= y.Clone();
+        y ??= new Vector(b.Count);
 
-        for (var i = sparseMatrix.CountRows - 1; i >= 0; i--)
+        for (var i = 0; i < sparseMatrix.Count; i++)
         {
-            for (var j = sparseMatrix.RowsIndexes[i + 1] - 1; j >= sparseMatrix.RowsIndexes[i]; j--)
+            var sum = 0.0;
+
+            Parallel.For(0, sparseMatrix[i].Length, k =>
             {
-                x[sparseMatrix.ColumnsIndexes[j]] -= sparseMatrix.UpperValues[j] * x[i];
+                var j = sparseMatrix[i][k];
+                sum += sparseMatrix[i, j] * y[j];
+            });
+
+            y[i] = (b[i] - sum) / sparseMatrix[i, i];
+        }
+
+        return y;
+    }
+
+    public Vector CalcX(SparseMatrix sparseMatrix, Vector y, Vector? x = null)
+    {
+        x = x == null ? y.Clone() : y.Copy(x);
+
+        for (var i = sparseMatrix.Count - 1; i >= 0; i--)
+        {
+            var columns = sparseMatrix[i];
+            for (var j = columns.Length - 1; j >= 0; j--)
+            {
+                x[columns[j]] -= sparseMatrix[columns[j], i] * x[i];
             }
         }
 

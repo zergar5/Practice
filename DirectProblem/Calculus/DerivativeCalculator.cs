@@ -1,7 +1,7 @@
-﻿using Practice6Sem.Core.GridComponents;
-using Practice6Sem.TwoDimensional.Assembling.Local;
+﻿using DirectProblem.Core.GridComponents;
+using DirectProblem.TwoDimensional.Assembling.Local;
 
-namespace Practice6Sem.Calculus;
+namespace DirectProblem.Calculus;
 
 public class DerivativeCalculator
 {

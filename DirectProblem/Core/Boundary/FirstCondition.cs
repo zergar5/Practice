@@ -1,3 +1,6 @@
-﻿namespace Practice6Sem.Core.Boundary;
+﻿using DirectProblem.Core.Local;
 
-public record struct FirstCondition(int NodeIndex, double Value);
+namespace DirectProblem.Core.Boundary;
+
+public record struct FirstCondition(int ElementIndex, Bound Bound);
+public record struct FirstConditionValue(LocalVector Values);

@@ -1,3 +1,3 @@
-﻿namespace Practice6Sem.Core.GridComponents;
+﻿namespace DirectProblem.Core.GridComponents;
 
 public record struct Node2D(double R, double Z);

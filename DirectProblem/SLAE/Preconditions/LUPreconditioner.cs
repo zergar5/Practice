@@ -1,6 +1,6 @@
-﻿using Practice6Sem.Core.Global;
+﻿using DirectProblem.Core.Global;
 
-namespace Practice6Sem.SLAE.Preconditions;
+namespace DirectProblem.SLAE.Preconditions;
 
 public class LUPreconditioner : IPreconditioner<SparseMatrix>
 {
@@ -8,9 +8,10 @@ public class LUPreconditioner : IPreconditioner<SparseMatrix>
     {
         var preconditionMatrix = globalMatrix;
 
-        for (var i = 0; i < preconditionMatrix.CountRows; i++)
+        for (var i = 0; i < preconditionMatrix.Count; i++)
         {
             var sumD = 0.0;
+
             for (var j = preconditionMatrix.RowsIndexes[i]; j < preconditionMatrix.RowsIndexes[i + 1]; j++)
             {
                 var sumL = 0d;
@@ -19,21 +20,26 @@ public class LUPreconditioner : IPreconditioner<SparseMatrix>
                 for (var k = preconditionMatrix.RowsIndexes[i]; k < j; k++)
                 {
                     var iPrev = i - preconditionMatrix.ColumnsIndexes[j];
-                    var kPrev = preconditionMatrix[i - iPrev, preconditionMatrix.ColumnsIndexes[k]];
+                    var kPrev = preconditionMatrix.IndexOf(i - iPrev, preconditionMatrix.ColumnsIndexes[k]);
 
                     if (kPrev == -1) continue;
 
-                    sumL += preconditionMatrix.LowerValues[k] * preconditionMatrix.UpperValues[kPrev];
-                    sumU += preconditionMatrix.UpperValues[k] * preconditionMatrix.LowerValues[kPrev];
+                    sumL += preconditionMatrix[i, preconditionMatrix.ColumnsIndexes[k]] *
+                            preconditionMatrix[preconditionMatrix.ColumnsIndexes[kPrev], i - iPrev];
+                    sumU += preconditionMatrix[preconditionMatrix.ColumnsIndexes[k], i] *
+                            preconditionMatrix[i - iPrev, preconditionMatrix.ColumnsIndexes[kPrev]];
                 }
 
-                preconditionMatrix.LowerValues[j] -= sumL;
-                preconditionMatrix.UpperValues[j] = (preconditionMatrix.UpperValues[j] - sumU) / preconditionMatrix.Diagonal[preconditionMatrix.ColumnsIndexes[j]];
+                preconditionMatrix[i, preconditionMatrix.ColumnsIndexes[j]] -= sumL;
+                preconditionMatrix[preconditionMatrix.ColumnsIndexes[j], i] =
+                    (preconditionMatrix[preconditionMatrix.ColumnsIndexes[j], i] - sumU) /
+                    preconditionMatrix[preconditionMatrix.ColumnsIndexes[j], preconditionMatrix.ColumnsIndexes[j]];
 
-                sumD += preconditionMatrix.LowerValues[j] * preconditionMatrix.UpperValues[j];
+                sumD += preconditionMatrix[i, preconditionMatrix.ColumnsIndexes[j]] *
+                        preconditionMatrix[preconditionMatrix.ColumnsIndexes[j], i];
             }
 
-            preconditionMatrix.Diagonal[i] -= sumD;
+            preconditionMatrix[i, i] -= sumD;
         }
 
         return preconditionMatrix;

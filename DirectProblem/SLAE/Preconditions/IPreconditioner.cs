@@ -1,4 +1,4 @@
-﻿namespace Practice6Sem.SLAE.Preconditions;
+﻿namespace DirectProblem.SLAE.Preconditions;
 
 public interface IPreconditioner<TMatrix>
 {

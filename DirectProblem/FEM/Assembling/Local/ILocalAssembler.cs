@@ -1,10 +1,9 @@
-﻿using Practice6Sem.Core.GridComponents;
-using Practice6Sem.Core.Local;
+﻿using DirectProblem.Core.GridComponents;
+using DirectProblem.Core.Local;
 
-namespace Practice6Sem.FEM.Assembling.Local;
+namespace DirectProblem.FEM.Assembling.Local;
 
 public interface ILocalAssembler
 {
     public LocalMatrix AssembleMatrix(Element element);
-    public LocalVector AssembleRightSide(Element element);
 }

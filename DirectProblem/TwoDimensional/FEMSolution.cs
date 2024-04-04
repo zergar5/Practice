@@ -1,24 +1,27 @@
-﻿using Practice6Sem.Core;
-using Practice6Sem.Core.Global;
-using Practice6Sem.Core.GridComponents;
-using Practice6Sem.FEM;
-using Practice6Sem.TwoDimensional.Assembling.Local;
+﻿using DirectProblem.Core;
+using DirectProblem.Core.Base;
+using DirectProblem.Core.GridComponents;
+using DirectProblem.FEM;
+using DirectProblem.GridGenerator.Intervals.Core;
+using DirectProblem.SLAE;
+using DirectProblem.TwoDimensional.Assembling.Local;
+using System.Drawing;
 using System.Numerics;
-using Practice6Sem.GridGenerator.Intervals.Core;
+using Vector = DirectProblem.Core.Base.Vector;
 
-namespace Practice6Sem.TwoDimensional;
+namespace DirectProblem.TwoDimensional;
 
 public class FEMSolution
 {
     private readonly Grid<Node2D> _grid;
-    private readonly GlobalVector _solution;
+    private readonly Vector _solution;
     private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
     private readonly double _omega;
 
     public FEMSolution
     (
         Grid<Node2D> grid,
-        GlobalVector solution,
+        Vector solution,
         LocalBasisFunctionsProvider localBasisFunctionsProvider,
         double omega
     )
@@ -29,7 +32,7 @@ public class FEMSolution
         _omega = omega;
     }
 
-    public (double, double) Calculate(Node2D point)
+    public Complex Calculate(Node2D point)
     {
         if (AreaHas(point))
         {
@@ -46,83 +49,40 @@ public class FEMSolution
                 sumC += _solution[element.NodesIndexes[i] * 2 + 1] * basisFunctions[i].Calculate(point);
             }
 
-            CourseHolder.WriteSolution(point, sumS, sumC);
+            var values = new Complex(sumS, sumC);
 
-            return (sumS, sumC);
+            //CourseHolder.WriteSolution(point, values);
+
+            return values;
         }
 
         CourseHolder.WriteAreaInfo();
-        CourseHolder.WriteSolution(point, double.NaN, double.NaN);
-        return (double.NaN, double.NaN);
+        CourseHolder.WriteSolution(point, (double.NaN, double.NaN));
+        return new Complex(double.NaN, double.NaN);
     }
 
-    public double Calculate(Node2D point, double time)
+    public Complex CalculateEMF(Node2D point)
     {
-        if (AreaHas(point))
-        {
-            var element = _grid.Elements.First(x => ElementHas(x, point));
+        var emfs = 2d * Math.PI * point.R * Calculate(point);
 
-            var basisFunctions = _localBasisFunctionsProvider.GetBilinearFunctions(element);
-
-            var sumS = 0d;
-            var sumC = 0d;
-
-            for (var i = 0; i < element.NodesIndexes.Length; i++)
-            {
-                sumS += _solution[element.NodesIndexes[i] * 2] * basisFunctions[i].Calculate(point);
-                sumC += _solution[element.NodesIndexes[i] * 2 + 1] * basisFunctions[i].Calculate(point);
-            }
-
-            var result = sumS * Math.Sin(_omega * time) + sumC * Math.Cos(_omega * time);
-
-            CourseHolder.WriteSolution(point, time, result);
-
-            return result;
-        }
-
-        CourseHolder.WriteAreaInfo();
-        CourseHolder.WriteSolution(point, double.NaN, double.NaN);
-        return double.NaN;
+        return emfs;
     }
 
-    public double[] CalculateField(double time, double r)
+    public Complex[] CalculateEMFs(Node2D[] points)
     {
-        var zInterval = new Interval(_grid.Nodes[0].Z, _grid.Nodes[^1].Z);
-        var numberOfSegments = (int)(zInterval.Length / 0.01d);
-        var fieldValues = new double[numberOfSegments + 1];
+        var emfsValues = new Complex[points.Length];
 
-        var point = new Node2D(r, zInterval.Begin - 0.01d);
-
-        for (var i = 0; i <= numberOfSegments; i++)
+        for (var i = 0; i < points.Length; i++)
         {
-            point = point with { Z = point.Z + 0.01d };
-
-            var element = _grid.Elements.First(x => ElementHas(x, point));
-
-            var basisFunctions = _localBasisFunctionsProvider.GetBilinearFunctions(element);
-
-            var sumS = 0d;
-            var sumC = 0d;
-
-            for (var j = 0; j < element.NodesIndexes.Length; j++)
-            {
-                sumS += _solution[element.NodesIndexes[j] * 2] * basisFunctions[j].Calculate(point);
-                sumC += _solution[element.NodesIndexes[j] * 2 + 1] * basisFunctions[j].Calculate(point);
-            }
-
-            var result = (sumS * Math.Sin(_omega * time) + sumC * Math.Cos(_omega * time)) * 2 * Math.PI * r;
-
-            CourseHolder.WriteSolution(point, time, result);
-
-            fieldValues[i] = result;
+            emfsValues[i] = CalculateEMF(points[i]);
         }
 
-        return fieldValues;
+        return emfsValues;
     }
 
     public double CalcError(Func<Node2D, Complex> u)
     {
-        var trueSolution = new GlobalVector(_solution.Count);
+        var trueSolution = new Vector(_solution.Count);
 
         for (var i = 0; i < trueSolution.Count / 2; i++)
         {
@@ -131,24 +91,36 @@ public class FEMSolution
             trueSolution[i * 2 + 1] = uValues.Imaginary;
         }
 
-        GlobalVector.Subtract(_solution, trueSolution, trueSolution);
+        Vector.Subtract(_solution, trueSolution, trueSolution);
 
         return trueSolution.Norm;
     }
 
     private bool ElementHas(Element element, Node2D node)
     {
-        var leftCornerNode = _grid.Nodes[element.NodesIndexes[0]];
-        var rightCornerNode = _grid.Nodes[element.NodesIndexes[^1]];
-        return node.R >= leftCornerNode.R && node.Z >= leftCornerNode.Z &&
-               node.R <= rightCornerNode.R && node.Z <= rightCornerNode.Z;
+        var lowerLeftCorner = _grid.Nodes[element.NodesIndexes[0]];
+        var upperRightCorner = _grid.Nodes[element.NodesIndexes[^1]];
+        return (node.R > lowerLeftCorner.R ||
+                Math.Abs(node.R - lowerLeftCorner.R) < MethodsConfig.EpsDouble) &&
+               (node.Z > lowerLeftCorner.Z ||
+                Math.Abs(node.Z - lowerLeftCorner.Z) < MethodsConfig.EpsDouble) &&
+               (node.R < upperRightCorner.R ||
+                Math.Abs(node.R - upperRightCorner.R) < MethodsConfig.EpsDouble) &&
+               (node.Z < upperRightCorner.Z ||
+                Math.Abs(node.Z - upperRightCorner.Z) < MethodsConfig.EpsDouble);
     }
 
     private bool AreaHas(Node2D node)
     {
-        var leftCornerNode = _grid.Nodes[0];
-        var rightCornerNode = _grid.Nodes[^1];
-        return node.R >= leftCornerNode.R && node.Z >= leftCornerNode.Z &&
-               node.R <= rightCornerNode.R && node.Z <= rightCornerNode.Z;
+        var lowerLeftCorner = _grid.Nodes[0];
+        var upperRightCorner = _grid.Nodes[^1];
+        return (node.R > lowerLeftCorner.R ||
+                Math.Abs(node.R - lowerLeftCorner.R) < MethodsConfig.EpsDouble) &&
+               (node.Z > lowerLeftCorner.Z ||
+                Math.Abs(node.Z - lowerLeftCorner.Z) < MethodsConfig.EpsDouble) &&
+               (node.R < upperRightCorner.R ||
+                Math.Abs(node.R - upperRightCorner.R) < MethodsConfig.EpsDouble) &&
+               (node.Z < upperRightCorner.Z ||
+                Math.Abs(node.Z - upperRightCorner.Z) < MethodsConfig.EpsDouble);
     }
 }

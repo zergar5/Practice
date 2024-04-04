@@ -1,6 +1,6 @@
-﻿using Practice6Sem.Core;
+﻿using DirectProblem.Core;
 
-namespace Practice6Sem.FEM.Assembling;
+namespace DirectProblem.FEM.Assembling;
 
 public interface IMatrixPortraitBuilder<TNode, out TMatrix>
 {

@@ -1,4 +1,6 @@
-﻿namespace Practice6Sem.Core.GridComponents;
+﻿using DirectProblem.Core.Boundary;
+
+namespace DirectProblem.Core.GridComponents;
 
 public class Element
 {
@@ -17,41 +19,30 @@ public class Element
         MaterialId = materialId;
     }
 
-    public (int[], double) GetBoundNodeIndexes(Bound bound) =>
-        bound switch
+    public (int[], double) GetBoundNodeIndexes(Bound bound, int[]? indexes = null)
+    {
+        indexes ??= new int[2];
+
+        switch (bound)
         {
-            Bound.Lower =>
-            (new[]
-            {
-                NodesIndexes[0],
-                NodesIndexes[1],
-            },
-                Length
-            ),
-            Bound.Left =>
-            (new[]
-            {
-                NodesIndexes[0],
-                NodesIndexes[2],
-            },
-                Height
-            ),
-            Bound.Right =>
-            (new[]
-            {
-                NodesIndexes[1],
-                NodesIndexes[3],
-            },
-                Height
-            ),
-            Bound.Upper =>
-            (new[]
-            {
-                NodesIndexes[2],
-                NodesIndexes[3],
-            },
-                Length
-            ),
-            _ => throw new ArgumentOutOfRangeException()
-        };
+            case Bound.Lower:
+                indexes[0] = NodesIndexes[0];
+                indexes[1] = NodesIndexes[1];
+                return (indexes, Length);
+            case Bound.Left:
+                indexes[0] = NodesIndexes[0];
+                indexes[1] = NodesIndexes[2];
+                return (indexes, Height);
+            case Bound.Right:
+                indexes[0] = NodesIndexes[1];
+                indexes[1] = NodesIndexes[3];
+                return (indexes, Height);
+            case Bound.Upper:
+                indexes[0] = NodesIndexes[2];
+                indexes[1] = NodesIndexes[3];
+                return (indexes, Length);
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
 }
