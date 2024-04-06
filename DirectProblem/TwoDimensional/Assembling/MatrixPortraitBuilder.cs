@@ -7,7 +7,7 @@ namespace DirectProblem.TwoDimensional.Assembling;
 
 public class MatrixPortraitBuilder : IMatrixPortraitBuilder<Node2D, SparseMatrix>
 {
-    private List<SortedSet<int>> _adjacencyList = null!;
+    private List<SortedSet<int>> _adjacencyList;
 
     public SparseMatrix Build(Grid<Node2D> grid)
     {
@@ -24,13 +24,35 @@ public class MatrixPortraitBuilder : IMatrixPortraitBuilder<Node2D, SparseMatrix
 
     private void BuildAdjacencyList(Grid<Node2D> grid)
     {
-        _adjacencyList = new List<SortedSet<int>>(grid.Nodes.Length * 2);
-
-        for (var i = 0; i < grid.Nodes.Length * 2; i++)
+        if (_adjacencyList is null)
         {
-            _adjacencyList.Add(new SortedSet<int>());
-        }
+            _adjacencyList = new List<SortedSet<int>>(grid.Nodes.Length * 2);
 
+            for (var i = 0; i < grid.Nodes.Length * 2; i++)
+            {
+                _adjacencyList.Add(new SortedSet<int>());
+            }
+        }
+        else
+        {
+            if (_adjacencyList.Count == grid.Nodes.Length * 2)
+            {
+                for (var i = 0; i < grid.Nodes.Length * 2; i++)
+                {
+                    _adjacencyList[i].Clear();
+                }
+            }
+            else
+            {
+                _adjacencyList = new List<SortedSet<int>>(grid.Nodes.Length * 2);
+
+                for (var i = 0; i < grid.Nodes.Length * 2; i++)
+                {
+                    _adjacencyList.Add(new SortedSet<int>());
+                }
+            }
+        }
+        
         foreach (var element in grid)
         {
             var nodesIndexes = element.NodesIndexes;

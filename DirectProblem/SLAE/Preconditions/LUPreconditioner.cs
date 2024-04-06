@@ -30,13 +30,13 @@ public class LUPreconditioner : IPreconditioner<SparseMatrix>
                             preconditionMatrix[i - iPrev, preconditionMatrix.ColumnsIndexes[kPrev]];
                 }
 
-                preconditionMatrix[i, preconditionMatrix.ColumnsIndexes[j]] -= sumL;
-                preconditionMatrix[preconditionMatrix.ColumnsIndexes[j], i] =
-                    (preconditionMatrix[preconditionMatrix.ColumnsIndexes[j], i] - sumU) /
-                    preconditionMatrix[preconditionMatrix.ColumnsIndexes[j], preconditionMatrix.ColumnsIndexes[j]];
+                var jColumn = preconditionMatrix.ColumnsIndexes[j];
 
-                sumD += preconditionMatrix[i, preconditionMatrix.ColumnsIndexes[j]] *
-                        preconditionMatrix[preconditionMatrix.ColumnsIndexes[j], i];
+                preconditionMatrix[i, jColumn] -= sumL;
+                preconditionMatrix[jColumn, i] = (preconditionMatrix[jColumn, i] - sumU) /
+                                                 preconditionMatrix[jColumn, jColumn];
+
+                sumD += preconditionMatrix[i, jColumn] * preconditionMatrix[jColumn, i];
             }
 
             preconditionMatrix[i, i] -= sumD;

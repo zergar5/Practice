@@ -10,7 +10,9 @@ namespace DirectProblem.TwoDimensional.Assembling.Boundary;
 
 public class FirstBoundaryProvider
 {
-    private readonly Grid<Node2D> _grid;
+    private Grid<Node2D> _grid;
+    private FirstCondition[] _conditions;
+    private FirstConditionValue[] _firstConditionValues;
     private int[][]? _indexes;
     private Vector[]? _values;
     private readonly int[] _indexesBuffer = new int [2];
@@ -20,15 +22,25 @@ public class FirstBoundaryProvider
         _grid = grid;
     }
 
+    public FirstBoundaryProvider SetGrid(Grid<Node2D> grid)
+    {
+        _grid = grid;
+
+        return this;
+    }
+
     public FirstConditionValue[] GetConditions(FirstCondition[] conditions)
     {
-        var conditionsValues = new FirstConditionValue[conditions.Length * 2];
-
+        if (_firstConditionValues is null || _firstConditionValues.Length != conditions.Length)
+        {
+            _firstConditionValues = new FirstConditionValue[conditions.Length * 2];
+        }
+        
         if (_indexes is null)
         {
-            _indexes = new int[conditionsValues.Length][];
+            _indexes = new int[_firstConditionValues.Length][];
 
-            for (var i = 0; i < conditionsValues.Length; i++)
+            for (var i = 0; i < _firstConditionValues.Length; i++)
             {
                 _indexes[i] = new int[2];
             }
@@ -36,9 +48,9 @@ public class FirstBoundaryProvider
 
         if (_values is null)
         {
-            _values = new Vector[conditionsValues.Length];
+            _values = new Vector[_firstConditionValues.Length];
 
-            for (var i = 0; i < conditionsValues.Length; i++)
+            for (var i = 0; i < _firstConditionValues.Length; i++)
             {
                 _values[i] = new Vector(2);
             }
@@ -57,39 +69,42 @@ public class FirstBoundaryProvider
                     _indexes[j][k] = indexes[k] * 2 + i;
                 }
 
-                conditionsValues[j] = new FirstConditionValue(new LocalVector(_indexes[j], _values[j]));
+                _firstConditionValues[j] = new FirstConditionValue(new LocalVector(_indexes[j], _values[j]));
             }
         }
 
-        return conditionsValues;
+        return _firstConditionValues;
     }
 
     public FirstConditionValue[] GetConditions(int elementsByLength, int elementsByHeight)
     {
-        var conditions = new FirstCondition[2 * (elementsByLength + elementsByHeight)];
-
+        if (_conditions is null || _conditions.Length != 2 * (elementsByLength + elementsByHeight))
+        {
+            _conditions = new FirstCondition[2 * (elementsByLength + elementsByHeight)];
+        }
+        
         var j = 0;
 
         for (var i = 0; i < elementsByLength; i++, j++)
         {
-            conditions[j] = new FirstCondition(i, Bound.Lower);
+            _conditions[j] = new FirstCondition(i, Bound.Lower);
         }
 
         for (var i = 0; i < elementsByHeight; i++, j++)
         {
-            conditions[j] = new FirstCondition(i * elementsByLength, Bound.Left);
+            _conditions[j] = new FirstCondition(i * elementsByLength, Bound.Left);
         }
 
         for (var i = 0; i < elementsByHeight; i++, j++)
         {
-            conditions[j] = new FirstCondition((i + 1) * elementsByLength - 1, Bound.Right);
+            _conditions[j] = new FirstCondition((i + 1) * elementsByLength - 1, Bound.Right);
         }
 
         for (var i = elementsByLength * (elementsByHeight - 1); i < elementsByLength * elementsByHeight; i++, j++)
         {
-            conditions[j] = new FirstCondition(i, Bound.Upper);
+            _conditions[j] = new FirstCondition(i, Bound.Upper);
         }
 
-        return GetConditions(conditions);
+        return GetConditions(_conditions);
     }
 }

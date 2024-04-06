@@ -16,20 +16,17 @@ public class FEMSolution
     private readonly Grid<Node2D> _grid;
     private readonly Vector _solution;
     private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
-    private readonly double _omega;
 
     public FEMSolution
     (
         Grid<Node2D> grid,
         Vector solution,
-        LocalBasisFunctionsProvider localBasisFunctionsProvider,
-        double omega
+        LocalBasisFunctionsProvider localBasisFunctionsProvider
     )
     {
         _grid = grid;
         _solution = solution;
         _localBasisFunctionsProvider = localBasisFunctionsProvider;
-        _omega = omega;
     }
 
     public Complex Calculate(Node2D point)

@@ -10,6 +10,7 @@ using DirectProblem.FEM.Assembling.Local;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
 using System.Xml.Linq;
+using DirectProblem.SLAE;
 
 namespace DirectProblem.TwoDimensional.Assembling.Global;
 
@@ -20,13 +21,14 @@ public class GlobalAssembler<TNode>
     private readonly ILocalAssembler _localAssembler;
     private readonly IInserter<SparseMatrix> _inserter;
     private readonly GaussExcluder _gaussExсluder;
-    private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
+
     private readonly Matrix _massTemplate;
     private readonly int[] _indexes = new int[2];
     private readonly Vector _bufferThetaVector = new(2);
     private readonly Vector _bufferVector = new(2);
     private readonly Vector _complexVector = new(4);
     private int[] _complexIndexes = new int[4];
+
     private Equation<SparseMatrix> _equation;
     private SparseMatrix _preconditionMatrix;
 
@@ -36,8 +38,7 @@ public class GlobalAssembler<TNode>
         IMatrixPortraitBuilder<TNode, SparseMatrix> matrixPortraitBuilder,
         ILocalAssembler localAssembler,
         IInserter<SparseMatrix> inserter,
-        GaussExcluder gaussExсluder,
-        LocalBasisFunctionsProvider localBasisFunctionsProvider
+        GaussExcluder gaussExсluder
     )
     {
         _grid = grid;
@@ -45,51 +46,27 @@ public class GlobalAssembler<TNode>
         _localAssembler = localAssembler;
         _inserter = inserter;
         _gaussExсluder = gaussExсluder;
-        _localBasisFunctionsProvider = localBasisFunctionsProvider;
         _massTemplate = MassMatrixTemplateProvider.MassMatrix;
     }
 
     public GlobalAssembler<TNode> AssembleEquation(Grid<TNode> grid)
     {
         var globalMatrix = _matrixPortraitBuilder.Build(grid);
-        _preconditionMatrix = globalMatrix.Clone();
-        _equation = new Equation<SparseMatrix>(
-            globalMatrix,
-            new Vector(grid.Nodes.Length * 2),
-            new Vector(grid.Nodes.Length * 2)
-        );
 
-        //var threadsCount = ThreadPool.ThreadCount;
+        if (_preconditionMatrix is null || _preconditionMatrix.Count != globalMatrix.Count)
+        {
+            _preconditionMatrix = globalMatrix.Clone();
+        }
+        
 
-        //var tasks = new Task[threadsCount];
-
-        //var thread = new Thread(() => { });
-
-        //Action<object> ktok = (element) =>
-        //{
-        //    var localMatrix = _localAssembler.AssembleMatrix((Element)element);
-
-        //    _inserter.InsertMatrix(_equation.Matrix, localMatrix);
-        //};
-
-        //for (var i = 0; i < threadsCount; i++)
-        //{
-        //    tasks[i] = new Task(() => {});
-        //    tasks[i].Start();
-        //}
-
-        //foreach (var element in grid)
-        //{
-        //    var task = Task.WhenAny(tasks);
-        //    task.ContinueWith((_, element) =>
-        //    {
-        //        var localMatrix = _localAssembler.AssembleMatrix((Element)element);
-
-        //        _inserter.InsertMatrix(_equation.Matrix, localMatrix);
-        //    }, element);
-        //    //var task = new Task(ktok, element);
-        //    //Task.WhenAny()
-        //}
+        if (_equation is null || _equation.RightPart.Count != grid.Nodes.Length * 2)
+        {
+            _equation = new Equation<SparseMatrix>(
+                globalMatrix,
+                new Vector(grid.Nodes.Length * 2),
+                new Vector(grid.Nodes.Length * 2)
+            );
+        }
 
         foreach (var element in grid)
         {
@@ -101,7 +78,7 @@ public class GlobalAssembler<TNode>
         return this;
     }
 
-    public GlobalAssembler<TNode> ApplySources(FocusedSource source)
+    public GlobalAssembler<TNode> ApplySources(Source source)
     {
         var element = _grid.Elements.First(x => ElementHas(x, source.Point));
 
@@ -134,17 +111,10 @@ public class GlobalAssembler<TNode>
 
     public GlobalAssembler<TNode> ApplyFirstConditions(FirstConditionValue[] conditions)
     {
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-
-        Parallel.ForEach(conditions, condition =>
+        foreach (var condition in conditions)
         {
             _gaussExсluder.Exclude(_equation, condition);
-        });
-
-        stopwatch.Stop();
-
-        var time = (double)stopwatch.ElapsedMilliseconds / 1000;
+        }
 
         return this;
     }
@@ -162,10 +132,16 @@ public class GlobalAssembler<TNode>
 
     private bool ElementHas(Element element, Node2D node)
     {
-        var leftCornerNode = _grid.Nodes[element.NodesIndexes[0]];
-        var rightCornerNode = _grid.Nodes[element.NodesIndexes[^1]];
-        return node.R >= leftCornerNode.R && node.Z >= leftCornerNode.Z &&
-               node.R <= rightCornerNode.R && node.Z <= rightCornerNode.Z;
+        var lowerLeftCorner = _grid.Nodes[element.NodesIndexes[0]];
+        var upperRightCorner = _grid.Nodes[element.NodesIndexes[^1]];
+        return (node.R > lowerLeftCorner.R ||
+                Math.Abs(node.R - lowerLeftCorner.R) < MethodsConfig.EpsDouble) &&
+               (node.Z > lowerLeftCorner.Z ||
+                Math.Abs(node.Z - lowerLeftCorner.Z) < MethodsConfig.EpsDouble) &&
+               (node.R < upperRightCorner.R ||
+                Math.Abs(node.R - upperRightCorner.R) < MethodsConfig.EpsDouble) &&
+               (node.Z < upperRightCorner.Z ||
+                Math.Abs(node.Z - upperRightCorner.Z) < MethodsConfig.EpsDouble);
     }
 
     private int[] GetComplexIndexes(int[] indexes)

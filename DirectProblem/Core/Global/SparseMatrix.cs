@@ -4,11 +4,6 @@ namespace DirectProblem.Core.Global;
 
 public class SparseMatrix
 {
-    private static readonly ParallelOptions _parallelOptions = new()
-    {
-        MaxDegreeOfParallelism = Environment.ProcessorCount
-    };
-
     private readonly double[] _diagonal;
     private readonly double[] _lowerValues;
     private readonly double[] _upperValues;
@@ -120,30 +115,6 @@ public class SparseMatrix
 
         return result;
     }
-
-    public static Vector ParallelMultiply(SparseMatrix matrix, Vector vector, Vector? result = null)
-    {
-        if (matrix.Count != vector.Count)
-            throw new ArgumentOutOfRangeException(
-                $"{nameof(matrix)} and {nameof(vector)} must have same size");
-
-        if (result == null) result = new Vector(matrix.Count);
-        else result.Clear();
-
-        Parallel.For(0, matrix.Count, _parallelOptions, i =>
-        {
-            result[i] += matrix[i, i] * vector[i];
-
-            foreach (var j in matrix[i])
-            {
-                result[i] += matrix[i, j] * vector[j];
-                result[j] += matrix[j, i] * vector[i];
-            }
-        });
-
-        return result;
-    }
-
     public SparseMatrix Clone()
     {
         var rowIndexes = new int[_rowsIndexes.Length];

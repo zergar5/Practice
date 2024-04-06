@@ -8,11 +8,11 @@ namespace DirectProblem.TwoDimensional.Assembling.Local;
 
 public class LocalMatrixAssembler : ILocalMatrixAssembler
 {
-    private readonly Grid<Node2D> _grid;
-    private readonly Matrix _stiffnessTemplate;
-    private readonly Matrix _massTemplate;
-    private readonly Matrix _massRTemplate;
-    private readonly Matrix _rotorMassTemplate;
+    private Grid<Node2D> _grid;
+    private readonly Matrix _stiffnessTemplate = StiffnessMatrixTemplatesProvider.StiffnessMatrix;
+    private readonly Matrix _massTemplate = MassMatrixTemplateProvider.MassMatrix;
+    private readonly Matrix _massRTemplate = MassMatrixTemplateProvider.MassRMatrix;
+    private readonly Matrix _rotorMassTemplate = MassMatrixTemplateProvider.RotorMassMatrix;
     private readonly Matrix _stiffness = new(4);
     private readonly Matrix _rotorStiffness = new(2);
     private readonly Matrix _stiffnessR = new(2);
@@ -21,16 +21,16 @@ public class LocalMatrixAssembler : ILocalMatrixAssembler
     private readonly Matrix _massR = new(2);
     private readonly Matrix _massZ = new(2);
 
-    public LocalMatrixAssembler
-    (
-        Grid<Node2D> grid
-    )
+    public LocalMatrixAssembler(Grid<Node2D> grid)
     {
         _grid = grid;
-        _stiffnessTemplate = StiffnessMatrixTemplatesProvider.StiffnessMatrix;
-        _massTemplate = MassMatrixTemplateProvider.MassMatrix;
-        _massRTemplate = MassMatrixTemplateProvider.MassRMatrix;
-        _rotorMassTemplate = MassMatrixTemplateProvider.RotorMassMatrix;
+    }
+
+    public LocalMatrixAssembler SetGrid(Grid<Node2D> grid)
+    {
+        _grid = grid;
+
+        return this;
     }
 
     public Matrix AssembleStiffnessMatrix(Element element)

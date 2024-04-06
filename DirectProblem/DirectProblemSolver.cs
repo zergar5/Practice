@@ -22,68 +22,82 @@ public class DirectProblemSolver
 {
     private static readonly MatrixPortraitBuilder MatrixPortraitBuilder = new();
     private static readonly Inserter Inserter = new();
-    private static readonly LinearFunctionsProvider LinearFunctionsProvider = new();
     private static readonly GaussExcluder GaussExcluder = new();
     private static readonly LOS LOS = new(new LUPreconditioner(), new LUSparse());
-    private readonly Grid<Node2D> _grid;
-    private readonly MaterialFactory _materialFactory;
+
     private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
-    private readonly FirstConditionValue[] _firstConditions;
-    private double _omega;
-    private FocusedSource _focusedSource;
+    private readonly LocalMatrixAssembler _localMatrixAssembler;
+    private readonly LocalAssembler _localAssembler;
+    private readonly FirstBoundaryProvider _firstBoundaryProvider;
+    private readonly GlobalAssembler<Node2D> _globalAssembler;
+
+    private Grid<Node2D> _grid;
+    private Source _source;
+    private FirstConditionValue[] _firstConditions;
+    
     private Equation<SparseMatrix> _equation;
 
-    public DirectProblemSolver
-    (
-        Grid<Node2D> grid, 
-        MaterialFactory materialFactory,
-        FirstConditionValue[] firstConditions
-    )
+    public DirectProblemSolver(Grid<Node2D> grid, Material[] materials, double frequency)
     {
         _grid = grid;
-        _materialFactory = materialFactory;
-        _localBasisFunctionsProvider = new LocalBasisFunctionsProvider(grid, LinearFunctionsProvider);
-        _firstConditions = firstConditions;
+
+        _localBasisFunctionsProvider = new LocalBasisFunctionsProvider(grid);
+        _localMatrixAssembler = new LocalMatrixAssembler(grid);
+        _localAssembler = new LocalAssembler(_localMatrixAssembler, materials, frequency);
+        _firstBoundaryProvider = new FirstBoundaryProvider(grid);
+        _globalAssembler = new GlobalAssembler<Node2D>(grid, MatrixPortraitBuilder, 
+            _localAssembler, Inserter, GaussExcluder);
     }
 
-    public DirectProblemSolver SetOmega(double omega)
+    public DirectProblemSolver SetGrid(Grid<Node2D> grid)
     {
-        _omega = omega;
+        _grid = grid;
+        _localBasisFunctionsProvider.SetGrid(grid);
+        _localMatrixAssembler.SetGrid(grid);
+        _firstBoundaryProvider.SetGrid(grid);
+        _firstConditions = _firstBoundaryProvider.GetConditions(
+                grid.Nodes.RLength - 1, grid.Nodes.ZLength - 1);
+        
+        return this;
+    }
+
+    public DirectProblemSolver SetMaterials(Material[] materials)
+    {
+        _localAssembler.SetMaterials(materials);
 
         return this;
     }
 
-    public DirectProblemSolver SetSource(FocusedSource focusedSource)
+    public DirectProblemSolver SetFrequency(double frequency)
     {
-        _focusedSource = focusedSource;
+        _localAssembler.SetFrequency(frequency);
+
+        return this;
+    }
+
+    public DirectProblemSolver SetSource(Source focusedSource)
+    {
+        _source = focusedSource;
 
         return this;
     }
 
     public DirectProblemSolver AssembleSLAE()
     {
-        var localAssembler =
-            new LocalAssembler(
-                new LocalMatrixAssembler(_grid),
-                _materialFactory, _omega);
-
-        var globalAssembler = new GlobalAssembler<Node2D>(_grid, MatrixPortraitBuilder, localAssembler, Inserter,
-            GaussExcluder, _localBasisFunctionsProvider);
-
-        _equation = globalAssembler
+        _equation = _globalAssembler
             .AssembleEquation(_grid)
-            .ApplySources(_focusedSource)
+            .ApplySources(_source)
             .ApplyFirstConditions(_firstConditions)
             .BuildEquation();
-
-        var preconditionMatrix = globalAssembler.AllocatePreconditionMatrix();
-        LOS.SetPrecondition(preconditionMatrix);
 
         return this;
     }
 
     public Vector Solve()
     {
+        var preconditionMatrix = _globalAssembler.AllocatePreconditionMatrix();
+        LOS.SetPrecondition(preconditionMatrix);
+
         var solution = LOS.Solve(_equation);
 
         return solution;

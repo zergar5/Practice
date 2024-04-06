@@ -2,7 +2,7 @@
 using DirectProblem.Core.Global;
 using Practice6Sem.Core.Global;
 
-namespace Practice6Sem.SLAE.Solvers;
+namespace DirectProblem.SLAE.Solvers;
 
 public class LUProfile
 {

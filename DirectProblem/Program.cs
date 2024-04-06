@@ -42,7 +42,7 @@ var materialFactory = new MaterialFactory
 var omegas = new[] { 4e4, 2e5, 1e6, 2e6 };
 var current = 1;
 
-var sources = new FocusedSource[40];
+var sources = new Source[40];
 var receiverLines = new ReceiverLine[sources.Length];
 var emfs = new Complex[sources.Length, omegas.Length];
 var phaseDifferences = new double[sources.Length, omegas.Length];
@@ -50,7 +50,7 @@ var centersZ = new double[sources.Length];
 
 for (var i = 0; i < sources.Length; i++)
 {
-    sources[i] = new FocusedSource(new Node2D(0.05, -2 - 0.05 * i), current);
+    sources[i] = new Source(new Node2D(0.05, -2 - 0.05 * i), current);
     receiverLines[i] = new ReceiverLine(
         new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.05), new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.1)
     );
@@ -74,7 +74,7 @@ for (var i = 0; i < sources.Length; i++)
     for (var j = 0; j < omegas.Length; j++)
     {
         var solution = directProblemSolver
-            .SetOmega(omegas[j])
+            .SetFrequency(omegas[j])
             .SetSource(sources[i])
             .AssembleSLAE()
             .Solve();

@@ -103,7 +103,7 @@ public class GridBuilder2D : IGridBuilder<Node2D>
 
             return area.MaterialId;
         }
-        if (_materialsId != null)
+        if (_materialsId is not null)
         {
             return _materialsId[elementIndex];
         }
