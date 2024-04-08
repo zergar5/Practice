@@ -10,7 +10,7 @@ public class Regularizer
     private readonly Parameter[] _parameters;
     private readonly double[] _alphas;
     private readonly Equation<Matrix> _regularizedEquation;
-    private readonly Vector _initialDeltas;
+    private readonly Vector _previousDeltas;
 
     public Regularizer(GaussElimination gaussElimination, Parameter[] parameters)
     {
@@ -22,7 +22,7 @@ public class Regularizer
             new Vector(parameters.Length),
             new Vector(parameters.Length)
             );
-        _initialDeltas = new Vector(parameters.Length);
+        _previousDeltas = new Vector(parameters.Length);
     }
 
     public Equation<Matrix> Regularize(Equation<Matrix> equation, Vector trueParametersValues, out double[] alphas)
@@ -52,22 +52,22 @@ public class Regularizer
     {
         Matrix.SumToDiagonal(equation.Matrix, alphas, _regularizedEquation.Matrix);
 
-        Vector.Subtract
-        (
-            equation.RightPart,
-            Vector.Multiply
-            (
-                alphas,
-                Vector.Subtract
-                (
-                    equation.Solution,
-                    trueParametersValues,
-                    _regularizedEquation.RightPart
-                    ),
-                _regularizedEquation.RightPart
-                ),
-            _regularizedEquation.RightPart
-            );
+        //Vector.Subtract
+        //(
+        //    equation.RightPart,
+        //    Vector.Multiply
+        //    (
+        //        alphas,
+        //        Vector.Subtract
+        //        (
+        //            equation.Solution,
+        //            trueParametersValues,
+        //            _regularizedEquation.RightPart
+        //            ),
+        //        _regularizedEquation.RightPart
+        //        ),
+        //    _regularizedEquation.RightPart
+        //    );
     }
 
     private double CalculateResidual(Equation<Matrix> equation, double[] alphas, Vector trueParametersValues)
@@ -111,7 +111,7 @@ public class Regularizer
 
                 break;
             }
-            finally
+            catch
             {
                 for (var i = 0; i < alphas.Length; i++)
                 {
@@ -125,30 +125,25 @@ public class Regularizer
 
     private double[] FindBestAlphas(Equation<Matrix> equation, double[] alphas, Vector trueParametersValues)
     {
-        _regularizedEquation.Solution.Copy(_initialDeltas);
-
         bool stop;
 
         do
         {
             try
             {
+                _regularizedEquation.Solution.Copy(_previousDeltas);
+
                 AssembleSLAE(equation, alphas, trueParametersValues);
 
-                _gaussElimination.Solve(equation);
+                _gaussElimination.Solve(_regularizedEquation);
             }
             finally
             {
                 alphas = ChangeAlphas(equation, alphas, out stop);
 
-                //_regularizedEquation.Solution.Copy(_initialDeltas);
+                //_regularizedEquation.Solution.Copy(_previousDeltas);
             }
-        } while (stop);
-
-        for (var i = 0; i < alphas.Length; i++)
-        {
-            alphas[i] /= 1.5;
-        }
+        } while (!stop);
 
         return alphas;
     }
@@ -162,10 +157,10 @@ public class Regularizer
 
         for (var i = 0; i < alphas.Length; i++)
         {
-            var changeRatio = _initialDeltas[i] / _regularizedEquation.Solution[i];
+            var changeRatio = _previousDeltas[i] / _regularizedEquation.Solution[i];
 
-            if (!CheckLocalConstraints(changeRatio) ||
-                !CheckGlobalConstraints(_regularizedEquation.RightPart[i])) continue;
+            if (CheckLocalConstraints(changeRatio) &&
+                CheckGlobalConstraints(_regularizedEquation.RightPart[i])) continue;
 
             alphas[i] *= 1.5;
 

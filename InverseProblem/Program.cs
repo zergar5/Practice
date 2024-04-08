@@ -5,6 +5,10 @@ using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using InverseProblem.Parameters;
 using System.Globalization;
+using DirectProblem.GridGenerator.Intervals.Splitting;
+using InverseProblem;
+using InverseProblem.Assembling;
+using InverseProblem.SLAE;
 using Vector = DirectProblem.Core.Base.Vector;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -16,7 +20,7 @@ var gridBuilder2D = new GridBuilder2D();
 var current = 1d;
 var mu = 4 * Math.PI * 10e-7;
 
-var materials = new Material[]
+var trueMaterials = new Material[]
 {
     new(mu, 0.5),
     new(mu, 0.1),
@@ -27,9 +31,7 @@ var materials = new Material[]
     new(mu, 1d)
 };
 
-materials[0] = new Material(mu, 1d);
-
-var frequencies = new[] { 4e4, 2e5, 1e6, 2e6 };
+var frequencies = new[] { 4e4, /*2e5, 1e6, 2e6*/ };
 
 var sources = new Source[1];
 var receiverLines = new ReceiverLine[sources.Length];
@@ -44,13 +46,13 @@ for (var i = 0; i < sources.Length; i++)
     );
 }
 
-var directProblemSolver = new DirectProblemSolver(trueGrid, materials);
+var directProblemSolver = new DirectProblemSolver(trueGrid, trueMaterials);
 
 var localBasisFunctionsProvider = new LocalBasisFunctionsProvider(trueGrid);
 
 directProblemSolver
     .SetGrid(trueGrid)
-    .SetMaterials(materials);
+    .SetMaterials(trueMaterials);
 
 for (var i = 0; i < frequencies.Length; i++)
 {
@@ -69,34 +71,64 @@ for (var i = 0; i < frequencies.Length; i++)
 
         truePhaseDifferences[i, j] = (fieldM.Phase - fieldN.Phase) * 180d / Math.PI;
 
-        Console.Write($"frequency {i} source {i}                                      \r");
+        Console.Write($"frequency {i} source {j}                                      \r");
     }
 }
 
 Console.WriteLine();
 Console.WriteLine("TrueDirectProblem calculated");
 
-//var targetParameters = new Parameter[]
-//{
-//    new (ParameterType.Sigma, 0, 0),
-//};
+var targetParameters = new Parameter[]
+{
+    new (ParameterType.Sigma, 0, 0),
+};
 
-//var trueValues = new Vector([1d]);
-//var initialValues = new Vector([0.5d]);
+var trueValues = new Vector([1d]);
+var initialValues = new Vector([1d]);
 
-//var slaeAssembler = new SLAEAssembler(gridBuilder2D, directProblemSolver, localBasisFunctionsProvider,)
+var gridParameters = new GridParameters
+(
+    [1e-4, 0.1, 3d],
+    [-6d, -4d, -3d, -2d, 0d],
+    [new UniformSplitter(16), new StepProportionalSplitter(0.003125, 1.1)],
+    [
+        new StepProportionalSplitter(0.003125, 1 / 1.1),
+        new StepUniformSplitter(0.003125),
+        new StepUniformSplitter(0.003125),
+        new StepProportionalSplitter(0.003125, 1.1)
+    ],
+    [new(6, new Node2D(1e-4, -6d), new Node2D(3d, 0d))]
+);
 
-//var inverseProblemSolver = new InverseProblemSolver(gridBuilder2D, directProblemSolver, new SLAEAssembler(g));
+var materials = new Material[]
+{
+    new(mu, 0.5),
+    new(mu, 0.1),
+    new(mu, 0.05),
+    new(mu, 0.2),
+    new(mu, 1d / 3d),
+    new(mu, 0d),
+    new(mu, 1d)
+};
 
-//solution = inverseProblemSolver
-//    .SetSource(source)
-//    .SetReceivers(receiversLines)
-//    .SetParameters(targetParameters, trueValues, initialValues)
-//    .SetTruePotentialDifferences(truePotentialDifferences)
-//    .SetInitialDirectProblemParameters(rPoints, zPoints, areas, sigmas, firstConditions)
-//    .Solve();
+var parametersCollection =
+    new ParametersCollection(materials, gridParameters.RControlPoints, gridParameters.ZControlPoints);
 
-//foreach (var value in solution)
-//{
-//    Console.WriteLine(value);
-//}
+var slaeAssembler = new SLAEAssembler(gridBuilder2D, directProblemSolver, localBasisFunctionsProvider,
+    parametersCollection, gridParameters, sources, receiverLines, frequencies, targetParameters, initialValues,
+    truePhaseDifferences);
+
+var gaussElimination = new GaussElimination();
+
+var regularizer = new Regularizer(gaussElimination, targetParameters);
+
+var inverseProblemSolver = new InverseProblemSolver(gridBuilder2D, directProblemSolver, slaeAssembler, regularizer,
+    gaussElimination, localBasisFunctionsProvider, parametersCollection, gridParameters, sources, receiverLines,
+    frequencies, targetParameters, trueValues, truePhaseDifferences);
+
+var parametersValues = inverseProblemSolver.Solve();
+
+foreach (var parameterValue in parametersValues)
+{
+    Console.WriteLine(parameterValue);
+}

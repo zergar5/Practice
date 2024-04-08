@@ -96,6 +96,9 @@ public class InverseProblemSolver
         var functional = 1d;
         Equation<Matrix> equation = null!;
 
+        RebuildGrid();
+        _slaeAssembler.SetGrid(_grid);
+
         CalculatePhaseDifferences();
 
         for (var i = 1; i <= MethodsConfig.MaxIterations && functional > MethodsConfig.EpsDouble; i++)
@@ -145,11 +148,6 @@ public class InverseProblemSolver
             }
         }
 
-        for (var i = 0; i < alphas.Length; i++)
-        {
-            functional += alphas[i] * Math.Pow(equation.Solution[i] - _trueValues[i], 2);
-        }
-
         return functional;
     }
 
@@ -189,7 +187,7 @@ public class InverseProblemSolver
 
     private void CalculatePhaseDifferences()
     {
-        RebuildGrid();
+        //RebuildGrid();
         ChangeMaterials();
 
         for (var i = 0; i < _frequencies.Length; i++)
@@ -201,8 +199,8 @@ public class InverseProblemSolver
                 ChangeSource(_sources[j]);
                 SolveDirectProblem();
 
-                var fieldM = _femSolution.Calculate(_receiverLines[i].PointM);
-                var fieldN = _femSolution.Calculate(_receiverLines[i].PointN);
+                var fieldM = _femSolution.Calculate(_receiverLines[j].PointM);
+                var fieldN = _femSolution.Calculate(_receiverLines[j].PointN);
 
                 _currentPhaseDifferences[i, j] = (fieldM.Phase - fieldN.Phase) * 180d / Math.PI;
             }

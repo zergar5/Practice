@@ -45,8 +45,7 @@ public class SLAEAssembler
         double[] frequencies,
         Parameter[] parameters,
         Vector initialValues,
-        double[,] truePhaseDifferences,
-        double[,] weightsSquares
+        double[,] truePhaseDifferences
     )
     {
         _gridBuilder2D = gridBuilder2D;
@@ -60,7 +59,6 @@ public class SLAEAssembler
         _frequencies = frequencies;
         _parameters = parameters;
         _truePhaseDifferences = truePhaseDifferences;
-        _weightsSquares = weightsSquares;
 
         _equation = new Equation<Matrix>(new Matrix(_parameters.Length), initialValues,
             new Vector(_parameters.Length));
@@ -68,6 +66,13 @@ public class SLAEAssembler
         _phaseDifferences = new double[_frequencies.Length, _receiverLines.Length];
 
         _phaseDifferencesDerivatives = new double[_parameters.Length, _frequencies.Length, _receiverLines.Length];
+    }
+
+    public SLAEAssembler SetGrid(Grid<Node2D> grid)
+    {
+        _grid = grid;
+
+        return this;
     }
 
     public SLAEAssembler SetWeightsSquares(double[,] weightsSquares)
@@ -185,10 +190,10 @@ public class SLAEAssembler
                 case ParameterType.Sigma:
                     ChangeMaterials();
                     break;
-                case ParameterType.VerticalBound:
-                case ParameterType.HorizontalBound:
-                    RebuildGrid();
-                    break;
+                //case ParameterType.VerticalBound:
+                //case ParameterType.HorizontalBound:
+                //    RebuildGrid();
+                //    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
