@@ -140,4 +140,11 @@ public class SparseMatrix
 
         return sparseMatrix;
     }
+
+    public void Clear()
+    {
+        Array.Clear(_diagonal);
+        Array.Clear(_lowerValues);
+        Array.Clear(_upperValues);
+    }
 }

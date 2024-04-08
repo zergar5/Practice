@@ -50,7 +50,7 @@ public class LOS
         var residualNext = residual;
         var bufferVector = new Vector(equation.Solution.Count);
 
-        for (var i = 1; i <= MethodsConfig.MaxIterations && residualNext > Math.Pow(MethodsConfig.MethodPrecision, 2); i++)
+        for (var i = 1; i <= MethodsConfig.MaxIterations && residualNext > Math.Pow(MethodsConfig.ResidualPrecision, 2); i++)
         {
             var scalarPP = Vector.ScalarProduct(_p, _p);
             var alpha = Vector.ScalarProduct(_p, _r) / scalarPP;

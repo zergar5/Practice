@@ -31,7 +31,7 @@ var trueMaterials = new Material[]
     new(mu, 1d)
 };
 
-var frequencies = new[] { 4e4, /*2e5, 1e6, 2e6*/ };
+var frequencies = new[] { 4e4, 2e5, 1e6, 2e6 };
 
 var sources = new Source[1];
 var receiverLines = new ReceiverLine[sources.Length];
@@ -50,9 +50,7 @@ var directProblemSolver = new DirectProblemSolver(trueGrid, trueMaterials);
 
 var localBasisFunctionsProvider = new LocalBasisFunctionsProvider(trueGrid);
 
-directProblemSolver
-    .SetGrid(trueGrid)
-    .SetMaterials(trueMaterials);
+directProblemSolver.SetGrid(trueGrid).SetMaterials(trueMaterials);
 
 for (var i = 0; i < frequencies.Length; i++)
 {
@@ -80,11 +78,11 @@ Console.WriteLine("TrueDirectProblem calculated");
 
 var targetParameters = new Parameter[]
 {
-    new (ParameterType.Sigma, 0, 0),
+    new (ParameterType.Sigma, 6, 0),
 };
 
 var trueValues = new Vector([1d]);
-var initialValues = new Vector([1d]);
+var initialValues = new Vector([0.9d]);
 
 var gridParameters = new GridParameters
 (
@@ -108,7 +106,7 @@ var materials = new Material[]
     new(mu, 0.2),
     new(mu, 1d / 3d),
     new(mu, 0d),
-    new(mu, 1d)
+    new(mu, 0.9d)
 };
 
 var parametersCollection =

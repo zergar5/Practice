@@ -59,7 +59,8 @@ public class Matrix
             throw new ArgumentOutOfRangeException(
                 $"{nameof(matrix)} and {nameof(vector)} must have same size");
 
-
+        if (result == null) result = new Vector(matrix.CountRows);
+        else result.Clear();
 
         for (var i = 0; i < matrix.CountRows; i++)
         {

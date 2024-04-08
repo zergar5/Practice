@@ -43,6 +43,7 @@ public class Regularizer
         for (var i = 0; i < matrix.CountRows; i++)
         {
             _alphas[i] = matrix[i, i] * 1e-8;
+            //_alphas[i] = 0;
         }
 
         return _alphas;
@@ -51,6 +52,8 @@ public class Regularizer
     private void AssembleSLAE(Equation<Matrix> equation, double[] alphas, Vector trueParametersValues)
     {
         Matrix.SumToDiagonal(equation.Matrix, alphas, _regularizedEquation.Matrix);
+
+        equation.RightPart.Copy(_regularizedEquation.RightPart);
 
         //Vector.Subtract
         //(
@@ -157,7 +160,7 @@ public class Regularizer
 
         for (var i = 0; i < alphas.Length; i++)
         {
-            var changeRatio = _previousDeltas[i] / _regularizedEquation.Solution[i];
+            var changeRatio = _regularizedEquation.Solution[i] / _previousDeltas[i];
 
             if (CheckLocalConstraints(changeRatio) &&
                 CheckGlobalConstraints(_regularizedEquation.RightPart[i])) continue;

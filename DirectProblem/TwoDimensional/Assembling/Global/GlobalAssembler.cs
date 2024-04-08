@@ -55,7 +55,6 @@ public class GlobalAssembler<TNode>
             _preconditionMatrix = globalMatrix.Clone();
         }
 
-
         if (_equation is null || _equation.RightPart.Count != grid.Nodes.Length * 2)
         {
             _equation = new Equation<SparseMatrix>(
@@ -64,6 +63,11 @@ public class GlobalAssembler<TNode>
                 new Vector(grid.Nodes.Length * 2)
             );
         }
+
+        //Потом переделать
+        globalMatrix.Copy(_equation.Matrix);
+        _equation.Solution.Clear();
+        _equation.RightPart.Clear();
 
         foreach (var element in grid)
         {

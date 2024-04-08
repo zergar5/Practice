@@ -101,7 +101,7 @@ public class InverseProblemSolver
 
         CalculatePhaseDifferences();
 
-        for (var i = 1; i <= MethodsConfig.MaxIterations && functional > MethodsConfig.EpsDouble; i++)
+        for (var i = 1; i <= MethodsConfig.MaxIterations && functional > MethodsConfig.FunctionalPrecision; i++)
         {
             equation = _slaeAssembler
                 .SetCurrentPhaseDifferences(_currentPhaseDifferences)
@@ -117,9 +117,9 @@ public class InverseProblemSolver
 
             CalculatePhaseDifferences();
 
-            functional = CalculateFunctional(equation, alphas);
+            functional = CalculateFunctional();
 
-            CourseHolder.GetInfo(i, functional);
+            CourseHolder.GetInfo(i, parametersDeltas[0], functional);
         }
 
         Console.WriteLine();
@@ -135,7 +135,7 @@ public class InverseProblemSolver
         }
     }
 
-    private double CalculateFunctional(Equation<Matrix> equation, double[] alphas)
+    private double CalculateFunctional()
     {
         var functional = 0d;
 
@@ -209,7 +209,7 @@ public class InverseProblemSolver
 
     private void SolveDirectProblem()
     {
-        var solution = _directProblemSolver.Solve();
+        var solution = _directProblemSolver.AssembleSLAE().Solve();
 
         _femSolution = new FEMSolution(_grid, solution, _localBasisFunctionsProvider);
     }

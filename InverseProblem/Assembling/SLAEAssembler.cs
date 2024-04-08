@@ -134,7 +134,7 @@ public class SLAEAssembler
 
     private void SolveDirectProblem()
     {
-        var solution = _directProblemSolver.Solve();
+        var solution = _directProblemSolver.AssembleSLAE().Solve();
 
         _femSolution = new FEMSolution(_grid, solution, _localBasisFunctionsProvider);
     }
@@ -185,6 +185,10 @@ public class SLAEAssembler
     {
         for (var k = 0; k < _parameters.Length; k++)
         {
+            var parameterValue = _parametersCollection.GetParameterValue(_parameters[k]);
+            var delta = parameterValue * 1e-3;
+            _parametersCollection.SetParameterValue(_parameters[k], parameterValue + delta);
+
             switch (_parameters[k].ParameterType)
             {
                 case ParameterType.Sigma:
@@ -197,10 +201,6 @@ public class SLAEAssembler
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            var parameterValue = _parametersCollection.GetParameterValue(_parameters[k]);
-            var delta = parameterValue * 1e-3;
-            _parametersCollection.SetParameterValue(_parameters[k], parameterValue + delta);
 
             CalculatePhaseDifferencesDerivatives(k, delta);
 
@@ -222,7 +222,7 @@ public class SLAEAssembler
                 var fieldM = _femSolution.Calculate(_receiverLines[i].PointM);
                 var fieldN = _femSolution.Calculate(_receiverLines[i].PointN);
 
-                _phaseDifferences[i, j] = (fieldM.Phase - fieldN.Phase) * 180d / Math.PI;
+                _phaseDifferencesDerivatives[parameterIndex, i, j] = (fieldM.Phase - fieldN.Phase) * 180d / Math.PI;
 
                 _phaseDifferencesDerivatives[parameterIndex, i, j] =
                     (_phaseDifferencesDerivatives[parameterIndex, i, j] - _phaseDifferences[i, j]) / delta;
