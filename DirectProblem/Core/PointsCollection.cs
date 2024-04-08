@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using DirectProblem.Core.GridComponents;
+﻿using DirectProblem.Core.GridComponents;
 
 namespace DirectProblem.Core;
 

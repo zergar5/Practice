@@ -1,13 +1,10 @@
 ﻿using DirectProblem;
 using DirectProblem.Core;
 using DirectProblem.Core.Base;
-using DirectProblem.Core.Boundary;
 using DirectProblem.Core.Global;
 using DirectProblem.Core.GridComponents;
-using DirectProblem.FEM;
 using DirectProblem.GridGenerator;
 using DirectProblem.GridGenerator.Intervals.Splitting;
-using DirectProblem.IO;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using InverseProblem.Parameters;
@@ -25,17 +22,17 @@ public class SLAEAssembler
     private readonly GridParameters _gridParameters;
     private readonly Source[] _sources;
     private readonly ReceiverLine[] _receiverLines;
-    private readonly double[] _omegas;
+    private readonly double[] _frequencies;
     private readonly Parameter[] _parameters;
-    private readonly double[,] _truePotentialDifferences;
-    private readonly double[,] _weightsSquares;
-    private readonly double[,] _potentialDifferences;
-    private readonly double[,,] _derivativesPotentialDifferences;
+    private readonly double[,] _truePhaseDifferences;
+    private double[,] _weightsSquares;
+    private double[,] _phaseDifferences;
+    private readonly double[,,] _phaseDifferencesDerivatives;
     private readonly Equation<Matrix> _equation;
 
     private Grid<Node2D> _grid;
     private FEMSolution _femSolution;
-    
+
     public SLAEAssembler
     (
         GridBuilder2D gridBuilder2D,
@@ -45,10 +42,11 @@ public class SLAEAssembler
         GridParameters gridParameters,
         Source[] sourcesLine,
         ReceiverLine[] receiversLines,
-        double[] omegas,
+        double[] frequencies,
         Parameter[] parameters,
         Vector initialValues,
-        double[,] truePotentialDifferences
+        double[,] truePhaseDifferences,
+        double[,] weightsSquares
     )
     {
         _gridBuilder2D = gridBuilder2D;
@@ -59,39 +57,40 @@ public class SLAEAssembler
         _gridParameters = gridParameters;
         _sources = sourcesLine;
         _receiverLines = receiversLines;
-        _omegas = omegas;
+        _frequencies = frequencies;
         _parameters = parameters;
-        _truePotentialDifferences = truePotentialDifferences;
+        _truePhaseDifferences = truePhaseDifferences;
+        _weightsSquares = weightsSquares;
 
         _equation = new Equation<Matrix>(new Matrix(_parameters.Length), initialValues,
             new Vector(_parameters.Length));
 
-        _weightsSquares = new double[_omegas.Length, _truePotentialDifferences.Length];
-        CalculateWeightsSquares();
+        _phaseDifferences = new double[_frequencies.Length, _receiverLines.Length];
 
-        _potentialDifferences = new double[_omegas.Length, _receiverLines.Length];
+        _phaseDifferencesDerivatives = new double[_parameters.Length, _frequencies.Length, _receiverLines.Length];
+    }
 
-        _derivativesPotentialDifferences = new double[_parameters.Length, _omegas.Length, _receiverLines.Length];
+    public SLAEAssembler SetWeightsSquares(double[,] weightsSquares)
+    {
+        _weightsSquares = weightsSquares;
+
+        return this;
+    }
+
+    public SLAEAssembler SetCurrentPhaseDifferences(double[,] phaseDifferences)
+    {
+        _phaseDifferences = phaseDifferences;
+
+        return this;
     }
 
     public Equation<Matrix> BuildEquation()
     {
-        CalculatePotentialDifferences();
+        CalculatePhaseDifferences();
         AssembleMatrix();
         AssembleRightPart();
 
         return _equation;
-    }
-
-    private void CalculateWeightsSquares()
-    {
-        for (var i = 0; i < _omegas.Length; i++)
-        {
-            for (var k = 0; k < _receiverLines.Length; k++)
-            {
-                _weightsSquares[i, k] = Math.Pow(1d / _truePotentialDifferences[i, k], 2);
-            }
-        }
     }
 
     private void RebuildGrid()
@@ -142,13 +141,13 @@ public class SLAEAssembler
             for (var s = 0; s < _equation.Matrix.CountColumns; s++)
             {
                 var sum = 0d;
-                
-                for (var i = 0; i < _omegas.Length; i++)
+
+                for (var i = 0; i < _frequencies.Length; i++)
                 {
                     for (var k = 0; k < _receiverLines.Length; k++)
                     {
-                        sum += _weightsSquares[i, k] * _derivativesPotentialDifferences[q, i, k] *
-                                                  _derivativesPotentialDifferences[s, i, k];
+                        sum += _weightsSquares[i, k] * _phaseDifferencesDerivatives[q, i, k] *
+                                                  _phaseDifferencesDerivatives[s, i, k];
                     }
                 }
 
@@ -162,14 +161,14 @@ public class SLAEAssembler
         for (var q = 0; q < _equation.Matrix.CountRows; q++)
         {
             var sum = 0d;
-            
-            for (var i = 0; i < _omegas.Length; i++)
+
+            for (var i = 0; i < _frequencies.Length; i++)
             {
                 for (var k = 0; k < _receiverLines.Length; k++)
                 {
                     sum -= _weightsSquares[i, k] *
-                           (_potentialDifferences[i, k] - _truePotentialDifferences[i, k]) *
-                           _derivativesPotentialDifferences[q, i, k];
+                           (_phaseDifferences[i, k] - _truePhaseDifferences[i, k]) *
+                           _phaseDifferencesDerivatives[q, i, k];
                 }
             }
 
@@ -177,10 +176,8 @@ public class SLAEAssembler
         }
     }
 
-    private void CalculatePotentialDifferences()
+    private void CalculatePhaseDifferences()
     {
-        CalculateOriginalPotentialDifferences();
-
         for (var k = 0; k < _parameters.Length; k++)
         {
             switch (_parameters[k].ParameterType)
@@ -200,52 +197,30 @@ public class SLAEAssembler
             var delta = parameterValue * 1e-3;
             _parametersCollection.SetParameterValue(_parameters[k], parameterValue + delta);
 
-            CalculatePotentialDifferencesDerivatives(k, delta);
+            CalculatePhaseDifferencesDerivatives(k, delta);
 
             _parametersCollection.SetParameterValue(_parameters[k], parameterValue);
         }
     }
 
-    private void CalculateOriginalPotentialDifferences()
+    private void CalculatePhaseDifferencesDerivatives(int parameterIndex, double delta)
     {
-        RebuildGrid();
-        ChangeMaterials();
-
-        for (var i = 0; i < _omegas.Length; i++)
+        for (var i = 0; i < _frequencies.Length; i++)
         {
-            ChangeFrequency(_omegas[i]);
+            ChangeFrequency(_frequencies[i]);
 
-            for (var j = 0; j < _sources.Length; j++)
+            for (var j = 0; j < _receiverLines.Length; j++)
             {
                 ChangeSource(_sources[j]);
                 SolveDirectProblem();
 
-                var potentialM = _femSolution.Calculate(_receiverLines[i].PointM);
-                var potentialN = _femSolution.Calculate(_receiverLines[i].PointN);
+                var fieldM = _femSolution.Calculate(_receiverLines[i].PointM);
+                var fieldN = _femSolution.Calculate(_receiverLines[i].PointN);
 
-                _potentialDifferences[i, j] = (potentialM.Phase - potentialN.Phase) * 180d / Math.PI;
-            }
-        }
-    }
+                _phaseDifferences[i, j] = (fieldM.Phase - fieldN.Phase) * 180d / Math.PI;
 
-    private void CalculatePotentialDifferencesDerivatives(int parameterIndex, double delta)
-    {
-        for (var i = 0; i < _omegas.Length; i++)
-        {
-            ChangeFrequency(_omegas[i]);
-
-            for (var j = 0; j < _sources.Length; j++)
-            {
-                ChangeSource(_sources[j]);
-                SolveDirectProblem();
-
-                var potentialM = _femSolution.Calculate(_receiverLines[i].PointM);
-                var potentialN = _femSolution.Calculate(_receiverLines[i].PointN);
-
-                _potentialDifferences[i, j] = (potentialM.Phase - potentialN.Phase) * 180d / Math.PI;
-
-                _derivativesPotentialDifferences[parameterIndex, i, j] =
-                    (_derivativesPotentialDifferences[parameterIndex, i, j] - _potentialDifferences[i, j]) / delta;
+                _phaseDifferencesDerivatives[parameterIndex, i, j] =
+                    (_phaseDifferencesDerivatives[parameterIndex, i, j] - _phaseDifferences[i, j]) / delta;
             }
         }
     }

@@ -9,32 +9,6 @@ public class Grids
 {
     private static readonly GridBuilder2D GridBuilder = new();
 
-    public static Grid<Node2D> GetUniformSmallGridWith0Dot003125Step()
-    {
-        var grid = GridBuilder
-            .SetRAxis(new AxisSplitParameter(
-                    new[] { 1e-4, 0.1, 3d },
-                    new UniformSplitter(16),
-                    new StepProportionalSplitter(0.003125, 1.1)
-                )
-            )
-            .SetZAxis(new AxisSplitParameter(
-                    new[] { -6d, -4d, -3d, -2d, 0d },
-                    new StepProportionalSplitter(0.003125, 1/1.1),
-                    new StepUniformSplitter(0.003125),
-                    new StepUniformSplitter(0.003125),
-                    new StepProportionalSplitter(0.003125, 1.1)
-                )
-            )
-            .SetAreas(new Area[]
-            {
-                new(6, new Node2D(1e-4, -6d), new Node2D(3d, 0d)),
-            })
-            .Build();
-
-        return grid;
-    }
-
     public static Grid<Node2D> GetUniformGridWith0Dot05Step()
     {
         var grid = GridBuilder
@@ -185,6 +159,32 @@ public class Grids
             .SetAreas(new Area[]
             {
                 new(6, new Node2D(1e-4, -10d), new Node2D(10d, 0d)),
+            })
+            .Build();
+
+        return grid;
+    }
+
+    public static Grid<Node2D> GetUniformSmallGridWith0Dot003125Step()
+    {
+        var grid = GridBuilder
+            .SetRAxis(new AxisSplitParameter(
+                    new[] { 1e-4, 0.1, 3d },
+                    new UniformSplitter(16),
+                    new StepProportionalSplitter(0.003125, 1.1)
+                )
+            )
+            .SetZAxis(new AxisSplitParameter(
+                    new[] { -6d, -4d, -3d, -2d, 0d },
+                    new StepProportionalSplitter(0.003125, 1/1.1),
+                    new StepUniformSplitter(0.003125),
+                    new StepUniformSplitter(0.003125),
+                    new StepProportionalSplitter(0.003125, 1.1)
+                )
+            )
+            .SetAreas(new Area[]
+            {
+                new(6, new Node2D(1e-4, -6d), new Node2D(3d, 0d)),
             })
             .Build();
 

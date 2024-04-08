@@ -1,6 +1,5 @@
 ﻿using DirectProblem.Core.Base;
 using DirectProblem.Core.Global;
-using DirectProblem.FEM;
 using DirectProblem.SLAE.Preconditions;
 
 namespace DirectProblem.SLAE.Solvers;

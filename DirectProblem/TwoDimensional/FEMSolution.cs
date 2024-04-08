@@ -1,11 +1,8 @@
 ﻿using DirectProblem.Core;
-using DirectProblem.Core.Base;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.FEM;
-using DirectProblem.GridGenerator.Intervals.Core;
 using DirectProblem.SLAE;
 using DirectProblem.TwoDimensional.Assembling.Local;
-using System.Drawing;
 using System.Numerics;
 using Vector = DirectProblem.Core.Base.Vector;
 

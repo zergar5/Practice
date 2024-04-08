@@ -1,141 +1,122 @@
 ﻿using DirectProblem;
+using DirectProblem.Core;
 using DirectProblem.Core.Base;
-using DirectProblem.Core.Boundary;
 using DirectProblem.Core.Global;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.FEM;
 using DirectProblem.GridGenerator;
+using DirectProblem.GridGenerator.Intervals.Splitting;
 using DirectProblem.SLAE;
+using DirectProblem.TwoDimensional;
+using DirectProblem.TwoDimensional.Assembling.Local;
 using InverseProblem.Assembling;
+using InverseProblem.Parameters;
 using InverseProblem.SLAE;
 
 namespace InverseProblem;
 
 public class InverseProblemSolver
 {
-    private static readonly GaussElimination GaussElimination = new();
-    private static readonly Regularizer Regularizer = new(GaussElimination);
-    private static readonly DirectProblemSolver DirectProblemSolver = new();
     private readonly GridBuilder2D _gridBuilder2D;
-    private SLAEAssembler _slaeAssembler;
-    private Matrix _bufferMatrix;
-    private Vector _bufferVector;
-    private Vector _residualBufferVector;
+    private readonly DirectProblemSolver _directProblemSolver;
+    private readonly SLAEAssembler _slaeAssembler;
+    private readonly Regularizer _regularizer;
+    private readonly GaussElimination _gaussElimination;
+    private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
 
-    private Source[] _sources;
-    private ReceiverLine[] _receiverLines;
+    private readonly ParametersCollection _parametersCollection;
+    private readonly GridParameters _gridParameters;
+    private readonly Source[] _sources;
+    private readonly ReceiverLine[] _receiverLines;
+    private readonly double[] _frequencies;
+    private readonly Parameter[] _parameters;
+    private readonly Vector _trueValues;
+    private readonly double[,] _truePhaseDifferences;
 
-    private Parameter[] _parameters;
-    private Vector _trueValues;
-    private Vector _initialValues;
+    private double[,] _weightsSquares;
+    private readonly double[,] _currentPhaseDifferences;
+    private Grid<Node2D> _grid;
+    private FEMSolution _femSolution;
 
-    private double[] _truePotentialDifferences;
-
-    private double[] _rPoints;
-    private double[] _zPoints;
-    private Area[] _areas;
-    private double[] _sigmas;
-    private FirstCondition[] _firstConditions;
-
-    public InverseProblemSolver(GridBuilder2D gridBuilder2D, Source[] sources, ReceiverLine[] receiverLines, double[] frequencies, )
+    public InverseProblemSolver
+    (
+        GridBuilder2D gridBuilder2D,
+        DirectProblemSolver directProblemSolver,
+        SLAEAssembler slaeAssembler,
+        Regularizer regularizer,
+        GaussElimination gaussElimination,
+        LocalBasisFunctionsProvider localBasisFunctionsProvider,
+        ParametersCollection parametersCollection,
+        GridParameters gridParameters,
+        Source[] sources,
+        ReceiverLine[] receiverLines,
+        double[] frequencies,
+        Parameter[] parameters,
+        Vector trueValues,
+        double[,] truePhaseDifferences
+    )
     {
         _gridBuilder2D = gridBuilder2D;
-    }
-
-    public InverseProblemSolver SetSource(SourcesLine sourcesLine)
-    {
-        _sourceLine = sourcesLine;
-
-        return this;
-    }
-
-    public InverseProblemSolver SetReceivers(ReceiversLine[] receivers)
-    {
-        _receiversLines = receivers;
-
-        return this;
-    }
-
-    public InverseProblemSolver SetParameters(Parameter[] parameters, Vector trueValues, Vector initialValues)
-    {
+        _directProblemSolver = directProblemSolver;
+        _slaeAssembler = slaeAssembler;
+        _regularizer = regularizer;
+        _gaussElimination = gaussElimination;
+        _localBasisFunctionsProvider = localBasisFunctionsProvider;
+        _parametersCollection = parametersCollection;
+        _gridParameters = gridParameters;
+        _sources = sources;
+        _receiverLines = receiverLines;
+        _frequencies = frequencies;
         _parameters = parameters;
         _trueValues = trueValues;
-        _initialValues = initialValues;
+        _truePhaseDifferences = truePhaseDifferences;
 
-        return this;
+        CalculateWeightsSquares();
+
+        _currentPhaseDifferences = new double[_frequencies.Length, _receiverLines.Length];
     }
 
-    public InverseProblemSolver SetTruePotentialDifferences(double[] truePotentialDifferences)
+    private void CalculateWeightsSquares()
     {
-        _truePotentialDifferences = truePotentialDifferences;
+        _weightsSquares = new double[_frequencies.Length, _receiverLines.Length];
 
-        return this;
-    }
+        for (var i = 0; i < _frequencies.Length; i++)
+        {
+            for (var j = 0; j < _receiverLines.Length; j++)
+            {
+                _weightsSquares[i, j] = Math.Pow(1 / _truePhaseDifferences[i, j], 2);
+            }
+        }
 
-    public InverseProblemSolver SetInitialDirectProblemParameters(double[] rPoints, double[] zPoints, Area[] areas,
-        double[] sigmas, FirstCondition[] firstConditions)
-    {
-        _rPoints = rPoints;
-        _zPoints = zPoints;
-        _areas = areas;
-        _sigmas = sigmas;
-        _firstConditions = firstConditions;
-
-        return this;
-    }
-
-    private void Init()
-    {
-        _slaeAssembler = new SLAEAssembler(_gridBuilder2D, DirectProblemSolver, _sourceLine, _receiversLines,
-            _parameters, _initialValues, _truePotentialDifferences, _rPoints, _zPoints, _areas, _sigmas,
-            _firstConditions);
-
-        _bufferMatrix = Matrix.CreateIdentityMatrix(_parameters.Length);
-        _bufferVector = new Vector(_parameters.Length);
-        _residualBufferVector = new Vector(_parameters.Length);
-        Regularizer.BufferMatrix = _bufferMatrix;
-        Regularizer.BufferVector = _bufferVector;
-        Regularizer.ResidualBufferVector = _residualBufferVector;
+        _slaeAssembler.SetWeightsSquares(_weightsSquares);
     }
 
     public Vector Solve()
     {
-        //Собрать сетку для базовых значений, учесть только А электрод
-        //Посчитать разности потенциалов M-N для А, сделать аналогично для B, но потенциалы буду с минусом
-        //Сложить разности при А и при Б
-        Init();
-
-        var residual = 1d;
+        var functional = 1d;
         Equation<Matrix> equation = null!;
 
-        for (var i = 1; i <= MethodsConfig.MaxIterations && residual > MethodsConfig.Eps; i++)
+        CalculatePhaseDifferences();
+
+        for (var i = 1; i <= MethodsConfig.MaxIterations && functional > MethodsConfig.EpsDouble; i++)
         {
-            equation = _slaeAssembler.BuildEquation();
+            equation = _slaeAssembler
+                .SetCurrentPhaseDifferences(_currentPhaseDifferences)
+                .BuildEquation();
 
-            var alpha = Regularizer.Regularize(equation, _trueValues);
+            var regularizedEquation = _regularizer.Regularize(equation, _trueValues, out var alphas);
 
-            Matrix.CreateIdentityMatrix(_bufferMatrix);
+            var parametersDeltas = _gaussElimination.Solve(regularizedEquation);
 
-            Matrix.Sum(equation.Matrix, Matrix.Multiply(alpha, _bufferMatrix, _bufferMatrix), equation.Matrix);
-
-            Vector.Subtract(
-                equation.RightPart, Vector.Multiply(
-                    alpha, Vector.Subtract(equation.Solution, _trueValues, _bufferVector),
-                    _bufferVector),
-                equation.RightPart);
-
-            _bufferMatrix = equation.Matrix.Copy(_bufferMatrix);
-            _bufferVector = equation.RightPart.Copy(_bufferVector);
-
-            _bufferVector = GaussElimination.Solve(_bufferMatrix, _bufferVector);
-
-            residual = CalculateResidual(equation);
-
-            Vector.Sum(equation.Solution, _bufferVector, equation.Solution);
+            Vector.Sum(equation.Solution, parametersDeltas, equation.Solution);
 
             UpdateParameters(equation.Solution);
 
-            CourseHolder.GetInfo(i, residual);
+            CalculatePhaseDifferences();
+
+            functional = CalculateFunctional(equation, alphas);
+
+            CourseHolder.GetInfo(i, functional);
         }
 
         Console.WriteLine();
@@ -143,20 +124,95 @@ public class InverseProblemSolver
         return equation.Solution;
     }
 
-    private void UpdateParameters(Vector vector)
+    private void UpdateParameters(Vector parametersValues)
     {
         for (var i = 0; i < _parameters.Length; i++)
         {
-            _slaeAssembler.SetParameter(_parameters[i], vector[i]);
+            _parametersCollection.SetParameterValue(_parameters[i], parametersValues[i]);
         }
     }
 
-    private double CalculateResidual(Equation<Matrix> equation)
+    private double CalculateFunctional(Equation<Matrix> equation, double[] alphas)
     {
-        return Vector.Subtract(
-            equation.RightPart,
-            Matrix.Multiply(equation.Matrix, _bufferVector, _residualBufferVector),
-            equation.RightPart)
-            .Norm;
+        var functional = 0d;
+
+        for (var i = 0; i < _frequencies.Length; i++)
+        {
+            for (var j = 0; j < _receiverLines.Length; j++)
+            {
+                functional += _weightsSquares[i, j] *
+                              Math.Pow(_currentPhaseDifferences[i, j] - _truePhaseDifferences[i, j], 2);
+            }
+        }
+
+        for (var i = 0; i < alphas.Length; i++)
+        {
+            functional += alphas[i] * Math.Pow(equation.Solution[i] - _trueValues[i], 2);
+        }
+
+        return functional;
+    }
+
+    private void RebuildGrid()
+    {
+        _grid = _gridBuilder2D
+            .SetRAxis(new AxisSplitParameter(
+                    _gridParameters.RControlPoints,
+                    _gridParameters.RSplitters
+                )
+            )
+            .SetZAxis(new AxisSplitParameter(
+                    _gridParameters.ZControlPoints,
+                    _gridParameters.ZSplitters
+                )
+            )
+            .SetAreas(_gridParameters.Areas)
+            .Build();
+
+        _directProblemSolver.SetGrid(_grid);
+    }
+
+    private void ChangeMaterials()
+    {
+        _directProblemSolver.SetMaterials(_parametersCollection.Materials);
+    }
+
+    private void ChangeFrequency(double frequency)
+    {
+        _directProblemSolver.SetFrequency(frequency);
+    }
+
+    private void ChangeSource(Source source)
+    {
+        _directProblemSolver.SetSource(source);
+    }
+
+    private void CalculatePhaseDifferences()
+    {
+        RebuildGrid();
+        ChangeMaterials();
+
+        for (var i = 0; i < _frequencies.Length; i++)
+        {
+            ChangeFrequency(_frequencies[i]);
+
+            for (var j = 0; j < _receiverLines.Length; j++)
+            {
+                ChangeSource(_sources[j]);
+                SolveDirectProblem();
+
+                var fieldM = _femSolution.Calculate(_receiverLines[i].PointM);
+                var fieldN = _femSolution.Calculate(_receiverLines[i].PointN);
+
+                _currentPhaseDifferences[i, j] = (fieldM.Phase - fieldN.Phase) * 180d / Math.PI;
+            }
+        }
+    }
+
+    private void SolveDirectProblem()
+    {
+        var solution = _directProblemSolver.Solve();
+
+        _femSolution = new FEMSolution(_grid, solution, _localBasisFunctionsProvider);
     }
 }

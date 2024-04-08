@@ -1,10 +1,4 @@
-﻿using DirectProblem.Core;
-using DirectProblem.Core.Base;
-using DirectProblem.Core.GridComponents;
-using System.Drawing;
-using System.Numerics;
-using System.Reflection;
-using System.Xml.Linq;
+﻿using System.Numerics;
 using Vector = DirectProblem.Core.Base.Vector;
 
 namespace DirectProblem.IO;
@@ -111,7 +105,7 @@ public class ResultIO
 
         for (var i = 0; i < omegas.Length; i++)
         {
-            using var streamWriterForTelma = 
+            using var streamWriterForTelma =
                 new StreamWriter(_path + "phaseDifferences" + _fileNames[i] + ".txt");
 
             streamWriterForTelma.WriteLine();
@@ -131,7 +125,7 @@ public class ResultIO
 
         for (var i = 0; i < solution.Count; i++)
         {
-            if(i % 2 == 0) binaryWriter.Write(solution[i]);
+            if (i % 2 == 0) binaryWriter.Write(solution[i]);
         }
     }
 

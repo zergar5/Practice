@@ -52,7 +52,7 @@ public class MatrixPortraitBuilder : IMatrixPortraitBuilder<Node2D, SparseMatrix
                 }
             }
         }
-        
+
         foreach (var element in grid)
         {
             var nodesIndexes = element.NodesIndexes;

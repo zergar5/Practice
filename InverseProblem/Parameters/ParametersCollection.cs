@@ -1,5 +1,4 @@
 ﻿using DirectProblem.Core.GridComponents;
-using DirectProblem.TwoDimensional.Parameters;
 
 namespace InverseProblem.Parameters;
 

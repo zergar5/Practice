@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using DirectProblem.Core;
+﻿using DirectProblem.Core;
 using DirectProblem.Core.Base;
 using DirectProblem.Core.Boundary;
 using DirectProblem.Core.Global;
@@ -7,10 +6,8 @@ using DirectProblem.Core.GridComponents;
 using DirectProblem.Core.Local;
 using DirectProblem.FEM.Assembling;
 using DirectProblem.FEM.Assembling.Local;
-using DirectProblem.TwoDimensional.Assembling.Local;
-using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
-using System.Xml.Linq;
 using DirectProblem.SLAE;
+using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
 
 namespace DirectProblem.TwoDimensional.Assembling.Global;
 
@@ -57,7 +54,7 @@ public class GlobalAssembler<TNode>
         {
             _preconditionMatrix = globalMatrix.Clone();
         }
-        
+
 
         if (_equation is null || _equation.RightPart.Count != grid.Nodes.Length * 2)
         {

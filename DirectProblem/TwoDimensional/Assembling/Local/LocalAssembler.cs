@@ -1,9 +1,7 @@
-﻿using DirectProblem.Core;
-using DirectProblem.Core.Base;
+﻿using DirectProblem.Core.Base;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.Core.Local;
 using DirectProblem.FEM.Assembling.Local;
-using DirectProblem.TwoDimensional.Parameters;
 
 namespace DirectProblem.TwoDimensional.Assembling.Local;
 
@@ -18,13 +16,11 @@ public class LocalAssembler : ILocalAssembler
     public LocalAssembler
     (
         ILocalMatrixAssembler localMatrixAssembler,
-        Material[] materials,
-        double frequency
+        Material[] materials
     )
     {
         _localMatrixAssembler = localMatrixAssembler;
         _materials = materials;
-        _frequency = frequency;
     }
 
     public LocalAssembler SetMaterials(Material[] materials)

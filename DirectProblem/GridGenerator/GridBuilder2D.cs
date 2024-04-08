@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Drawing;
-using DirectProblem.Core;
+﻿using DirectProblem.Core;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.GridGenerator.Intervals.Splitting;
 

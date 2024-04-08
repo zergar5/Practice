@@ -3,18 +3,12 @@ using DirectProblem.Core.Base;
 using DirectProblem.Core.Boundary;
 using DirectProblem.Core.Global;
 using DirectProblem.Core.GridComponents;
-using DirectProblem.FEM;
-using DirectProblem.FEM.Assembling.Local;
 using DirectProblem.SLAE.Preconditions;
 using DirectProblem.SLAE.Solvers;
-using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling;
 using DirectProblem.TwoDimensional.Assembling.Boundary;
 using DirectProblem.TwoDimensional.Assembling.Global;
 using DirectProblem.TwoDimensional.Assembling.Local;
-using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
-using DirectProblem.TwoDimensional.Parameters;
-using System.Diagnostics;
 
 namespace DirectProblem;
 
@@ -34,18 +28,18 @@ public class DirectProblemSolver
     private Grid<Node2D> _grid;
     private Source _source;
     private FirstConditionValue[] _firstConditions;
-    
+
     private Equation<SparseMatrix> _equation;
 
-    public DirectProblemSolver(Grid<Node2D> grid, Material[] materials, double frequency)
+    public DirectProblemSolver(Grid<Node2D> grid, Material[] materials)
     {
         _grid = grid;
 
         _localBasisFunctionsProvider = new LocalBasisFunctionsProvider(grid);
         _localMatrixAssembler = new LocalMatrixAssembler(grid);
-        _localAssembler = new LocalAssembler(_localMatrixAssembler, materials, frequency);
+        _localAssembler = new LocalAssembler(_localMatrixAssembler, materials);
         _firstBoundaryProvider = new FirstBoundaryProvider(grid);
-        _globalAssembler = new GlobalAssembler<Node2D>(grid, MatrixPortraitBuilder, 
+        _globalAssembler = new GlobalAssembler<Node2D>(grid, MatrixPortraitBuilder,
             _localAssembler, Inserter, GaussExcluder);
     }
 
@@ -57,7 +51,7 @@ public class DirectProblemSolver
         _firstBoundaryProvider.SetGrid(grid);
         _firstConditions = _firstBoundaryProvider.GetConditions(
                 grid.Nodes.RLength - 1, grid.Nodes.ZLength - 1);
-        
+
         return this;
     }
 
