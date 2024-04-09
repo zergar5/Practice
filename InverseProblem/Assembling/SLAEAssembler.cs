@@ -183,13 +183,13 @@ public class SLAEAssembler
 
     private void CalculatePhaseDifferences()
     {
-        for (var k = 0; k < _parameters.Length; k++)
+        for (var i = 0; i < _parameters.Length; i++)
         {
-            var parameterValue = _parametersCollection.GetParameterValue(_parameters[k]);
-            var delta = parameterValue * 1e-3;
-            _parametersCollection.SetParameterValue(_parameters[k], parameterValue + delta);
+            var parameterValue = _parametersCollection.GetParameterValue(_parameters[i]);
+            var delta = parameterValue * 1e-1;
+            _parametersCollection.SetParameterValue(_parameters[i], parameterValue + delta);
 
-            switch (_parameters[k].ParameterType)
+            switch (_parameters[i].ParameterType)
             {
                 case ParameterType.Sigma:
                     ChangeMaterials();
@@ -202,9 +202,9 @@ public class SLAEAssembler
                     throw new ArgumentOutOfRangeException();
             }
 
-            CalculatePhaseDifferencesDerivatives(k, delta);
+            CalculatePhaseDifferencesDerivatives(i, delta);
 
-            _parametersCollection.SetParameterValue(_parameters[k], parameterValue);
+            _parametersCollection.SetParameterValue(_parameters[i], parameterValue);
         }
     }
 
@@ -219,13 +219,15 @@ public class SLAEAssembler
                 ChangeSource(_sources[j]);
                 SolveDirectProblem();
 
-                var fieldM = _femSolution.Calculate(_receiverLines[i].PointM);
-                var fieldN = _femSolution.Calculate(_receiverLines[i].PointN);
+                var fieldM = _femSolution.Calculate(_receiverLines[j].PointM);
+                var fieldN = _femSolution.Calculate(_receiverLines[j].PointN);
 
                 _phaseDifferencesDerivatives[parameterIndex, i, j] = (fieldM.Phase - fieldN.Phase) * 180d / Math.PI;
 
                 _phaseDifferencesDerivatives[parameterIndex, i, j] =
                     (_phaseDifferencesDerivatives[parameterIndex, i, j] - _phaseDifferences[i, j]) / delta;
+
+                Console.Write($"derivative {parameterIndex} frequency {i} source {j}                           \r");
             }
         }
     }

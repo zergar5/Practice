@@ -88,4 +88,17 @@ public class Matrix
 
         return result;
     }
+
+    public Matrix Copy(Matrix matrix)
+    {
+        for (var i = 0; i < matrix.CountRows; i++)
+        {
+            for (var j = 0; j < matrix.CountColumns; j++)
+            {
+                matrix[i, j] = Values[i, j];
+            }
+        }
+
+        return matrix;
+    }
 }

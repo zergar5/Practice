@@ -13,7 +13,7 @@ using Vector = DirectProblem.Core.Base.Vector;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var trueGrid = Grids.GetUniformSmallGridWith0Dot003125Step();
+var trueGrid = Grids.GetUniformSmallGridWith0Dot003125StepWith2Materials();
 
 var gridBuilder2D = new GridBuilder2D();
 
@@ -33,13 +33,13 @@ var trueMaterials = new Material[]
 
 var frequencies = new[] { 4e4, 2e5, 1e6, 2e6 };
 
-var sources = new Source[1];
+var sources = new Source[3];
 var receiverLines = new ReceiverLine[sources.Length];
 var truePhaseDifferences = new double[frequencies.Length, receiverLines.Length];
 
 for (var i = 0; i < sources.Length; i++)
 {
-    sources[i] = new Source(new Node2D(0.05, -2.95 - 0.05 * i), current);
+    sources[i] = new Source(new Node2D(0.05, -2.9 - 0.05 * i), current);
     receiverLines[i] = new ReceiverLine(
         new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.05),
         new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.1)
@@ -78,35 +78,42 @@ Console.WriteLine("TrueDirectProblem calculated");
 
 var targetParameters = new Parameter[]
 {
-    new (ParameterType.Sigma, 6, 0),
+    new (ParameterType.Sigma, 0, 0),
+    new (ParameterType.Sigma, 3, 0),
 };
 
-var trueValues = new Vector([1d]);
-var initialValues = new Vector([0.9d]);
+var trueValues = new Vector([0.5, 0.2]);
+var initialValues = new Vector([0.4, 0.1]);
 
 var gridParameters = new GridParameters
 (
     [1e-4, 0.1, 3d],
     [-6d, -4d, -3d, -2d, 0d],
-    [new UniformSplitter(16), new StepProportionalSplitter(0.003125, 1.1)],
+    [
+        new UniformSplitter(16), 
+        new StepProportionalSplitter(0.003125, 1.1)
+    ],
     [
         new StepProportionalSplitter(0.003125, 1 / 1.1),
         new StepUniformSplitter(0.003125),
         new StepUniformSplitter(0.003125),
         new StepProportionalSplitter(0.003125, 1.1)
     ],
-    [new(6, new Node2D(1e-4, -6d), new Node2D(3d, 0d))]
+    [
+        new(0, new Node2D(1e-4, -6d), new Node2D(0.1, 0d)),
+        new(3, new Node2D(0.1, -6d), new Node2D(3, 0d))
+    ]
 );
 
 var materials = new Material[]
 {
-    new(mu, 0.5),
+    new(mu, 0.4),
     new(mu, 0.1),
     new(mu, 0.05),
-    new(mu, 0.2),
+    new(mu, 0.1),
     new(mu, 1d / 3d),
     new(mu, 0d),
-    new(mu, 0.9d)
+    new(mu, 1d)
 };
 
 var parametersCollection =

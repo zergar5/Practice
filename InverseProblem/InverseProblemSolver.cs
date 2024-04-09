@@ -93,6 +93,7 @@ public class InverseProblemSolver
 
     public Vector Solve()
     {
+        var previousFunctional = 2d;
         var functional = 1d;
         Equation<Matrix> equation = null!;
 
@@ -101,7 +102,7 @@ public class InverseProblemSolver
 
         CalculatePhaseDifferences();
 
-        for (var i = 1; i <= MethodsConfig.MaxIterations && functional > MethodsConfig.FunctionalPrecision; i++)
+        for (var i = 1; i <= MethodsConfig.MaxIterations && CheckFunctional(functional, previousFunctional); i++)
         {
             equation = _slaeAssembler
                 .SetCurrentPhaseDifferences(_currentPhaseDifferences)
@@ -111,15 +112,31 @@ public class InverseProblemSolver
 
             var parametersDeltas = _gaussElimination.Solve(regularizedEquation);
 
+            //for (var j = 0; j < parametersDeltas.Count; j++)
+            //{
+            //    parametersDeltas[j] /= 2;
+            //}
+
             Vector.Sum(equation.Solution, parametersDeltas, equation.Solution);
 
             UpdateParameters(equation.Solution);
 
             CalculatePhaseDifferences();
 
+            previousFunctional = functional;
+
             functional = CalculateFunctional();
 
-            CourseHolder.GetInfo(i, parametersDeltas[0], functional);
+            CourseHolder.GetInfo(i, functional);
+
+            Console.WriteLine();
+
+            for (int j = 0; j < equation.Solution.Count; j++)
+            {
+                Console.WriteLine($"delta{j}: {parametersDeltas[j]}");
+            }
+            
+            //Console.WriteLine();
         }
 
         Console.WriteLine();
@@ -149,6 +166,13 @@ public class InverseProblemSolver
         }
 
         return functional;
+    }
+
+    private bool CheckFunctional(double currentFunctional, double previousFunctional)
+    {
+        var functionalRatio = Math.Abs(currentFunctional / previousFunctional);
+        return Math.Abs(double.Max(1 / functionalRatio, functionalRatio) - 1) > 1e-1 &&
+               currentFunctional >= MethodsConfig.FunctionalPrecision;
     }
 
     private void RebuildGrid()
@@ -203,6 +227,8 @@ public class InverseProblemSolver
                 var fieldN = _femSolution.Calculate(_receiverLines[j].PointN);
 
                 _currentPhaseDifferences[i, j] = (fieldM.Phase - fieldN.Phase) * 180d / Math.PI;
+
+                Console.Write($"original frequency {i} source {j}                          \r");
             }
         }
     }

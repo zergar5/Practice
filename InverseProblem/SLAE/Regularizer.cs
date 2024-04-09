@@ -43,7 +43,6 @@ public class Regularizer
         for (var i = 0; i < matrix.CountRows; i++)
         {
             _alphas[i] = matrix[i, i] * 1e-8;
-            //_alphas[i] = 0;
         }
 
         return _alphas;
@@ -51,6 +50,7 @@ public class Regularizer
 
     private void AssembleSLAE(Equation<Matrix> equation, double[] alphas, Vector trueParametersValues)
     {
+        equation.Matrix.Copy(_regularizedEquation.Matrix);
         Matrix.SumToDiagonal(equation.Matrix, alphas, _regularizedEquation.Matrix);
 
         equation.RightPart.Copy(_regularizedEquation.RightPart);
@@ -112,6 +112,8 @@ public class Regularizer
 
                 _gaussElimination.Solve(_regularizedEquation);
 
+                Console.Write("system is not degenerate                           \r");
+
                 break;
             }
             catch
@@ -120,6 +122,8 @@ public class Regularizer
                 {
                     alphas[i] *= 1.5;
                 }
+
+                Console.Write($"alpha increased to {alphas[0]}                          \r");
             }
         }
 
@@ -165,7 +169,11 @@ public class Regularizer
             if (CheckLocalConstraints(changeRatio) &&
                 CheckGlobalConstraints(_regularizedEquation.RightPart[i])) continue;
 
+            Console.Write("constraints not passed                          \r");
+
             alphas[i] *= 1.5;
+
+            Console.Write($"alpha increased to {alphas[0]}                          \r");
 
             stop = false;
         }
