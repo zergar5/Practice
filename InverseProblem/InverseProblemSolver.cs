@@ -127,13 +127,13 @@ public class InverseProblemSolver
 
             functional = CalculateFunctional();
 
-            CourseHolder.GetInfo(i, functional);
+            CourseHolder.GetFunctionalInfo(i, functional);
 
             Console.WriteLine();
 
-            for (int j = 0; j < equation.Solution.Count; j++)
+            for (var j = 0; j < equation.Solution.Count; j++)
             {
-                Console.WriteLine($"delta{j}: {parametersDeltas[j]}");
+                Console.WriteLine($"{equation.Solution[j]} {parametersDeltas[j]} {alphas[j]}");
             }
             
             //Console.WriteLine();
@@ -165,13 +165,15 @@ public class InverseProblemSolver
             }
         }
 
+        functional = Math.Sqrt(functional) / (_frequencies.Length * _receiverLines.Length);
+
         return functional;
     }
 
     private bool CheckFunctional(double currentFunctional, double previousFunctional)
     {
         var functionalRatio = Math.Abs(currentFunctional / previousFunctional);
-        return Math.Abs(double.Max(1 / functionalRatio, functionalRatio) - 1) > 1e-1 &&
+        return Math.Abs(double.Max(1 / functionalRatio, functionalRatio) - 1) > 5e-1 &&
                currentFunctional >= MethodsConfig.FunctionalPrecision;
     }
 

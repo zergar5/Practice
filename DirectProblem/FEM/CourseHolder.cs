@@ -4,15 +4,16 @@ namespace DirectProblem.FEM;
 
 public class CourseHolder
 {
-    public static void GetInfo(int iteration, double residual)
+    public static void GetResidualInfo(int iteration, double residual)
     {
         Console.Write($"Iteration: {iteration}, residual: {residual:E14}                                   \r");
     }
 
-    public static void GetInfo(int iteration, double delta, double functional)
+    public static void GetFunctionalInfo(int iteration, double functional)
     {
-        Console.Write($"Iteration: {iteration}, delta: {delta:E14}, functional: {functional:E14}           \r");
+        Console.Write($"Iteration: {iteration}, functional: {functional:E14}                                   \r");
     }
+
 
     public static void WriteSolution(Node2D point, (double sValue, double cValue) values)
     {

@@ -75,7 +75,7 @@ public class LOS
 
             residualNext = Vector.ScalarProduct(_r, _r) / residual;
 
-            //CourseHolder.GetInfo(i, residualNext);
+            //CourseHolder.GetResidualInfo(i, residualNext);
         }
 
         //Console.WriteLine();
