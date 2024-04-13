@@ -7,7 +7,6 @@ namespace InverseProblem.SLAE;
 public class Regularizer
 {
     private readonly GaussElimination _gaussElimination;
-    private readonly Parameter[] _parameters;
     private readonly double[] _alphas;
     private readonly Equation<Matrix> _regularizedEquation;
     private readonly Vector _previousDeltas;
@@ -15,7 +14,6 @@ public class Regularizer
     public Regularizer(GaussElimination gaussElimination, Parameter[] parameters)
     {
         _gaussElimination = gaussElimination;
-        _parameters = parameters;
         _alphas = new double[parameters.Length];
         _regularizedEquation = new Equation<Matrix>(
             new Matrix(parameters.Length),
@@ -112,8 +110,6 @@ public class Regularizer
 
                 _gaussElimination.Solve(_regularizedEquation);
 
-                Console.Write("system is not degenerate                           \r");
-
                 break;
             }
             catch
@@ -121,9 +117,9 @@ public class Regularizer
                 for (var i = 0; i < alphas.Length; i++)
                 {
                     alphas[i] *= 1.5;
-                }
 
-                Console.Write($"alpha increased to {alphas[0]}                          \r");
+                    Console.Write($"alpha{i} increased to {alphas[i]}                          \r");
+                }
             }
         }
 
@@ -136,20 +132,14 @@ public class Regularizer
 
         do
         {
-            try
-            {
-                _regularizedEquation.Solution.Copy(_previousDeltas);
+            _regularizedEquation.Solution.Copy(_previousDeltas);
 
-                AssembleSLAE(equation, alphas, trueParametersValues);
+            AssembleSLAE(equation, alphas, trueParametersValues);
 
-                _gaussElimination.Solve(_regularizedEquation);
-            }
-            finally
-            {
-                alphas = ChangeAlphas(equation, alphas, out stop);
+            _gaussElimination.Solve(_regularizedEquation);
 
-                //_regularizedEquation.Solution.Copy(_previousDeltas);
-            }
+            alphas = ChangeAlphas(equation, alphas, out stop);
+
         } while (!stop);
 
         return alphas;
@@ -173,7 +163,7 @@ public class Regularizer
 
             alphas[i] *= 1.5;
 
-            Console.Write($"alpha increased to {alphas[0]}                          \r");
+            Console.Write($"alpha{i} increased to {alphas[i]}                          \r");
 
             stop = false;
         }

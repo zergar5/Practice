@@ -1,14 +1,14 @@
 ﻿using DirectProblem;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.GridGenerator;
+using DirectProblem.GridGenerator.Intervals.Splitting;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
-using InverseProblem.Parameters;
-using System.Globalization;
-using DirectProblem.GridGenerator.Intervals.Splitting;
 using InverseProblem;
 using InverseProblem.Assembling;
+using InverseProblem.Parameters;
 using InverseProblem.SLAE;
+using System.Globalization;
 using Vector = DirectProblem.Core.Base.Vector;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -24,7 +24,7 @@ var trueMaterials = new Material[]
 {
     new(mu, 0.5),
     new(mu, 0.1),
-    new(mu, 0.05), 
+    new(mu, 0.05),
     new(mu, 0.2),
     new(mu, 1d / 3d),
     new(mu, 0d),

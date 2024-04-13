@@ -112,11 +112,6 @@ public class InverseProblemSolver
 
             var parametersDeltas = _gaussElimination.Solve(regularizedEquation);
 
-            //for (var j = 0; j < parametersDeltas.Count; j++)
-            //{
-            //    parametersDeltas[j] /= 2;
-            //}
-
             Vector.Sum(equation.Solution, parametersDeltas, equation.Solution);
 
             UpdateParameters(equation.Solution);
@@ -135,7 +130,7 @@ public class InverseProblemSolver
             {
                 Console.WriteLine($"{equation.Solution[j]} {parametersDeltas[j]} {alphas[j]}");
             }
-            
+
             //Console.WriteLine();
         }
 
