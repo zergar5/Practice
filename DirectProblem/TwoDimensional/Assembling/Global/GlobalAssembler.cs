@@ -66,7 +66,7 @@ public class GlobalAssembler<TNode>
 
         //Потом переделать
         globalMatrix.Copy(_equation.Matrix);
-        _equation.Solution.Clear();
+        //_equation.Solution.Clear();
         _equation.RightPart.Clear();
 
         foreach (var element in grid)

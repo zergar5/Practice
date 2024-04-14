@@ -39,6 +39,8 @@ public class DirectProblemSolver
         _localMatrixAssembler = new LocalMatrixAssembler(grid);
         _localAssembler = new LocalAssembler(_localMatrixAssembler, materials);
         _firstBoundaryProvider = new FirstBoundaryProvider(grid);
+        _firstConditions = _firstBoundaryProvider.GetConditions(
+            grid.Nodes.RLength - 1, grid.Nodes.ZLength - 1);
         _globalAssembler = new GlobalAssembler<Node2D>(grid, MatrixPortraitBuilder,
             _localAssembler, Inserter, GaussExcluder);
     }

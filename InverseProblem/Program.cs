@@ -8,6 +8,7 @@ using InverseProblem;
 using InverseProblem.Assembling;
 using InverseProblem.Parameters;
 using InverseProblem.SLAE;
+using System.Diagnostics;
 using System.Globalization;
 using Vector = DirectProblem.Core.Base.Vector;
 
@@ -52,6 +53,9 @@ var localBasisFunctionsProvider = new LocalBasisFunctionsProvider(trueGrid);
 
 directProblemSolver.SetGrid(trueGrid).SetMaterials(trueMaterials);
 
+var stopwatch = new Stopwatch();
+stopwatch.Start();
+
 for (var i = 0; i < frequencies.Length; i++)
 {
     for (var j = 0; j < receiverLines.Length; j++)
@@ -75,6 +79,12 @@ for (var i = 0; i < frequencies.Length; i++)
 
 Console.WriteLine();
 Console.WriteLine("TrueDirectProblem calculated");
+stopwatch.Stop();
+
+var time = (double)stopwatch.ElapsedMilliseconds / 1000;
+
+Console.WriteLine();
+Console.WriteLine($"Elapsed time {time}");
 
 var gridParameters = new GridParameters
 (
