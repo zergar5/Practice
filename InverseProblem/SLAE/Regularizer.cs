@@ -9,7 +9,7 @@ public class Regularizer
     private readonly GaussElimination _gaussElimination;
     private readonly double[] _alphas;
     private readonly Equation<Matrix> _regularizedEquation;
-    private readonly Vector _previousDeltas;
+    private readonly Vector _previousSolution;
 
     public Regularizer(GaussElimination gaussElimination, Parameter[] parameters)
     {
@@ -20,7 +20,7 @@ public class Regularizer
             new Vector(parameters.Length),
             new Vector(parameters.Length)
             );
-        _previousDeltas = new Vector(parameters.Length);
+        _previousSolution = new Vector(parameters.Length);
     }
 
     public Equation<Matrix> Regularize(Equation<Matrix> equation, Vector trueParametersValues, out double[] alphas)
@@ -41,6 +41,7 @@ public class Regularizer
         for (var i = 0; i < matrix.CountRows; i++)
         {
             _alphas[i] = matrix[i, i] * 1e-8;
+            //_alphas[i] = 0;
         }
 
         return _alphas;
@@ -130,10 +131,10 @@ public class Regularizer
     {
         bool stop;
 
+        equation.Solution.Copy(_previousSolution);
+
         do
         {
-            _regularizedEquation.Solution.Copy(_previousDeltas);
-
             AssembleSLAE(equation, alphas, trueParametersValues);
 
             _gaussElimination.Solve(_regularizedEquation);
@@ -150,14 +151,14 @@ public class Regularizer
         stop = true;
 
         Vector.Sum(equation.Solution, _regularizedEquation.Solution,
-            _regularizedEquation.RightPart);
+            _regularizedEquation.Solution);
 
         for (var i = 0; i < alphas.Length; i++)
         {
-            var changeRatio = _regularizedEquation.Solution[i] / _previousDeltas[i];
+            var changeRatio = _regularizedEquation.Solution[i] / _previousSolution[i];
 
             if (CheckLocalConstraints(changeRatio) &&
-                CheckGlobalConstraints(_regularizedEquation.RightPart[i])) continue;
+                CheckGlobalConstraints(_regularizedEquation.Solution[i])) continue;
 
             Console.Write("constraints not passed                          \r");
 
@@ -167,6 +168,8 @@ public class Regularizer
 
             stop = false;
         }
+
+        _regularizedEquation.Solution.Copy(_previousSolution);
 
         return alphas;
     }

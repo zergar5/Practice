@@ -121,11 +121,11 @@ var gridParameters = new GridParameters
 
 var materials = new Material[]
 {
-    new(mu, 0.49),
-    new(mu, 0.19),
-    new(mu, 0.04),
-    new(mu, 0.09),
-    new(mu, 1d / 3d - 0.01),
+    new(mu, 0.4),
+    new(mu, 0.15),
+    new(mu, 0.1),
+    new(mu, 0.2),
+    new(mu, 0.5),
     new(mu, 0d),
     new(mu, 1d)
 };
@@ -140,7 +140,7 @@ var targetParameters = new Parameter[]
 };
 
 var trueValues = new Vector([0.5, 0.2]);
-var initialValues = new Vector([0.49, 0.19, 0.04, 0.09, 1d / 3d - 0.01]);
+var initialValues = new Vector([0.4, 0.15, 0.1, 0.2, 0.5]);
 
 var parametersCollection =
     new ParametersCollection(materials, gridParameters.RControlPoints, gridParameters.ZControlPoints);
