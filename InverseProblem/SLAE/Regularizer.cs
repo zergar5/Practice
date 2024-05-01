@@ -23,15 +23,15 @@ public class Regularizer
         _previousSolution = new Vector(parameters.Length);
     }
 
-    public Equation<Matrix> Regularize(Equation<Matrix> equation, Vector trueParametersValues, out double[] alphas)
+    public Equation<Matrix> Regularize(Equation<Matrix> equation, out double[] alphas)
     {
         alphas = SetupAlphas(equation.Matrix);
 
-        alphas = FindPossibleAlphas(equation, alphas, trueParametersValues);
+        alphas = FindPossibleAlphas(equation, alphas);
 
-        alphas = FindBestAlphas(equation, alphas, trueParametersValues);
+        alphas = FindBestAlphas(equation, alphas);
 
-        AssembleSLAE(equation, alphas, trueParametersValues);
+        AssembleSLAE(equation, alphas);
 
         return _regularizedEquation;
     }
@@ -41,73 +41,26 @@ public class Regularizer
         for (var i = 0; i < matrix.CountRows; i++)
         {
             _alphas[i] = matrix[i, i] * 1e-8;
-            //_alphas[i] = 0;
         }
 
         return _alphas;
     }
 
-    private void AssembleSLAE(Equation<Matrix> equation, double[] alphas, Vector trueParametersValues)
+    private void AssembleSLAE(Equation<Matrix> equation, double[] alphas)
     {
         equation.Matrix.Copy(_regularizedEquation.Matrix);
         Matrix.SumToDiagonal(equation.Matrix, alphas, _regularizedEquation.Matrix);
 
         equation.RightPart.Copy(_regularizedEquation.RightPart);
-
-        //Vector.Subtract
-        //(
-        //    equation.RightPart,
-        //    Vector.Multiply
-        //    (
-        //        alphas,
-        //        Vector.Subtract
-        //        (
-        //            equation.Solution,
-        //            trueParametersValues,
-        //            _regularizedEquation.RightPart
-        //            ),
-        //        _regularizedEquation.RightPart
-        //        ),
-        //    _regularizedEquation.RightPart
-        //    );
     }
 
-    private double CalculateResidual(Equation<Matrix> equation, double[] alphas, Vector trueParametersValues)
-    {
-        Matrix.SumToDiagonal(equation.Matrix, alphas, _regularizedEquation.Matrix);
-
-        Matrix.Multiply(_regularizedEquation.Matrix, _regularizedEquation.RightPart,
-            _regularizedEquation.Solution);
-
-        Vector.Subtract
-        (
-            equation.RightPart,
-            Vector.Multiply
-            (
-                alphas,
-                Vector.Subtract
-                (
-                    equation.Solution,
-                    trueParametersValues,
-                    _regularizedEquation.RightPart
-                ),
-                _regularizedEquation.RightPart
-            ),
-            _regularizedEquation.RightPart
-        );
-
-        return Vector.Subtract(
-                _regularizedEquation.RightPart,
-            _regularizedEquation.Solution, _regularizedEquation.RightPart).Norm;
-    }
-
-    private double[] FindPossibleAlphas(Equation<Matrix> equation, double[] alphas, Vector trueParametersValues)
+    private double[] FindPossibleAlphas(Equation<Matrix> equation, double[] alphas)
     {
         for (; ; )
         {
             try
             {
-                AssembleSLAE(equation, alphas, trueParametersValues);
+                AssembleSLAE(equation, alphas);
 
                 _gaussElimination.Solve(_regularizedEquation);
 
@@ -127,7 +80,7 @@ public class Regularizer
         return alphas;
     }
 
-    private double[] FindBestAlphas(Equation<Matrix> equation, double[] alphas, Vector trueParametersValues)
+    private double[] FindBestAlphas(Equation<Matrix> equation, double[] alphas)
     {
         bool stop;
 
@@ -135,7 +88,7 @@ public class Regularizer
 
         do
         {
-            AssembleSLAE(equation, alphas, trueParametersValues);
+            AssembleSLAE(equation, alphas);
 
             _gaussElimination.Solve(_regularizedEquation);
 

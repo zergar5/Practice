@@ -18,8 +18,8 @@ var trueGrid = Grids.GetSmallGridWith0Dot003125StepWithElementCloseToWell();
 
 var gridBuilder2D = new GridBuilder2D();
 
-var current = 1d;
-var mu = 4 * Math.PI * 10e-7;
+const double current = 1d;
+const double mu = 4 * Math.PI * 10e-7;
 
 var trueMaterials = new Material[]
 {
@@ -40,10 +40,10 @@ var truePhaseDifferences = new double[frequencies.Length, receiverLines.Length];
 
 for (var i = 0; i < sources.Length; i++)
 {
-    sources[i] = new Source(new Node2D(0.05, -2.85 - 0.05 * i), current);
+    sources[i] = new Source(new Node2D(0.05, -2.5 - 0.05 * i), current);
     receiverLines[i] = new ReceiverLine(
-        new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.05),
-        new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.1)
+        new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.05 * (i + 1)),
+        new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.05 * (i + 2))
     );
 }
 
@@ -139,7 +139,6 @@ var targetParameters = new Parameter[]
     new (ParameterType.Sigma, 4, 0)
 };
 
-var trueValues = new Vector([0.5, 0.2]);
 var initialValues = new Vector([0.4, 0.15, 0.1, 0.2, 0.5]);
 
 var parametersCollection =
@@ -155,7 +154,7 @@ var regularizer = new Regularizer(gaussElimination, targetParameters);
 
 var inverseProblemSolver = new InverseProblemSolver(gridBuilder2D, directProblemSolver, slaeAssembler, regularizer,
     gaussElimination, localBasisFunctionsProvider, parametersCollection, gridParameters, sources, receiverLines,
-    frequencies, targetParameters, trueValues, truePhaseDifferences);
+    frequencies, targetParameters, truePhaseDifferences);
 
 var parametersValues = inverseProblemSolver.Solve();
 

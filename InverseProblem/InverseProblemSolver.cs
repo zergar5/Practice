@@ -30,7 +30,6 @@ public class InverseProblemSolver
     private readonly ReceiverLine[] _receiverLines;
     private readonly double[] _frequencies;
     private readonly Parameter[] _parameters;
-    private readonly Vector _trueValues;
     private readonly double[,] _truePhaseDifferences;
 
     private double[,] _weightsSquares;
@@ -52,7 +51,6 @@ public class InverseProblemSolver
         ReceiverLine[] receiverLines,
         double[] frequencies,
         Parameter[] parameters,
-        Vector trueValues,
         double[,] truePhaseDifferences
     )
     {
@@ -68,7 +66,6 @@ public class InverseProblemSolver
         _receiverLines = receiverLines;
         _frequencies = frequencies;
         _parameters = parameters;
-        _trueValues = trueValues;
         _truePhaseDifferences = truePhaseDifferences;
 
         CalculateWeightsSquares();
@@ -108,7 +105,7 @@ public class InverseProblemSolver
                 .SetCurrentPhaseDifferences(_currentPhaseDifferences)
                 .BuildEquation();
 
-            var regularizedEquation = _regularizer.Regularize(equation, _trueValues, out var alphas);
+            var regularizedEquation = _regularizer.Regularize(equation, out var alphas);
 
             var parametersDeltas = _gaussElimination.Solve(regularizedEquation);
 
