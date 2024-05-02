@@ -9,21 +9,33 @@ namespace DirectProblem.TwoDimensional.Assembling.Local;
 public class LocalMatrixAssembler : ILocalMatrixAssembler
 {
     private Grid<Node2D> _grid;
-    private readonly Matrix _stiffnessTemplate = StiffnessMatrixTemplatesProvider.StiffnessMatrix;
-    private readonly Matrix _massTemplate = MassMatrixTemplateProvider.MassMatrix;
-    private readonly Matrix _massRTemplate = MassMatrixTemplateProvider.MassRMatrix;
-    private readonly Matrix _rotorMassTemplate = MassMatrixTemplateProvider.RotorMassMatrix;
-    private readonly Matrix _stiffness = new(4);
-    private readonly Matrix _rotorStiffness = new(2);
-    private readonly Matrix _stiffnessR = new(2);
-    private readonly Matrix _stiffnessZ = new(2);
-    private readonly Matrix _mass = new(4);
-    private readonly Matrix _massR = new(2);
-    private readonly Matrix _massZ = new(2);
+    private readonly Matrix _stiffnessTemplate;
+    private readonly Matrix _massTemplate;
+    private readonly Matrix _massRTemplate;
+    private readonly Matrix _rotorMassTemplate;
+    private readonly Matrix _stiffness;
+    private readonly Matrix _rotorStiffness;
+    private readonly Matrix _stiffnessR;
+    private readonly Matrix _stiffnessZ;
+    private readonly Matrix _mass;
+    private readonly Matrix _massR;
+    private readonly Matrix _massZ;
 
     public LocalMatrixAssembler(Grid<Node2D> grid)
     {
         _grid = grid;
+        _stiffness = new Matrix(4);
+        _stiffnessTemplate = StiffnessMatrixTemplatesProvider.StiffnessMatrix;
+        _massTemplate = MassMatrixTemplateProvider.MassMatrix;
+        _massRTemplate = MassMatrixTemplateProvider.MassRMatrix;
+        _rotorMassTemplate = MassMatrixTemplateProvider.RotorMassMatrix;
+        _stiffness = new Matrix(4);
+        _rotorStiffness = new Matrix(2);
+        _stiffnessR = new Matrix(2);
+        _stiffnessZ = new Matrix(2);
+        _mass = new Matrix(4);
+        _massR = new Matrix(2);
+        _massZ = new Matrix(2);
     }
 
     public LocalMatrixAssembler SetGrid(Grid<Node2D> grid)

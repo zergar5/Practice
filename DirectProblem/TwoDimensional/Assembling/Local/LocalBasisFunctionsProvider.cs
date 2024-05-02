@@ -7,7 +7,7 @@ namespace DirectProblem.TwoDimensional.Assembling.Local;
 public class LocalBasisFunctionsProvider
 {
     private readonly LinearFunctionsProvider _linearFunctionsProvider;
-    private readonly LocalBasisFunction[] _localBasisFunctions = new LocalBasisFunction[4];
+    private readonly LocalBasisFunction[] _localBasisFunctions;
 
     private Grid<Node2D> _grid;
 
@@ -15,6 +15,7 @@ public class LocalBasisFunctionsProvider
     {
         _grid = grid;
         _linearFunctionsProvider = new LinearFunctionsProvider();
+        _localBasisFunctions = new LocalBasisFunction[4];
     }
 
     public LocalBasisFunctionsProvider SetGrid(Grid<Node2D> grid)

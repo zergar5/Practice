@@ -18,13 +18,13 @@ namespace InverseProblem;
 public class InverseProblemSolver
 {
     private readonly GridBuilder2D _gridBuilder2D;
-    private readonly DirectProblemSolver _directProblemSolver;
+    private readonly DirectProblemSolver[] _directProblemSolver;
     private readonly SLAEAssembler _slaeAssembler;
     private readonly Regularizer _regularizer;
     private readonly GaussElimination _gaussElimination;
-    private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
+    private readonly LocalBasisFunctionsProvider[] _localBasisFunctionsProvider;
 
-    private readonly ParametersCollection _parametersCollection;
+    private readonly ParametersCollection[] _parametersCollection;
     private readonly GridParameters _gridParameters;
     private readonly Source[] _sources;
     private readonly ReceiverLine[] _receiverLines;
@@ -40,12 +40,12 @@ public class InverseProblemSolver
     public InverseProblemSolver
     (
         GridBuilder2D gridBuilder2D,
-        DirectProblemSolver directProblemSolver,
+        DirectProblemSolver[] directProblemSolver,
         SLAEAssembler slaeAssembler,
         Regularizer regularizer,
         GaussElimination gaussElimination,
-        LocalBasisFunctionsProvider localBasisFunctionsProvider,
-        ParametersCollection parametersCollection,
+        LocalBasisFunctionsProvider[] localBasisFunctionsProvider,
+        ParametersCollection[] parametersCollection,
         GridParameters gridParameters,
         Source[] sources,
         ReceiverLine[] receiverLines,
@@ -140,7 +140,7 @@ public class InverseProblemSolver
     {
         for (var i = 0; i < _parameters.Length; i++)
         {
-            _parametersCollection.SetParameterValue(_parameters[i], parametersValues[i]);
+            _parametersCollection[0].SetParameterValue(_parameters[i], parametersValues[i]);
         }
     }
 
@@ -185,22 +185,22 @@ public class InverseProblemSolver
             .SetAreas(_gridParameters.Areas)
             .Build();
 
-        _directProblemSolver.SetGrid(_grid);
+        _directProblemSolver[0].SetGrid(_grid);
     }
 
     private void ChangeMaterials()
     {
-        _directProblemSolver.SetMaterials(_parametersCollection.Materials);
+        _directProblemSolver[0].SetMaterials(_parametersCollection[0].Materials);
     }
 
     private void ChangeFrequency(double frequency)
     {
-        _directProblemSolver.SetFrequency(frequency);
+        _directProblemSolver[0].SetFrequency(frequency);
     }
 
     private void ChangeSource(Source source)
     {
-        _directProblemSolver.SetSource(source);
+        _directProblemSolver[0].SetSource(source);
     }
 
     private void CalculatePhaseDifferences()
@@ -229,8 +229,8 @@ public class InverseProblemSolver
 
     private void SolveDirectProblem()
     {
-        var solution = _directProblemSolver.AssembleSLAE().Solve();
+        var solution = _directProblemSolver[0].AssembleSLAE().Solve();
 
-        _femSolution = new FEMSolution(_grid, solution, _localBasisFunctionsProvider);
+        _femSolution = new FEMSolution(_grid, solution, _localBasisFunctionsProvider[0]);
     }
 }

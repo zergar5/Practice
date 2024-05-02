@@ -13,11 +13,12 @@ public class FirstBoundaryProvider
     private FirstConditionValue[] _firstConditionValues;
     private int[][]? _indexes;
     private Vector[]? _values;
-    private readonly int[] _indexesBuffer = new int[2];
+    private readonly int[] _indexesBuffer;
 
     public FirstBoundaryProvider(Grid<Node2D> grid)
     {
         _grid = grid;
+        _indexesBuffer = new int[2];
     }
 
     public FirstBoundaryProvider SetGrid(Grid<Node2D> grid)

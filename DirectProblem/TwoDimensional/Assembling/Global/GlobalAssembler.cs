@@ -20,11 +20,11 @@ public class GlobalAssembler<TNode>
     private readonly GaussExcluder _gaussExсluder;
 
     private readonly Matrix _massTemplate;
-    private readonly int[] _indexes = new int[2];
-    private readonly Vector _bufferThetaVector = new(2);
-    private readonly Vector _bufferVector = new(2);
-    private readonly Vector _complexVector = new(4);
-    private int[] _complexIndexes = new int[4];
+    private readonly int[] _indexes;
+    private readonly Vector _bufferThetaVector;
+    private readonly Vector _bufferVector;
+    private readonly Vector _complexVector;
+    private int[] _complexIndexes;
 
     private Equation<SparseMatrix> _equation;
     private SparseMatrix _preconditionMatrix;
@@ -44,6 +44,11 @@ public class GlobalAssembler<TNode>
         _inserter = inserter;
         _gaussExсluder = gaussExсluder;
         _massTemplate = MassMatrixTemplateProvider.MassMatrix;
+        _indexes = new int[2];
+        _bufferThetaVector = new Vector(2);
+        _bufferVector = new Vector(2);
+        _complexVector = new Vector(4);
+        _complexIndexes = new int[4];
     }
 
     public GlobalAssembler<TNode> AssembleEquation(Grid<TNode> grid)

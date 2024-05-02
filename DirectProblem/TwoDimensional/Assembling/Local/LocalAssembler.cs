@@ -10,8 +10,8 @@ public class LocalAssembler : ILocalAssembler
     private readonly ILocalMatrixAssembler _localMatrixAssembler;
     private Material[] _materials;
     private double _frequency;
-    private readonly Matrix _matrix = new(8);
-    private readonly int[] _complexIndexes = new int[8];
+    private readonly Matrix _matrix;
+    private readonly int[] _complexIndexes;
 
     public LocalAssembler
     (
@@ -21,6 +21,8 @@ public class LocalAssembler : ILocalAssembler
     {
         _localMatrixAssembler = localMatrixAssembler;
         _materials = materials;
+        _matrix = new Matrix(8);
+        _complexIndexes = new int[8];
     }
 
     public LocalAssembler SetMaterials(Material[] materials)

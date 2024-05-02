@@ -14,10 +14,10 @@ namespace DirectProblem;
 
 public class DirectProblemSolver
 {
-    private static readonly MatrixPortraitBuilder MatrixPortraitBuilder = new();
-    private static readonly Inserter Inserter = new();
-    private static readonly GaussExcluder GaussExcluder = new();
-    private static readonly LOS LOS = new(new LUPreconditioner(), new LUSparse());
+    private readonly MatrixPortraitBuilder _matrixPortraitBuilder;
+    private readonly Inserter _inserter;
+    private readonly GaussExcluder _gaussExcluder;
+    private readonly LOS _los;
 
     private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
     private readonly LocalMatrixAssembler _localMatrixAssembler;
@@ -35,14 +35,18 @@ public class DirectProblemSolver
     {
         _grid = grid;
 
+        _matrixPortraitBuilder = new MatrixPortraitBuilder();
+        _inserter = new Inserter();
+        _gaussExcluder = new GaussExcluder();
+        _los = new(new LUPreconditioner(), new LUSparse());
         _localBasisFunctionsProvider = new LocalBasisFunctionsProvider(grid);
         _localMatrixAssembler = new LocalMatrixAssembler(grid);
         _localAssembler = new LocalAssembler(_localMatrixAssembler, materials);
         _firstBoundaryProvider = new FirstBoundaryProvider(grid);
         _firstConditions = _firstBoundaryProvider.GetConditions(
             grid.Nodes.RLength - 1, grid.Nodes.ZLength - 1);
-        _globalAssembler = new GlobalAssembler<Node2D>(grid, MatrixPortraitBuilder,
-            _localAssembler, Inserter, GaussExcluder);
+        _globalAssembler = new GlobalAssembler<Node2D>(grid, _matrixPortraitBuilder,
+            _localAssembler, _inserter, _gaussExcluder);
     }
 
     public DirectProblemSolver SetGrid(Grid<Node2D> grid)
@@ -92,9 +96,9 @@ public class DirectProblemSolver
     public Vector Solve()
     {
         var preconditionMatrix = _globalAssembler.AllocatePreconditionMatrix();
-        LOS.SetPrecondition(preconditionMatrix);
+        _los.SetPrecondition(preconditionMatrix);
 
-        var solution = LOS.Solve(_equation);
+        var solution = _los.Solve(_equation);
 
         return solution;
     }
