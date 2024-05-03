@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using DirectProblem.Core.GridComponents;
 using Vector = DirectProblem.Core.Base.Vector;
 
 namespace DirectProblem.IO;
@@ -136,6 +137,45 @@ public class ResultIO
         for (var i = 0; i < solution.Count; i++)
         {
             if (i % 2 != 0) binaryWriter.Write(solution[i]);
+        }
+    }
+
+    public void WriteInverseProblemIteration(ReceiverLine[] receivers, double[,] phaseDifferences, double[] frequencies, string fileName)
+    {
+        using var streamWriterForPython = new StreamWriter(_path + fileName);
+
+        foreach (var frequency in frequencies)
+        {
+            streamWriterForPython.Write($"{frequency / 1000000d} ");
+        }
+
+        streamWriterForPython.WriteLine();
+
+        foreach (var receiver in receivers)
+        {
+            streamWriterForPython.Write($"{receiver.PointM.Z} ");
+        }
+
+        streamWriterForPython.WriteLine();
+
+        for (var i = 0; i < phaseDifferences.GetLength(0); i++)
+        {
+            for (var j = 0; j < phaseDifferences.GetLength(1); j++)
+            {
+                streamWriterForPython.Write($"{phaseDifferences[i, j]} ");
+            }
+
+            streamWriterForPython.WriteLine();
+        }
+    }
+
+    public void WriteInverseProblemIteration(Vector solution, string fileName)
+    {
+        using var streamWriterForPython = new StreamWriter(_path + fileName);
+
+        foreach (var value in solution)
+        {
+            streamWriterForPython.Write($"{value} ");
         }
     }
 }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "InverseProblem": {
+      "commandName": "Project",
+      "workingDirectory": "..\\InverseProblem\\"
+    }
+  }
+}

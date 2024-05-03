@@ -176,7 +176,6 @@ public class SLAEAssembler
             if (i >= _tasks.Length)
             {
                 taskId = Task.WaitAny(_tasks);
-                taskId = Array.FindIndex(_tasks, t => t.Id == taskId);
             }
 
             var task = new Task(j =>

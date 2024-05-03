@@ -6,6 +6,7 @@ using DirectProblem.Core.GridComponents;
 using DirectProblem.FEM;
 using DirectProblem.GridGenerator;
 using DirectProblem.GridGenerator.Intervals.Splitting;
+using DirectProblem.IO;
 using DirectProblem.SLAE;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
@@ -31,6 +32,7 @@ public class InverseProblemSolver
     private readonly double[] _frequencies;
     private readonly Parameter[] _parameters;
     private readonly double[,] _truePhaseDifferences;
+    private readonly Vector _initialValues;
 
     private double[,] _weightsSquares;
     private readonly double[,] _currentPhaseDifferences;
@@ -51,7 +53,8 @@ public class InverseProblemSolver
         ReceiverLine[] receiverLines,
         double[] frequencies,
         Parameter[] parameters,
-        double[,] truePhaseDifferences
+        double[,] truePhaseDifferences,
+        Vector initialValues
     )
     {
         _gridBuilder2D = gridBuilder2D;
@@ -67,6 +70,7 @@ public class InverseProblemSolver
         _frequencies = frequencies;
         _parameters = parameters;
         _truePhaseDifferences = truePhaseDifferences;
+        _initialValues = initialValues;
 
         CalculateWeightsSquares();
 
@@ -97,7 +101,11 @@ public class InverseProblemSolver
         RebuildGrid();
         _slaeAssembler.SetGrid(_grid);
 
+        var resultO = new ResultIO("../InverseProblem/Results/5sigmas/");
+
         CalculatePhaseDifferences();
+        resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, "iteration 0 phase differences.txt");
+        resultO.WriteInverseProblemIteration(_initialValues, "iteration 0 sigmas.txt");
 
         for (var i = 1; i <= MethodsConfig.MaxIterations && CheckFunctional(functional, previousFunctional); i++)
         {
@@ -128,7 +136,8 @@ public class InverseProblemSolver
                 Console.WriteLine($"{equation.Solution[j]} {parametersDeltas[j]} {alphas[j]}");
             }
 
-            //Console.WriteLine();
+            resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, $"iteration {i} phase differences.txt");
+            resultO.WriteInverseProblemIteration(_initialValues, $"iteration {i} sigmas.txt");
         }
 
         Console.WriteLine();
@@ -140,7 +149,10 @@ public class InverseProblemSolver
     {
         for (var i = 0; i < _parameters.Length; i++)
         {
-            _parametersCollection[0].SetParameterValue(_parameters[i], parametersValues[i]);
+            foreach (var parametersCollection in _parametersCollection)
+            {
+                parametersCollection.SetParameterValue(_parameters[i], parametersValues[i]);
+            }
         }
     }
 
