@@ -49,7 +49,7 @@ def draw_areas_plot_for_iteration(areas, iteration):
         z = np.linspace(subregion['z'][0], subregion['z'][1], 300)
         R, Z = np.meshgrid(r, z)
         conductivity = np.full((300, 300), subregion['conductivity'])
-        ax.pcolormesh(R, Z, conductivity, shading='auto', cmap='gist_rainbow', vmin=0.01, vmax=1)
+        ax.pcolormesh(R, Z, conductivity, shading='auto', cmap='gist_rainbow', vmin=0.01, vmax=0.5)
 
         # Отрисовываем прямоугольники для областей
         width = subregion['r'][1] - subregion['r'][0]
@@ -72,7 +72,7 @@ def draw_areas_plot_for_iteration(areas, iteration):
     ax.set_ylim(-6, 0)
 
     # Добавляем цветовую шкалу
-    sm = plt.cm.ScalarMappable(cmap='gist_rainbow', norm=plt.Normalize(vmin=0.01, vmax=1))
+    sm = plt.cm.ScalarMappable(cmap='gist_rainbow', norm=plt.Normalize(vmin=0.01, vmax=0.5))
     sm._A = []
     cbar = plt.colorbar(sm, ax=ax, label='Conductivity')
 
@@ -99,7 +99,7 @@ def draw_areas_plot_for_true_values(areas):
         z = np.linspace(subregion['z'][0], subregion['z'][1], 300)
         R, Z = np.meshgrid(r, z)
         conductivity = np.full((300, 300), subregion['conductivity'])
-        ax.pcolormesh(R, Z, conductivity, shading='auto', cmap='gist_rainbow', vmin=0.01, vmax=1)
+        ax.pcolormesh(R, Z, conductivity, shading='auto', cmap='gist_rainbow', vmin=0.01, vmax=0.5)
 
         # Отрисовываем прямоугольники для областей
         width = subregion['r'][1] - subregion['r'][0]
@@ -122,7 +122,7 @@ def draw_areas_plot_for_true_values(areas):
     ax.set_ylim(-6, 0)
 
     # Добавляем цветовую шкалу
-    sm = plt.cm.ScalarMappable(cmap='gist_rainbow', norm=plt.Normalize(vmin=0.01, vmax=1))
+    sm = plt.cm.ScalarMappable(cmap='gist_rainbow', norm=plt.Normalize(vmin=0.01, vmax=0.5))
     sm._A = []
     cbar = plt.colorbar(sm, ax=ax, label='Conductivity')
 
@@ -130,7 +130,7 @@ def draw_areas_plot_for_true_values(areas):
     plt.show()
 
 # Директория, откуда нужно считать файлы
-directory = "..\\InverseProblem\\Results\\5sigmas\\"
+directory = "..\\InverseProblem\\Results\\8SigmasCloseToWell\\"
 
 # Обработка каждого файла в директории
 for file_name in os.listdir(directory):

@@ -14,7 +14,7 @@ using Vector = DirectProblem.Core.Base.Vector;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var trueGrid = Grids.GetGridWith0Dot003125StepWithElementCloseToWellAndMoreSigmas();
+var trueGrid = Grids.GetGridWith0Dot003125StepWithElementCloseToWellAnd8Sigmas();
 
 const double current = 1d;
 const double mu = 4 * Math.PI * 10e-7;
@@ -39,10 +39,10 @@ var truePhaseDifferences = new double[frequencies.Length, receiverLines.Length];
 
 for (var i = 0; i < sources.Length; i++)
 {
-    sources[i] = new Source(new Node2D(0.05, -2.5 - 0.05 * i), current);
+    sources[i] = new Source(new Node2D(0.05, -2.5 - 0.1 * i), current);
     receiverLines[i] = new ReceiverLine(
-        new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.05 * (i + 1)),
-        new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.05 * (i + 2))
+        new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.05),
+        new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.1)
     );
 }
 
@@ -54,10 +54,13 @@ var targetParameters = new Parameter[]
     new (ParameterType.Sigma, 1, 0),
     new (ParameterType.Sigma, 2, 0),
     new (ParameterType.Sigma, 3, 0),
-    new (ParameterType.Sigma, 4, 0)
+    new (ParameterType.Sigma, 4, 0),
+    new (ParameterType.Sigma, 5, 0),
+    new (ParameterType.Sigma, 6, 0),
+    new (ParameterType.Sigma, 7, 0)
 };
 
-var trueValues = new Vector([0.5, 0.1, 0.05, 0.2, 1d / 3]);
+var trueValues = new Vector([0.5, 0.05, 1d / 30, 0.15, 1d / 3d, 0.2, 0.1 + 1d / 30, 0.25]);
 
 DirectProblemSolver[] directProblemSolvers;
 LocalBasisFunctionsProvider[] localBasisFunctionsProviders;
@@ -83,8 +86,8 @@ for (var i = 0; i < directProblemSolvers.Length; i++)
 var stopwatch = new Stopwatch();
 stopwatch.Start();
 
-var resultO = new ResultIO("../InverseProblem/Results/8sigmas/");
-var gridO = new GridIO("../InverseProblem/Results/8sigmas/");
+var resultO = new ResultIO("../InverseProblem/Results/8SigmasCloseToWell/");
+var gridO = new GridIO("../InverseProblem/Results/8SigmasCloseToWell/");
 
 for (var i = 0; i < frequencies.Length; i++)
 {

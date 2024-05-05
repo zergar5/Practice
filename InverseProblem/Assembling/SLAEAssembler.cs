@@ -121,7 +121,7 @@ public class SLAEAssembler
 
     private void AssembleMatrix()
     {
-        for (var q = 0; q < _equation.Matrix.CountRows; q++)
+        Parallel.For(0, _equation.Matrix.CountRows, q =>
         {
             for (var s = 0; s < _equation.Matrix.CountColumns; s++)
             {
@@ -138,12 +138,12 @@ public class SLAEAssembler
 
                 _equation.Matrix[q, s] = sum;
             }
-        }
+        });
     }
 
     private void AssembleRightPart()
     {
-        for (var q = 0; q < _equation.Matrix.CountRows; q++)
+        Parallel.For(0, _equation.Matrix.CountRows, q =>
         {
             var sum = 0d;
 
@@ -158,7 +158,7 @@ public class SLAEAssembler
             }
 
             _equation.RightPart[q] = sum;
-        }
+        });
     }
 
     private void CalculatePhaseDifferences()

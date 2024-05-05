@@ -18,7 +18,6 @@ namespace InverseProblem;
 
 public class InverseProblemSolver
 {
-    private readonly GridBuilder2D _gridBuilder2D;
     private readonly DirectProblemSolver[] _directProblemSolver;
     private readonly SLAEAssembler _slaeAssembler;
     private readonly Regularizer _regularizer;
@@ -26,7 +25,6 @@ public class InverseProblemSolver
     private readonly LocalBasisFunctionsProvider[] _localBasisFunctionsProvider;
 
     private readonly ParametersCollection[] _parametersCollection;
-    private readonly GridParameters _gridParameters;
     private readonly Source[] _sources;
     private readonly ReceiverLine[] _receiverLines;
     private readonly double[] _frequencies;
@@ -79,13 +77,13 @@ public class InverseProblemSolver
     {
         _weightsSquares = new double[_frequencies.Length, _receiverLines.Length];
 
-        for (var i = 0; i < _frequencies.Length; i++)
+        Parallel.For(0, _frequencies.Length, i =>
         {
             for (var j = 0; j < _receiverLines.Length; j++)
             {
                 _weightsSquares[i, j] = Math.Pow(1 / _truePhaseDifferences[i, j], 2);
             }
-        }
+        });
 
         _slaeAssembler.SetWeightsSquares(_weightsSquares);
     }
@@ -98,8 +96,8 @@ public class InverseProblemSolver
 
         _slaeAssembler.SetGrid(_grid);
 
-        var resultO = new ResultIO("../InverseProblem/Results/8sigmas/");
-        var gridO = new GridIO("../InverseProblem/Results/8sigmas/");
+        var resultO = new ResultIO("../InverseProblem/Results/8SigmasCloseToWell/");
+        var gridO = new GridIO("../InverseProblem/Results/8SigmasCloseToWell/");
 
         CalculatePhaseDifferences();
         resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, "iteration 0 phase differences.txt");

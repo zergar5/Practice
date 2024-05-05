@@ -12,7 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Results\8sigmas\" />
+    <Folder Include="Results\8SigmasCloseToWell\" />
+    <Folder Include="Results\8SigmasNearToWell\" />
+    <Folder Include="Results\8SigmasCloseAndNearToWell\" />
   </ItemGroup>
 
 </Project>
