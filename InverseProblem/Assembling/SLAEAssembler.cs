@@ -15,12 +15,10 @@ namespace InverseProblem.Assembling;
 
 public class SLAEAssembler
 {
-    private readonly GridBuilder2D _gridBuilder2D;
     private readonly DirectProblemSolver[] _directProblemSolver;
     private readonly LocalBasisFunctionsProvider[] _localBasisFunctionsProvider;
 
     private readonly ParametersCollection[] _parametersCollection;
-    private readonly GridParameters _gridParameters;
     private readonly Source[] _sources;
     private readonly ReceiverLine[] _receiverLines;
     private readonly double[] _frequencies;
@@ -38,11 +36,9 @@ public class SLAEAssembler
 
     public SLAEAssembler
     (
-        GridBuilder2D gridBuilder2D,
         DirectProblemSolver[] directProblemSolver,
         LocalBasisFunctionsProvider[] localBasisFunctionsProvider,
         ParametersCollection[] parametersCollection,
-        GridParameters gridParameters,
         Source[] sourcesLine,
         ReceiverLine[] receiversLines,
         double[] frequencies,
@@ -51,12 +47,10 @@ public class SLAEAssembler
         double[,] truePhaseDifferences
     )
     {
-        _gridBuilder2D = gridBuilder2D;
         _directProblemSolver = directProblemSolver;
         _localBasisFunctionsProvider = localBasisFunctionsProvider;
 
         _parametersCollection = parametersCollection;
-        _gridParameters = gridParameters;
         _sources = sourcesLine;
         _receiverLines = receiversLines;
         _frequencies = frequencies;

@@ -11,7 +11,7 @@ using System.Numerics;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var grid = Grids.GetUniformSmallGridWith0Dot003125StepWith2Materials();
+var grid = Grids.GetUniformGridWith0Dot003125StepWith2Materials();
 
 var gridO = new GridIO("../DirectProblem/Results/");
 

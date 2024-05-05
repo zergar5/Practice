@@ -36,19 +36,18 @@ public class InverseProblemSolver
 
     private double[,] _weightsSquares;
     private readonly double[,] _currentPhaseDifferences;
-    private Grid<Node2D> _grid;
+    private readonly Grid<Node2D> _grid;
     private FEMSolution _femSolution;
 
     public InverseProblemSolver
     (
-        GridBuilder2D gridBuilder2D,
         DirectProblemSolver[] directProblemSolver,
         SLAEAssembler slaeAssembler,
         Regularizer regularizer,
         GaussElimination gaussElimination,
         LocalBasisFunctionsProvider[] localBasisFunctionsProvider,
+        Grid<Node2D> grid,
         ParametersCollection[] parametersCollection,
-        GridParameters gridParameters,
         Source[] sources,
         ReceiverLine[] receiverLines,
         double[] frequencies,
@@ -57,14 +56,13 @@ public class InverseProblemSolver
         Vector initialValues
     )
     {
-        _gridBuilder2D = gridBuilder2D;
         _directProblemSolver = directProblemSolver;
         _slaeAssembler = slaeAssembler;
         _regularizer = regularizer;
         _gaussElimination = gaussElimination;
         _localBasisFunctionsProvider = localBasisFunctionsProvider;
+        _grid = grid;
         _parametersCollection = parametersCollection;
-        _gridParameters = gridParameters;
         _sources = sources;
         _receiverLines = receiverLines;
         _frequencies = frequencies;
@@ -98,14 +96,14 @@ public class InverseProblemSolver
         var functional = 1d;
         Equation<Matrix> equation = null!;
 
-        RebuildGrid();
         _slaeAssembler.SetGrid(_grid);
 
-        var resultO = new ResultIO("../InverseProblem/Results/5sigmas/");
+        var resultO = new ResultIO("../InverseProblem/Results/8sigmas/");
+        var gridO = new GridIO("../InverseProblem/Results/8sigmas/");
 
         CalculatePhaseDifferences();
         resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, "iteration 0 phase differences.txt");
-        resultO.WriteInverseProblemIteration(_initialValues, "iteration 0 sigmas.txt");
+        gridO.WriteAreas(_grid, _initialValues, "iteration 0 areas.txt");
 
         for (var i = 1; i <= MethodsConfig.MaxIterations && CheckFunctional(functional, previousFunctional); i++)
         {
@@ -137,7 +135,7 @@ public class InverseProblemSolver
             }
 
             resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, $"iteration {i} phase differences.txt");
-            resultO.WriteInverseProblemIteration(_initialValues, $"iteration {i} sigmas.txt");
+            gridO.WriteAreas(_grid, equation.Solution, $"iteration {i} areas.txt");
         }
 
         Console.WriteLine();
@@ -181,25 +179,6 @@ public class InverseProblemSolver
                currentFunctional >= MethodsConfig.FunctionalPrecision;
     }
 
-    private void RebuildGrid()
-    {
-        _grid = _gridBuilder2D
-            .SetRAxis(new AxisSplitParameter(
-                    _gridParameters.RControlPoints,
-                    _gridParameters.RSplitters
-                )
-            )
-            .SetZAxis(new AxisSplitParameter(
-                    _gridParameters.ZControlPoints,
-                    _gridParameters.ZSplitters
-                )
-            )
-            .SetAreas(_gridParameters.Areas)
-            .Build();
-
-        _directProblemSolver[0].SetGrid(_grid);
-    }
-
     private void ChangeMaterials()
     {
         _directProblemSolver[0].SetMaterials(_parametersCollection[0].Materials);
@@ -217,7 +196,6 @@ public class InverseProblemSolver
 
     private void CalculatePhaseDifferences()
     {
-        //RebuildGrid();
         ChangeMaterials();
 
         for (var i = 0; i < _frequencies.Length; i++)

@@ -1,4 +1,5 @@
 ﻿using DirectProblem.Core;
+using DirectProblem.Core.Base;
 using DirectProblem.Core.GridComponents;
 
 namespace DirectProblem.IO
@@ -49,6 +50,18 @@ namespace DirectProblem.IO
                     binaryWriter.Write(node.R);
                     binaryWriter.Write(node.Z);
                 }
+            }
+        }
+
+        public void WriteAreas(Grid<Node2D> grid, Vector sigmas, string fileName)
+        {
+            using var streamWriter = new StreamWriter(_path + fileName);
+
+            foreach (var area in grid.Areas)
+            {
+                streamWriter.WriteLine($"{area.LowerLeftCorner.R} {area.LowerLeftCorner.Z} " +
+                                       $"{area.UpperRightCorner.R} {area.UpperRightCorner.Z} " +
+                                       $"{sigmas[area.MaterialId]}");
             }
         }
     }
