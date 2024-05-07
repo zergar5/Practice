@@ -84,8 +84,6 @@ public class Regularizer
     {
         bool stop;
 
-        equation.Solution.Copy(_previousSolution);
-
         do
         {
             AssembleSLAE(equation, alphas);
@@ -108,7 +106,7 @@ public class Regularizer
 
         for (var i = 0; i < alphas.Length; i++)
         {
-            var changeRatio = _regularizedEquation.Solution[i] / _previousSolution[i];
+            var changeRatio = equation.Solution[i] / _regularizedEquation.Solution[i];
 
             if (CheckLocalConstraints(changeRatio) &&
                 CheckGlobalConstraints(_regularizedEquation.Solution[i])) continue;
@@ -121,8 +119,6 @@ public class Regularizer
 
             stop = false;
         }
-
-        _regularizedEquation.Solution.Copy(_previousSolution);
 
         return alphas;
     }

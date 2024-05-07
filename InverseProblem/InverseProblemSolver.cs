@@ -96,8 +96,8 @@ public class InverseProblemSolver
 
         _slaeAssembler.SetGrid(_grid);
 
-        var resultO = new ResultIO("../InverseProblem/Results/8SigmasCloseToWell/");
-        var gridO = new GridIO("../InverseProblem/Results/8SigmasCloseToWell/");
+        var resultO = new ResultIO("../InverseProblem/Results/8OtherSigmasNearToWell/");
+        var gridO = new GridIO("../InverseProblem/Results/8OtherSigmasNearToWell/");
 
         CalculatePhaseDifferences();
         resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, "iteration 0 phase differences.txt");

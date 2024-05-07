@@ -351,7 +351,7 @@ public class Grids
                 new(4, new Node2D(0.1, -3.75), new Node2D(1, -3.25)),
                 //третий слой
                 new(5, new Node2D(0.1, -3.25d), new Node2D(1, -3)),
-                new(6, new Node2D(0.1, -4d), new Node2D(1, -3.75)),
+                new(5, new Node2D(0.1, -4d), new Node2D(1, -3.75)),
                 new(6, new Node2D(1, -4d), new Node2D(3d, -3d)),
                 //четвертый слой
                 new(7, new Node2D(0.1, -6d), new Node2D(3d, -4d))

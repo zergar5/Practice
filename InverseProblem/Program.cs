@@ -14,7 +14,7 @@ using Vector = DirectProblem.Core.Base.Vector;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var trueGrid = Grids.GetGridWith0Dot003125StepWithElementCloseToWellAnd8Sigmas();
+var trueGrid = Grids.GetGridWith0Dot003125StepWithElementNearToWellAnd8Sigmas();
 
 const double current = 1d;
 const double mu = 4 * Math.PI * 10e-7;
@@ -24,10 +24,10 @@ var trueMaterials = new Material[]
     new(mu, 0.5),
     new(mu, 0.05),
     new(mu, 1d/30),
-    new(mu, 0.15),
+    new(mu, 0.01),
     new(mu, 1d / 3d),
     new(mu, 0.2),
-    new(mu, 0.1 + 1d/30),
+    new(mu, 0.1),
     new(mu, 0.25)
 };
 
@@ -60,7 +60,7 @@ var targetParameters = new Parameter[]
     new (ParameterType.Sigma, 7, 0)
 };
 
-var trueValues = new Vector([0.5, 0.05, 1d / 30, 0.15, 1d / 3d, 0.2, 0.1 + 1d / 30, 0.25]);
+var trueValues = new Vector([0.5, 0.05, 1d / 30, 0.01, 1d / 3d, 0.2, 0.1, 0.25]);
 
 DirectProblemSolver[] directProblemSolvers;
 LocalBasisFunctionsProvider[] localBasisFunctionsProviders;
@@ -86,8 +86,8 @@ for (var i = 0; i < directProblemSolvers.Length; i++)
 var stopwatch = new Stopwatch();
 stopwatch.Start();
 
-var resultO = new ResultIO("../InverseProblem/Results/8SigmasCloseToWell/");
-var gridO = new GridIO("../InverseProblem/Results/8SigmasCloseToWell/");
+var resultO = new ResultIO("../InverseProblem/Results/8OtherSigmasNearToWell/");
+var gridO = new GridIO("../InverseProblem/Results/8OtherSigmasNearToWell/");
 
 for (var i = 0; i < frequencies.Length; i++)
 {

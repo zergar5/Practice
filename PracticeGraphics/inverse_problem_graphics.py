@@ -33,7 +33,7 @@ def draw_phase_differences_plot_for_iteration(frequencies, z_coordinate, measure
     for i, measurement in enumerate(measurements):
         plt.plot(measurement, z_coordinate, 'o-', label=f'Frequency {frequencies[i]} MHz')
     plt.xlabel('Phase differences')
-    plt.ylabel('Z')
+    plt.ylabel('Z, m')
     plt.title(f'Phase differences on iteration {iteration_number}')
     plt.ylim(-3.5, -2.5)
     plt.legend()
@@ -49,7 +49,7 @@ def draw_areas_plot_for_iteration(areas, iteration):
         z = np.linspace(subregion['z'][0], subregion['z'][1], 300)
         R, Z = np.meshgrid(r, z)
         conductivity = np.full((300, 300), subregion['conductivity'])
-        ax.pcolormesh(R, Z, conductivity, shading='auto', cmap='gist_rainbow', vmin=0.01, vmax=0.5)
+        ax.pcolormesh(R, Z, conductivity, shading='auto', cmap='jet_r', vmin=1e-3, vmax=0.5)
 
         # Отрисовываем прямоугольники для областей
         width = subregion['r'][1] - subregion['r'][0]
@@ -64,17 +64,17 @@ def draw_areas_plot_for_iteration(areas, iteration):
             ax.text(center_r, center_z, f"{subregion['conductivity']:.4}", color='black', ha='center', va='center')
 
     # Настройки графика
-    ax.set_xlabel('R')
-    ax.set_ylabel('Z')
+    ax.set_xlabel('R, m')
+    ax.set_ylabel('Z, m')
     ax.set_title(f'Areas on iteration {iteration}')
     ax.set_aspect('auto', adjustable='box')
     ax.set_xlim(1e-4, 3)
     ax.set_ylim(-6, 0)
 
     # Добавляем цветовую шкалу
-    sm = plt.cm.ScalarMappable(cmap='gist_rainbow', norm=plt.Normalize(vmin=0.01, vmax=0.5))
+    sm = plt.cm.ScalarMappable(cmap='jet_r', norm=plt.Normalize(vmin=1e-3, vmax=0.5))
     sm._A = []
-    cbar = plt.colorbar(sm, ax=ax, label='Conductivity')
+    cbar = plt.colorbar(sm, ax=ax, label='Conductivity, S')
 
     # Отображаем график
     plt.show()
@@ -83,7 +83,7 @@ def draw_plot_for_true_values(frequencies, z_coordinate, measurements):
     for i, measurement in enumerate(measurements):
         plt.plot(measurement, z_coordinate, 'o-', label=f'Frequency {frequencies[i]} MHz')
     plt.xlabel('Phase differences')
-    plt.ylabel('Z')
+    plt.ylabel('Z, m')
     plt.title(f'Phase differences true')
     plt.ylim(-3.5, -2.5)
     plt.legend()
@@ -99,7 +99,7 @@ def draw_areas_plot_for_true_values(areas):
         z = np.linspace(subregion['z'][0], subregion['z'][1], 300)
         R, Z = np.meshgrid(r, z)
         conductivity = np.full((300, 300), subregion['conductivity'])
-        ax.pcolormesh(R, Z, conductivity, shading='auto', cmap='gist_rainbow', vmin=0.01, vmax=0.5)
+        ax.pcolormesh(R, Z, conductivity, shading='auto', cmap='jet_r', vmin=1e-3, vmax=0.5)
 
         # Отрисовываем прямоугольники для областей
         width = subregion['r'][1] - subregion['r'][0]
@@ -114,23 +114,23 @@ def draw_areas_plot_for_true_values(areas):
             ax.text(center_r, center_z, f"{subregion['conductivity']:.4}", color='black', ha='center', va='center')
 
     # Настройки графика
-    ax.set_xlabel('R')
-    ax.set_ylabel('Z')
+    ax.set_xlabel('R, m')
+    ax.set_ylabel('Z, m')
     ax.set_title(f'Areas true')
     ax.set_aspect('auto', adjustable='box')
     ax.set_xlim(1e-4, 3)
     ax.set_ylim(-6, 0)
 
     # Добавляем цветовую шкалу
-    sm = plt.cm.ScalarMappable(cmap='gist_rainbow', norm=plt.Normalize(vmin=0.01, vmax=0.5))
+    sm = plt.cm.ScalarMappable(cmap='jet_r', norm=plt.Normalize(vmin=1e-3, vmax=0.5))
     sm._A = []
-    cbar = plt.colorbar(sm, ax=ax, label='Conductivity')
+    cbar = plt.colorbar(sm, ax=ax, label='Conductivity, S')
 
     # Отображаем график
     plt.show()
 
 # Директория, откуда нужно считать файлы
-directory = "..\\InverseProblem\\Results\\8SigmasCloseToWell\\"
+directory = "..\\InverseProblem\\Results\\8OtherSigmasNearToWell\\"
 
 # Обработка каждого файла в директории
 for file_name in os.listdir(directory):
