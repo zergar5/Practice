@@ -8,14 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DirectProblem\DirectProblem.csproj" />
+    <Compile Remove="Results\8SigmasCloseAndNearToWellOtherSigmas\**" />
+    <EmbeddedResource Remove="Results\8SigmasCloseAndNearToWellOtherSigmas\**" />
+    <None Remove="Results\8SigmasCloseAndNearToWellOtherSigmas\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Results\8SigmasCloseAndNearToWellOtherSigmas\" />
-    <Folder Include="Results\8SigmasCloseToWell\" />
-    <Folder Include="Results\8SigmasNearToWell\" />
-    <Folder Include="Results\8SigmasCloseAndNearToWell\" />
+    <ProjectReference Include="..\DirectProblem\DirectProblem.csproj" />
   </ItemGroup>
 
 </Project>
