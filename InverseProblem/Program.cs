@@ -14,7 +14,7 @@ using Vector = DirectProblem.Core.Base.Vector;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var trueGrid = Grids.GetGridWith0Dot003125StepWithElementNearToWellAnd8Sigmas();
+var trueGrid = Grids.GetGridWith0Dot003125StepWithElementsCloseAndNearToWellAnd8Sigmas();
 
 const double current = 1d;
 const double mu = 4 * Math.PI * 10e-7;
@@ -86,8 +86,8 @@ for (var i = 0; i < directProblemSolvers.Length; i++)
 var stopwatch = new Stopwatch();
 stopwatch.Start();
 
-var resultO = new ResultIO("../InverseProblem/Results/8OtherSigmasNearToWell/");
-var gridO = new GridIO("../InverseProblem/Results/8OtherSigmasNearToWell/");
+var resultO = new ResultIO("../InverseProblem/Results/8OtherSigmasCloseAndNearToWell/");
+var gridO = new GridIO("../InverseProblem/Results/8OtherSigmasCloseAndNearToWell/");
 
 for (var i = 0; i < frequencies.Length; i++)
 {

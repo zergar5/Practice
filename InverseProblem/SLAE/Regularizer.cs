@@ -84,6 +84,8 @@ public class Regularizer
     {
         bool stop;
 
+        alphas = ChangeAlphas(equation, alphas, out _);
+        
         do
         {
             AssembleSLAE(equation, alphas);
