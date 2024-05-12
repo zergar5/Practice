@@ -10,9 +10,9 @@ public class ParametersCollection
 
     public ParametersCollection(Material[] materials, double[] rControlPoints, double[] zControlPoints)
     {
-        Materials=materials;
-        RControlPoints=rControlPoints;
-        ZControlPoints=zControlPoints;
+        Materials = materials;
+        RControlPoints = rControlPoints;
+        ZControlPoints = zControlPoints;
     }
 
     public double GetParameterValue(Parameter parameter)

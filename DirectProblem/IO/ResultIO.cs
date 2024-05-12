@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using DirectProblem.Core.GridComponents;
+﻿using DirectProblem.Core.GridComponents;
+using System.Numerics;
 using Vector = DirectProblem.Core.Base.Vector;
 
 namespace DirectProblem.IO;

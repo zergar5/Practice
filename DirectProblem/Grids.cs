@@ -20,7 +20,7 @@ public class Grids
             )
             .SetZAxis(new AxisSplitParameter(
                     new[] { -6d, -4d, -3d, -2d, 0d },
-                    new StepProportionalSplitter(0.003125, 1/1.1),
+                    new StepProportionalSplitter(0.003125, 1 / 1.1),
                     new StepUniformSplitter(0.003125),
                     new StepUniformSplitter(0.003125),
                     new StepProportionalSplitter(0.003125, 1.1)
@@ -46,7 +46,7 @@ public class Grids
             )
             .SetZAxis(new AxisSplitParameter(
                     new[] { -6d, -4d, -3d, -2d, 0d },
-                    new StepProportionalSplitter(0.003125, 1/1.1),
+                    new StepProportionalSplitter(0.003125, 1 / 1.1),
                     new StepUniformSplitter(0.003125),
                     new StepUniformSplitter(0.003125),
                     new StepProportionalSplitter(0.003125, 1.1)
@@ -74,7 +74,7 @@ public class Grids
             )
             .SetZAxis(new AxisSplitParameter(
                     new[] { -6d, -4d, -3d, -2d, 0d },
-                    new StepProportionalSplitter(0.003125, 1/1.1),
+                    new StepProportionalSplitter(0.003125, 1 / 1.1),
                     new StepUniformSplitter(0.003125),
                     new StepUniformSplitter(0.003125),
                     new StepProportionalSplitter(0.003125, 1.1)
@@ -115,7 +115,7 @@ public class Grids
             )
             .SetZAxis(new AxisSplitParameter(
                     new[] { -6d, -4d, -3d, -2d, 0d },
-                    new StepProportionalSplitter(0.003125, 1/1.1),
+                    new StepProportionalSplitter(0.003125, 1 / 1.1),
                     new StepUniformSplitter(0.003125),
                     new StepUniformSplitter(0.003125),
                     new StepProportionalSplitter(0.003125, 1.1)
@@ -157,7 +157,7 @@ public class Grids
             )
             .SetZAxis(new AxisSplitParameter(
                     new[] { -6d, -4d, -3d, -2d, 0d },
-                    new StepProportionalSplitter(0.003125, 1/1.1),
+                    new StepProportionalSplitter(0.003125, 1 / 1.1),
                     new StepUniformSplitter(0.003125),
                     new StepUniformSplitter(0.003125),
                     new StepProportionalSplitter(0.003125, 1.1)
@@ -201,7 +201,7 @@ public class Grids
             )
             .SetZAxis(new AxisSplitParameter(
                     new[] { -6d, -4d, -3d, -2d, 0d },
-                    new StepProportionalSplitter(0.003125, 1/1.1),
+                    new StepProportionalSplitter(0.003125, 1 / 1.1),
                     new StepUniformSplitter(0.003125),
                     new StepUniformSplitter(0.003125),
                     new StepProportionalSplitter(0.003125, 1.1)

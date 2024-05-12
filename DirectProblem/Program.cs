@@ -1,9 +1,7 @@
 ﻿using DirectProblem;
 using DirectProblem.Core.GridComponents;
-using DirectProblem.FEM;
 using DirectProblem.IO;
 using DirectProblem.TwoDimensional;
-using DirectProblem.TwoDimensional.Assembling.Boundary;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using System.Diagnostics;
 using System.Globalization;

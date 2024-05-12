@@ -1,6 +1,5 @@
 ﻿using DirectProblem;
 using DirectProblem.Core.GridComponents;
-using DirectProblem.GridGenerator.Intervals.Splitting;
 using DirectProblem.IO;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
@@ -80,7 +79,7 @@ for (var i = 0; i < directProblemSolvers.Length; i++)
 {
     directProblemSolvers[i] = new DirectProblemSolver(trueGrid, trueMaterials)
         .SetGrid(trueGrid).SetMaterials(trueMaterials);
-    localBasisFunctionsProviders[i] =  new LocalBasisFunctionsProvider(trueGrid);
+    localBasisFunctionsProviders[i] = new LocalBasisFunctionsProvider(trueGrid);
 }
 
 var stopwatch = new Stopwatch();

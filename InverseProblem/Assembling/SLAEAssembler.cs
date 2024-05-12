@@ -1,11 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using DirectProblem;
+﻿using DirectProblem;
 using DirectProblem.Core;
 using DirectProblem.Core.Base;
 using DirectProblem.Core.Global;
 using DirectProblem.Core.GridComponents;
-using DirectProblem.GridGenerator;
-using DirectProblem.GridGenerator.Intervals.Splitting;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using InverseProblem.Parameters;
@@ -202,7 +199,7 @@ public class SLAEAssembler
             for (var j = 0; j < _receiverLines.Length; j++)
             {
                 ChangeSource(_sources[j], solverId);
-                var femSolution =  SolveDirectProblem(solverId);
+                var femSolution = SolveDirectProblem(solverId);
 
                 var fieldM = femSolution.Calculate(_receiverLines[j].PointM);
                 var fieldN = femSolution.Calculate(_receiverLines[j].PointN);
