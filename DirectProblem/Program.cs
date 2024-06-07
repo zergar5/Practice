@@ -9,7 +9,7 @@ using System.Numerics;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var grid = Grids.GetUniformGridWith0Dot003125StepWith2Materials();
+var grid = Grids.GetTestGrid();
 
 var gridO = new GridIO("../DirectProblem/Results/");
 
@@ -17,7 +17,7 @@ gridO.WriteMaterials(grid, "nvkat2d.dat");
 gridO.WriteElements(grid, "nvtr.dat");
 gridO.WriteNodes(grid, "rz.dat");
 
-var mu = 4 * Math.PI * 10e-7;
+var mu = 1;
 
 var materials = new Material[]
 {
@@ -30,23 +30,23 @@ var materials = new Material[]
     new(mu, 1d)
 };
 
-var omegas = new[] { 4e4, 2e5, 1e6, 2e6 };
+var omegas = new[] { 4e4, 2e5, 1e6, 2e6, 1d };
 var current = 1;
 
-var sources = new Source[10];
-var receiverLines = new ReceiverLine[sources.Length];
-var emfs = new Complex[sources.Length, omegas.Length];
-var phaseDifferences = new double[sources.Length, omegas.Length];
-var centersZ = new double[sources.Length];
+//var sources = new Source[10];
+//var receiverLines = new ReceiverLine[sources.Length];
+//var emfs = new Complex[sources.Length, omegas.Length];
+//var phaseDifferences = new double[sources.Length, omegas.Length];
+//var centersZ = new double[sources.Length];
 
-for (var i = 0; i < sources.Length; i++)
-{
-    sources[i] = new Source(new Node2D(0.05, -2.7 - 0.05 * i), current);
-    receiverLines[i] = new ReceiverLine(
-        new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.05), new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.1)
-    );
-    centersZ[i] = (sources[i].Point.Z + receiverLines[i].PointN.Z) / 2;
-}
+//for (var i = 0; i < sources.Length; i++)
+//{
+//    sources[i] = new Source(new Node2D(0.05, -2.7 - 0.05 * i), current);
+//    receiverLines[i] = new ReceiverLine(
+//        new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.05), new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.1)
+//    );
+//    centersZ[i] = (sources[i].Point.Z + receiverLines[i].PointN.Z) / 2;
+//}
 
 var directProblemSolver = new DirectProblemSolver(grid, materials);
 
@@ -57,41 +57,53 @@ var localBasisFunctionsProvider = new LocalBasisFunctionsProvider(grid);
 var stopwatch = new Stopwatch();
 stopwatch.Start();
 
-for (var i = 0; i < 1; i++)
-{
-    for (var j = 0; j < 1; j++)
-    {
-        var solution = directProblemSolver
-            .SetFrequency(omegas[j])
-            .SetSource(sources[i])
+var solution = directProblemSolver
+            .SetFrequency(omegas[4])
             .AssembleSLAE()
             .Solve();
 
-        var femSolution = new FEMSolution(grid, solution, localBasisFunctionsProvider);
+var femSolution = new FEMSolution(grid, solution, localBasisFunctionsProvider);
 
-        if (i == 0 && j == 0)
-        {
-            resultO.WriteSinuses(solution, "v2s.dat");
-            resultO.WriteCosinuses(solution, "v2c.dat");
-        }
+resultO.WriteSinuses(solution, "v2s.dat");
 
-        var potentialM = femSolution.Calculate(receiverLines[i].PointM);
-        var potentialN = femSolution.Calculate(receiverLines[i].PointN);
+var qValue = femSolution.Calculate(new Node2D(1.5, 1.5));
 
-        emfs[i, j] = 2 * Math.PI * receiverLines[i].PointM.R * potentialM;
+Console.WriteLine(qValue);
+//for (var i = 0; i < 1; i++)
+//{
+//    for (var j = 0; j < 1; j++)
+//    {
+//        var solution = directProblemSolver
+//            .SetFrequency(omegas[j])
+//            .SetSource(sources[i])
+//            .AssembleSLAE()
+//            .Solve();
 
-        phaseDifferences[i, j] = (potentialM.Phase - potentialN.Phase) * 180d / Math.PI;
+//        var femSolution = new FEMSolution(grid, solution, localBasisFunctionsProvider);
 
-        //if (i == 20 && j == 0)
-        //{
-        //    Console.WriteLine(femSolution.Calculate(receiverLines[i].PointM));
-        //    Console.WriteLine((potentialM.Phase - potentialN.Phase) * 180d / Math.PI);
-        //    break;
-        //}
+//        if (i == 0 && j == 0)
+//        {
+//            resultO.WriteSinuses(solution, "v2s.dat");
+//            resultO.WriteCosinuses(solution, "v2c.dat");
+//        }
 
-        Console.Write($"source {i} frequency {j}                                   \r");
-    }
-}
+//        var potentialM = femSolution.Calculate(receiverLines[i].PointM);
+//        var potentialN = femSolution.Calculate(receiverLines[i].PointN);
+
+//        emfs[i, j] = 2 * Math.PI * receiverLines[i].PointM.R * potentialM;
+
+//        phaseDifferences[i, j] = (potentialM.Phase - potentialN.Phase) * 180d / Math.PI;
+
+//        //if (i == 20 && j == 0)
+//        //{
+//        //    Console.WriteLine(femSolution.Calculate(receiverLines[i].PointM));
+//        //    Console.WriteLine((potentialM.Phase - potentialN.Phase) * 180d / Math.PI);
+//        //    break;
+//        //}
+
+//        Console.Write($"source {i} frequency {j}                                   \r");
+//    }
+//}
 
 stopwatch.Stop();
 

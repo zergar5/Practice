@@ -3,6 +3,8 @@ using DirectProblem.Core.Base;
 using DirectProblem.Core.Boundary;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.Core.Local;
+using System.Numerics;
+using Vector = DirectProblem.Core.Base.Vector;
 
 namespace DirectProblem.TwoDimensional.Assembling.Boundary;
 
@@ -14,11 +16,15 @@ public class FirstBoundaryProvider
     private int[][]? _indexes;
     private Vector[]? _values;
     private readonly int[] _indexesBuffer;
+    private readonly Func<Node2D, double>[] _u;
 
     public FirstBoundaryProvider(Grid<Node2D> grid)
     {
         _grid = grid;
-        _indexesBuffer = new int[2];
+        _indexesBuffer = new int[2]; 
+        _u = new Func<Node2D, double>[2];
+        _u[0] = node => Math.Exp(node.R);
+        _u[1] = node => Math.Exp(node.Z);
     }
 
     public FirstBoundaryProvider SetGrid(Grid<Node2D> grid)
@@ -66,6 +72,7 @@ public class FirstBoundaryProvider
                 for (var k = 0; k < indexes.Length; k++)
                 {
                     _indexes[j][k] = indexes[k] * 2 + i;
+                    _values[j][k] = _u[i](_grid.Nodes[indexes[k]]);
                 }
 
                 _firstConditionValues[j] = new FirstConditionValue(new LocalVector(_indexes[j], _values[j]));

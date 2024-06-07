@@ -16,7 +16,7 @@ Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 var trueGrid = Grids.GetGridWith0Dot003125StepWithElementsCloseAndNearToWellAnd8Sigmas();
 
 const double current = 1d;
-const double mu = 4 * Math.PI * 10e-7;
+const double mu = 4 * Math.PI * 1e-7;
 
 var trueMaterials = new Material[]
 {

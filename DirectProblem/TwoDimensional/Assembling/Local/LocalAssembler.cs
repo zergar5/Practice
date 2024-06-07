@@ -1,4 +1,5 @@
-﻿using DirectProblem.Core.Base;
+﻿using DirectProblem.Core;
+using DirectProblem.Core.Base;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.Core.Local;
 using DirectProblem.FEM.Assembling.Local;
@@ -12,6 +13,14 @@ public class LocalAssembler : ILocalAssembler
     private double _frequency;
     private readonly Matrix _matrix;
     private readonly int[] _complexIndexes;
+    private readonly Vector _sinBuffer;
+    private readonly Vector _cosBuffer;
+    private readonly Vector _bufferVector;
+    private readonly Vector _vector;
+
+    private readonly Func<Node2D, double> _bSin;
+    private readonly Func<Node2D, double> _bCos;
+    private Grid<Node2D> _grid;
 
     public LocalAssembler
     (
@@ -23,6 +32,13 @@ public class LocalAssembler : ILocalAssembler
         _materials = materials;
         _matrix = new Matrix(8);
         _complexIndexes = new int[8];
+        _sinBuffer = new Vector(4);
+        _cosBuffer = new Vector(4);
+        _bufferVector = new Vector(4);
+        _vector = new Vector(8);
+
+        _bSin = node => -Math.Exp(node.R) / node.R - Math.Exp(node.R) + Math.Exp(node.R) / (node.R * node.R) - Math.Exp(node.Z);
+        _bCos = node => -Math.Exp(node.Z) + Math.Exp(node.Z) / (node.R * node.R) + Math.Exp(node.R);
     }
 
     public LocalAssembler SetMaterials(Material[] materials)
@@ -45,6 +61,14 @@ public class LocalAssembler : ILocalAssembler
         var indexes = GetComplexIndexes(element);
 
         return new LocalMatrix(indexes, matrix);
+    }
+
+    public LocalVector AssembleVector(Element element)
+    {
+        var vector = GetComplexVector(element);
+        var indexes = GetComplexIndexes(element);
+
+        return new LocalVector(indexes, vector);
     }
 
     private Matrix GetStiffnessMatrix(Element element)
@@ -93,5 +117,36 @@ public class LocalAssembler : ILocalAssembler
         }
 
         return _complexIndexes;
+    }
+
+    private Vector GetComplexVector(Element element)
+    {
+        var mass = GetMassMatrix(element);
+
+        for (var i = 0; i < _sinBuffer.Count; i++)
+        {
+            _sinBuffer[i] = _bSin(_grid.Nodes[element.NodesIndexes[i]]);
+            _cosBuffer[i] = _bCos(_grid.Nodes[element.NodesIndexes[i]]);
+        }
+
+        Matrix.Multiply(mass, _sinBuffer, _bufferVector);
+        _bufferVector.Copy(_sinBuffer);
+        Matrix.Multiply(mass, _cosBuffer, _bufferVector);
+        _bufferVector.Copy(_cosBuffer);
+
+        for (var i = 0; i < _sinBuffer.Count; i++)
+        {
+            _vector[i * 2] = _sinBuffer[i];
+            _vector[i * 2 + 1] = _cosBuffer[i];
+        }
+
+        return _vector;
+    }
+
+    public LocalAssembler SetGrid(Grid<Node2D> grid)
+    {
+        _grid = grid;
+
+        return this;
     }
 }

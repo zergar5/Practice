@@ -77,8 +77,10 @@ public class GlobalAssembler<TNode>
         foreach (var element in grid)
         {
             var localMatrix = _localAssembler.AssembleMatrix(element);
+            var localVector = _localAssembler.AssembleVector(element);
 
             _inserter.InsertMatrix(_equation.Matrix, localMatrix);
+            _inserter.InsertVector(_equation.RightPart, localVector);
         }
 
         return this;

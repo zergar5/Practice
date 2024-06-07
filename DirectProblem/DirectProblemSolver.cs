@@ -42,6 +42,7 @@ public class DirectProblemSolver
         _localBasisFunctionsProvider = new LocalBasisFunctionsProvider(grid);
         _localMatrixAssembler = new LocalMatrixAssembler(grid);
         _localAssembler = new LocalAssembler(_localMatrixAssembler, materials);
+        _localAssembler.SetGrid(grid);
         _firstBoundaryProvider = new FirstBoundaryProvider(grid);
         _firstConditions = _firstBoundaryProvider.GetConditions(
             grid.Nodes.RLength - 1, grid.Nodes.ZLength - 1);
@@ -86,7 +87,7 @@ public class DirectProblemSolver
     {
         _equation = _globalAssembler
             .AssembleEquation(_grid)
-            .ApplySources(_source)
+            //.ApplySources(_source)
             .ApplyFirstConditions(_firstConditions)
             .BuildEquation();
 

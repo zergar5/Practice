@@ -360,4 +360,26 @@ public class Grids
 
         return grid;
     }
+
+    public static Grid<Node2D> GetTestGrid()
+    {
+        var grid = GridBuilder
+            .SetRAxis(new AxisSplitParameter(
+                    new[] { 1d, 2d },
+                    new UniformSplitter(16)
+                )
+            )
+            .SetZAxis(new AxisSplitParameter(
+                    new[] { 1d, 2d },
+                    new UniformSplitter(16)
+                )
+            )
+            .SetAreas(new Area[]
+            {
+                new(6, new Node2D(1d, 1d), new Node2D(2d, 2d)),
+            })
+            .Build();
+
+        return grid;
+    }
 }
