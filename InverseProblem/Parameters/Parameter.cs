@@ -7,4 +7,4 @@ public enum ParameterType
     HorizontalBound
 }
 
-public readonly record struct Parameter(ParameterType ParameterType, int Index, double Value);
+public readonly record struct Parameter(ParameterType ParameterType, int Index);

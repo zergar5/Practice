@@ -18,17 +18,4 @@ public class LocalMatrix
         get => Matrix[i, j];
         set => Matrix[i, j] = value;
     }
-
-    public static LocalMatrix Multiply(double coefficient, LocalMatrix matrix)
-    {
-        for (var i = 0; i < matrix.Matrix.CountRows; i++)
-        {
-            for (var j = 0; j < matrix.Matrix.CountColumns; j++)
-            {
-                matrix[i, j] *= coefficient;
-            }
-        }
-
-        return matrix;
-    }
 }

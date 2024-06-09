@@ -27,7 +27,6 @@ public class SLAEAssembler
     private readonly Equation<Matrix> _equation;
 
     private Grid<Node2D> _grid;
-    private FEMSolution _femSolution;
 
     private readonly Task[] _tasks;
 

@@ -116,7 +116,7 @@ def draw_areas_plot_for_true_values(areas):
     # Настройки графика
     ax.set_xlabel('R, m')
     ax.set_ylabel('Z, m')
-    ax.set_title(f'Areas true')
+    ax.set_title(f'Area true')
     ax.set_aspect('auto', adjustable='box')
     ax.set_xlim(1e-4, 3)
     ax.set_ylim(-6, 0)
@@ -130,7 +130,7 @@ def draw_areas_plot_for_true_values(areas):
     plt.show()
 
 # Директория, откуда нужно считать файлы
-directory = "..\\InverseProblem\\Results\\8OtherSigmasCloseAndNearToWell\\"
+directory = "..\\DirectProblem\\Results\\"
 
 # Обработка каждого файла в директории
 for file_name in os.listdir(directory):

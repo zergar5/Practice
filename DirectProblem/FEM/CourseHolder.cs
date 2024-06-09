@@ -20,11 +20,6 @@ public class CourseHolder
         Console.WriteLine($"({point.R:F2},{point.Z:F2}) EMFs = {values.sValue:E14} EMFc = {values.cValue:E14}");
     }
 
-    public static void WriteSolution(Node2D point, double time, double value)
-    {
-        Console.WriteLine($"({point.R:F2},{point.Z:F2}) {time} {value:E14}");
-    }
-
     public static void WriteAreaInfo()
     {
         Console.WriteLine("Point not in area or time interval");

@@ -1,6 +1,5 @@
 ﻿using DirectProblem;
 using DirectProblem.Core.GridComponents;
-using DirectProblem.IO;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using InverseProblem;
@@ -13,10 +12,10 @@ using Vector = DirectProblem.Core.Base.Vector;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var trueGrid = Grids.GetGridWith0Dot003125StepWithElementsCloseAndNearToWellAnd8Sigmas();
+var trueGrid = Grids.GetUniformGridWith0Dot003125StepWith4Materials();
 
 const double current = 1d;
-const double mu = 4 * Math.PI * 10e-7;
+const double mu = 4 * Math.PI * 1e-7;
 
 var trueMaterials = new Material[]
 {
@@ -27,18 +26,19 @@ var trueMaterials = new Material[]
     new(mu, 1d / 3d),
     new(mu, 0.2),
     new(mu, 0.1),
-    new(mu, 0.25)
+    new(mu, 0.25),
+    new(mu, 1)
 };
 
-var frequencies = new[] { 4e4, 2e5, 1e6, 2e6 };
+var frequencies = new[] { 4e4, 2e5, /*1e6, 2e6*/ };
 
-var sources = new Source[10];
+var sources = new Source[5];
 var receiverLines = new ReceiverLine[sources.Length];
 var truePhaseDifferences = new double[frequencies.Length, receiverLines.Length];
 
 for (var i = 0; i < sources.Length; i++)
 {
-    sources[i] = new Source(new Node2D(0.05, -2.5 - 0.1 * i), current);
+    sources[i] = new Source(new Node2D(0.05, -2.75 - 0.1 * i), current);
     receiverLines[i] = new ReceiverLine(
         new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.05),
         new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.1)
@@ -49,17 +49,16 @@ var maxThreads = 4;
 
 var targetParameters = new Parameter[]
 {
-    new (ParameterType.Sigma, 0, 0),
-    new (ParameterType.Sigma, 1, 0),
-    new (ParameterType.Sigma, 2, 0),
-    new (ParameterType.Sigma, 3, 0),
-    new (ParameterType.Sigma, 4, 0),
-    new (ParameterType.Sigma, 5, 0),
-    new (ParameterType.Sigma, 6, 0),
-    new (ParameterType.Sigma, 7, 0)
+    new (ParameterType.Sigma, 0),
+    new (ParameterType.Sigma, 1),
+    //new (ParameterType.Sigma, 2, 0),
+    //new (ParameterType.Sigma, 3, 0),
+    //new (ParameterType.Sigma, 4, 0),
+    //new (ParameterType.Sigma, 5, 0),
+    new (ParameterType.Sigma, 6),
+    new (ParameterType.Sigma, 7),
+    //new (ParameterType.Sigma, 8, 0)
 };
-
-var trueValues = new Vector([0.5, 0.05, 1d / 30, 0.01, 1d / 3d, 0.2, 0.1, 0.25]);
 
 DirectProblemSolver[] directProblemSolvers;
 LocalBasisFunctionsProvider[] localBasisFunctionsProviders;
@@ -85,8 +84,8 @@ for (var i = 0; i < directProblemSolvers.Length; i++)
 var stopwatch = new Stopwatch();
 stopwatch.Start();
 
-var resultO = new ResultIO("../InverseProblem/Results/8OtherSigmasCloseAndNearToWell/");
-var gridO = new GridIO("../InverseProblem/Results/8OtherSigmasCloseAndNearToWell/");
+//var resultO = new ResultIO("../InverseProblem/Results/OneSigma/");
+//var gridO = new GridIO("../InverseProblem/Results/8OtherSigmasCloseAndNearToWell/");
 
 for (var i = 0; i < frequencies.Length; i++)
 {
@@ -109,8 +108,8 @@ for (var i = 0; i < frequencies.Length; i++)
     }
 }
 
-resultO.WriteInverseProblemIteration(receiverLines, truePhaseDifferences, frequencies, "true phase differences.txt");
-gridO.WriteAreas(trueGrid, trueValues, "true areas.txt");
+//resultO.WriteInverseProblemIteration(receiverLines, truePhaseDifferences, frequencies, "true phase differences.txt");
+//gridO.WriteAreas(trueGrid, trueValues, "true areas.txt");
 
 Console.WriteLine();
 Console.WriteLine("TrueDirectProblem calculated");
@@ -134,13 +133,14 @@ for (var i = 0; i < parametersCollections.Length; i++)
         new(mu, 0.1),
         new(mu, 0.1),
         new(mu, 0.1),
-        new(mu, 0.1)
+        new(mu, 0.1),
+        new(mu, 0.1),
     };
 
     parametersCollections[i] = new ParametersCollection(materials, [1e-4, 0.1, 1d, 3d], [-6d, -4d, -3d, -2d, 0d]);
 }
 
-var initialValues = new Vector([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]);
+var initialValues = new Vector([/*0.1, 0.1, 0.1, 0.1, 0.1,*/ 0.1, 0.1, 0.1, 0.1]);
 
 var slaeAssembler = new SLAEAssembler(directProblemSolvers, localBasisFunctionsProviders,
     parametersCollections, sources, receiverLines, frequencies, targetParameters, initialValues,

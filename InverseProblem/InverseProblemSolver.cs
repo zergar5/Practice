@@ -4,7 +4,6 @@ using DirectProblem.Core.Base;
 using DirectProblem.Core.Global;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.FEM;
-using DirectProblem.IO;
 using DirectProblem.SLAE;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
@@ -89,17 +88,23 @@ public class InverseProblemSolver
     public Vector Solve()
     {
         var previousFunctional = 2d;
-        var functional = 1d;
+        var functional = 10d;
         Equation<Matrix> equation = null!;
 
         _slaeAssembler.SetGrid(_grid);
 
-        var resultO = new ResultIO("../InverseProblem/Results/8OtherSigmasCloseAndNearToWell/");
-        var gridO = new GridIO("../InverseProblem/Results/8OtherSigmasCloseAndNearToWell/");
+        //var resultO = new ResultIO("../InverseProblem/Results/8OtherSigmasCloseAndNearToWell/");
+        //var gridO = new GridIO("../InverseProblem/Results/8OtherSigmasCloseAndNearToWell/");
 
         CalculatePhaseDifferences();
-        resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, "iteration 0 phase differences.txt");
-        gridO.WriteAreas(_grid, _initialValues, "iteration 0 areas.txt");
+        //resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, "iteration 0 phase differences.txt");
+        //gridO.WriteAreas(_grid, _initialValues, "iteration 0 areas.txt");
+
+        Console.WriteLine($"Iteration: 0");
+        for (var j = 0; j < _initialValues.Count; j++)
+        {
+            Console.WriteLine($"{_initialValues[j]}");
+        }
 
         for (var i = 1; i <= MethodsConfig.MaxIterations && CheckFunctional(functional, previousFunctional); i++)
         {
@@ -130,8 +135,8 @@ public class InverseProblemSolver
                 Console.WriteLine($"{equation.Solution[j]} {parametersDeltas[j]} {alphas[j]}");
             }
 
-            resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, $"iteration {i} phase differences.txt");
-            gridO.WriteAreas(_grid, equation.Solution, $"iteration {i} areas.txt");
+            //resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, $"iteration {i} phase differences.txt");
+            //gridO.WriteAreas(_grid, equation.Solution, $"iteration {i} areas.txt");
         }
 
         Console.WriteLine();
@@ -171,7 +176,7 @@ public class InverseProblemSolver
     private bool CheckFunctional(double currentFunctional, double previousFunctional)
     {
         var functionalRatio = Math.Abs(currentFunctional / previousFunctional);
-        return Math.Abs(double.Max(1 / functionalRatio, functionalRatio) - 1) > 5e-1 &&
+        return Math.Abs(double.Max(1 / functionalRatio, functionalRatio) - 1) > 1e-1 &&
                currentFunctional >= MethodsConfig.FunctionalPrecision;
     }
 
@@ -211,6 +216,8 @@ public class InverseProblemSolver
                 Console.Write($"original frequency {i} source {j}                          \r");
             }
         }
+
+        Console.WriteLine();
     }
 
     private void SolveDirectProblem()

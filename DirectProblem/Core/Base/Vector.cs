@@ -4,7 +4,7 @@ public class Vector
 {
     public double[] Values { get; }
 
-    public Vector() : this(Array.Empty<double>()) { }
+    public Vector() : this([]) { }
     public Vector(double[] values)
     {
         Values = values;

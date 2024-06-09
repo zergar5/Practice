@@ -9,7 +9,6 @@ public class Regularizer
     private readonly GaussElimination _gaussElimination;
     private readonly double[] _alphas;
     private readonly Equation<Matrix> _regularizedEquation;
-    private readonly Vector _previousSolution;
 
     public Regularizer(GaussElimination gaussElimination, Parameter[] parameters)
     {
@@ -20,7 +19,6 @@ public class Regularizer
             new Vector(parameters.Length),
             new Vector(parameters.Length)
             );
-        _previousSolution = new Vector(parameters.Length);
     }
 
     public Equation<Matrix> Regularize(Equation<Matrix> equation, out double[] alphas)

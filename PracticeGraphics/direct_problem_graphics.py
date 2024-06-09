@@ -23,11 +23,12 @@ plt.plot(pointsZ, emfSin2, label=f'{frequencies[1]} MHz sin')
 plt.plot(pointsZ, emfSin3, label=f'{frequencies[2]} MHz sin')
 plt.plot(pointsZ, emfSin4, label=f'{frequencies[3]} MHz sin')
 
-plt.xlabel('Z')
-plt.ylabel('EMF')
+plt.xlabel('Z, m')
+plt.ylabel('EMF, V')
+plt.title(f'Sin EMFs')
 
 #plt.xticks([-1e-2, -1e-10, -1e-20, 0, 1e-20, 1e-10, 1e-2])
-plt.xlim(-4, -2)
+plt.xlim(-3.5, -2.5)
 #plt.ylim(sin_min, abs(sin_min))
 
 plt.legend()
@@ -41,11 +42,12 @@ plt.plot(pointsZ, emfCos2, label=f'{frequencies[1]} MHz cos')
 plt.plot(pointsZ, emfCos3, label=f'{frequencies[2]} MHz cos')
 plt.plot(pointsZ, emfCos4, label=f'{frequencies[3]} MHz cos')
 
-plt.xlabel('Z')
-plt.ylabel('EMF')
+plt.xlabel('Z, m')
+plt.ylabel('EMF, V')
+plt.title(f'Cos EMFs')
 
 #plt.xticks([-1e-2, -1e-10, -1e-20, 0, 1e-20, 1e-10, 1e-2])
-plt.xlim(-4, -2)
+plt.xlim(-3.5, -2.5)
 #plt.ylim(cos_min, abs(cos_min))
 
 plt.legend()
@@ -65,11 +67,12 @@ plt.plot(pointsZ, phaseDifferences2, label=f'{frequencies[1]} MHz phase differen
 plt.plot(pointsZ, phaseDifferences3, label=f'{frequencies[2]} MHz phase differences')
 plt.plot(pointsZ, phaseDifferences4, label=f'{frequencies[3]} MHz phase differences')
 
-plt.xlabel('Z')
-plt.ylabel('EMF')
+plt.xlabel('Z, m')
+plt.ylabel('Phase difference')
+plt.title(f'Phase differences')
 
 #plt.xticks([-1e-2, -1e-10, -1e-20, 0, 1e-20, 1e-10, 1e-2])
-plt.xlim(-4, -2)
+plt.xlim(-3.5, -2.5)
 
 plt.legend()
 
