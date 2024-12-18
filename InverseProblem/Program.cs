@@ -8,11 +8,14 @@ using InverseProblem.Parameters;
 using InverseProblem.SLAE;
 using System.Diagnostics;
 using System.Globalization;
+using DirectProblem.GridGenerator;
 using Vector = DirectProblem.Core.Base.Vector;
+using System.Numerics;
+using DirectProblem.IO;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var trueGrid = Grids.GetUniformGridWith0Dot003125StepWith4Materials();
+var trueGrid = Grids.GetGridWith0Dot003125StepWithElementCloseToWellAnd8Sigmas();
 
 const double current = 1d;
 const double mu = 4 * Math.PI * 1e-7;
@@ -30,15 +33,15 @@ var trueMaterials = new Material[]
     new(mu, 1)
 };
 
-var frequencies = new[] { 4e4, 2e5, /*1e6, 2e6*/ };
+var frequencies = new[] { 4e4, 2e5, 1e6, 2e6 };
 
-var sources = new Source[5];
+var sources = new Source[10];
 var receiverLines = new ReceiverLine[sources.Length];
 var truePhaseDifferences = new double[frequencies.Length, receiverLines.Length];
 
 for (var i = 0; i < sources.Length; i++)
 {
-    sources[i] = new Source(new Node2D(0.05, -2.75 - 0.1 * i), current);
+    sources[i] = new Source(new Node2D(0.05, -2.5 - 0.1 * i), current);
     receiverLines[i] = new ReceiverLine(
         new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.05),
         new Node2D(sources[i].Point.R, sources[i].Point.Z - 0.1)
@@ -51,13 +54,13 @@ var targetParameters = new Parameter[]
 {
     new (ParameterType.Sigma, 0),
     new (ParameterType.Sigma, 1),
-    //new (ParameterType.Sigma, 2, 0),
-    //new (ParameterType.Sigma, 3, 0),
-    //new (ParameterType.Sigma, 4, 0),
-    //new (ParameterType.Sigma, 5, 0),
+    new (ParameterType.Sigma, 2),
+    new (ParameterType.Sigma, 3),
+    new (ParameterType.Sigma, 4),
+    new (ParameterType.Sigma, 5),
     new (ParameterType.Sigma, 6),
     new (ParameterType.Sigma, 7),
-    //new (ParameterType.Sigma, 8, 0)
+    //new (ParameterType.Sigma, 8)
 };
 
 DirectProblemSolver[] directProblemSolvers;
@@ -81,23 +84,31 @@ for (var i = 0; i < directProblemSolvers.Length; i++)
     localBasisFunctionsProviders[i] = new LocalBasisFunctionsProvider(trueGrid);
 }
 
+var directSolver = new DirectProblemSolver(trueGrid, trueMaterials)
+    .SetGrid(trueGrid).SetMaterials(trueMaterials);
+
+var localBasisFunctionsProvider = new LocalBasisFunctionsProvider(trueGrid);
+
 var stopwatch = new Stopwatch();
 stopwatch.Start();
 
-//var resultO = new ResultIO("../InverseProblem/Results/OneSigma/");
-//var gridO = new GridIO("../InverseProblem/Results/8OtherSigmasCloseAndNearToWell/");
+var resultO = new ResultIO("../InverseProblem/Results/2hFieldPart8SigmasCloseToWell/");
+var gridO = new GridIO("../InverseProblem/Results/2hFieldPart8SigmasCloseToWell/");
+
+
 
 for (var i = 0; i < frequencies.Length; i++)
 {
     for (var j = 0; j < receiverLines.Length; j++)
     {
-        var solution = directProblemSolvers[0]
+        var solution = directSolver
+            .SetDenseProvider(new DenseValuesProviderViaFunction(v => new Complex(0, 0), trueGrid))
             .SetFrequency(frequencies[i])
             .SetSource(sources[j])
             .AssembleSLAE()
             .Solve();
 
-        var femSolution = new FEMSolution(trueGrid, solution, localBasisFunctionsProviders[0]);
+        var femSolution = new FEMSolution(trueGrid, solution, localBasisFunctionsProvider);
 
         var fieldM = femSolution.Calculate(receiverLines[j].PointM);
         var fieldN = femSolution.Calculate(receiverLines[j].PointN);
@@ -108,8 +119,8 @@ for (var i = 0; i < frequencies.Length; i++)
     }
 }
 
-//resultO.WriteInverseProblemIteration(receiverLines, truePhaseDifferences, frequencies, "true phase differences.txt");
-//gridO.WriteAreas(trueGrid, trueValues, "true areas.txt");
+resultO.WriteInverseProblemIteration(receiverLines, truePhaseDifferences, frequencies, "true phase differences.txt");
+gridO.WriteAreas(trueGrid, new Vector(trueMaterials.Select(m => m.Sigma).ToArray()), "true areas.txt");
 
 Console.WriteLine();
 Console.WriteLine("TrueDirectProblem calculated");
@@ -140,9 +151,9 @@ for (var i = 0; i < parametersCollections.Length; i++)
     parametersCollections[i] = new ParametersCollection(materials, [1e-4, 0.1, 1d, 3d], [-6d, -4d, -3d, -2d, 0d]);
 }
 
-var initialValues = new Vector([/*0.1, 0.1, 0.1, 0.1, 0.1,*/ 0.1, 0.1, 0.1, 0.1]);
+var initialValues = new Vector([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]);
 
-var slaeAssembler = new SLAEAssembler(directProblemSolvers, localBasisFunctionsProviders,
+var slaeAssembler = new SLAEAssembler(new GridBuilder2D(), directProblemSolvers, localBasisFunctionsProviders,
     parametersCollections, sources, receiverLines, frequencies, targetParameters, initialValues,
     truePhaseDifferences);
 
@@ -150,8 +161,8 @@ var gaussElimination = new GaussElimination();
 
 var regularizer = new Regularizer(gaussElimination, targetParameters);
 
-var inverseProblemSolver = new InverseProblemSolver(directProblemSolvers, slaeAssembler, regularizer,
-    gaussElimination, localBasisFunctionsProviders, trueGrid, parametersCollections, sources, receiverLines,
+var inverseProblemSolver = new InverseProblemSolver(directSolver, slaeAssembler, regularizer,
+    gaussElimination, localBasisFunctionsProvider, trueGrid, parametersCollections, sources, receiverLines,
     frequencies, targetParameters, truePhaseDifferences, initialValues);
 
 stopwatch.Restart();

@@ -1,25 +1,28 @@
-﻿using DirectProblem;
+﻿using System.Numerics;
+using DirectProblem;
 using DirectProblem.Core;
 using DirectProblem.Core.Base;
 using DirectProblem.Core.Global;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.FEM;
+using DirectProblem.IO;
 using DirectProblem.SLAE;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using InverseProblem.Assembling;
 using InverseProblem.Parameters;
 using InverseProblem.SLAE;
+using Vector = DirectProblem.Core.Base.Vector;
 
 namespace InverseProblem;
 
 public class InverseProblemSolver
 {
-    private readonly DirectProblemSolver[] _directProblemSolver;
+    private readonly DirectProblemSolver _directProblemSolver;
     private readonly SLAEAssembler _slaeAssembler;
     private readonly Regularizer _regularizer;
     private readonly GaussElimination _gaussElimination;
-    private readonly LocalBasisFunctionsProvider[] _localBasisFunctionsProvider;
+    private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
 
     private readonly ParametersCollection[] _parametersCollection;
     private readonly Source[] _sources;
@@ -32,15 +35,15 @@ public class InverseProblemSolver
     private double[,] _weightsSquares;
     private readonly double[,] _currentPhaseDifferences;
     private readonly Grid<Node2D> _grid;
-    private FEMSolution _femSolution;
+    private FEMSolution[,] _solutions;
 
     public InverseProblemSolver
     (
-        DirectProblemSolver[] directProblemSolver,
+        DirectProblemSolver directProblemSolver,
         SLAEAssembler slaeAssembler,
         Regularizer regularizer,
         GaussElimination gaussElimination,
-        LocalBasisFunctionsProvider[] localBasisFunctionsProvider,
+        LocalBasisFunctionsProvider localBasisFunctionsProvider,
         Grid<Node2D> grid,
         ParametersCollection[] parametersCollection,
         Source[] sources,
@@ -67,6 +70,7 @@ public class InverseProblemSolver
 
         CalculateWeightsSquares();
 
+        _solutions = new FEMSolution[_frequencies.Length, _receiverLines.Length];
         _currentPhaseDifferences = new double[_frequencies.Length, _receiverLines.Length];
     }
 
@@ -93,12 +97,12 @@ public class InverseProblemSolver
 
         _slaeAssembler.SetGrid(_grid);
 
-        //var resultO = new ResultIO("../InverseProblem/Results/8OtherSigmasCloseAndNearToWell/");
-        //var gridO = new GridIO("../InverseProblem/Results/8OtherSigmasCloseAndNearToWell/");
+        var resultO = new ResultIO("../InverseProblem/Results/2hFieldPart8SigmasCloseToWell/");
+        var gridO = new GridIO("../InverseProblem/Results/2hFieldPart8SigmasCloseToWell/");
 
         CalculatePhaseDifferences();
-        //resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, "iteration 0 phase differences.txt");
-        //gridO.WriteAreas(_grid, _initialValues, "iteration 0 areas.txt");
+        resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, "iteration 0 phase differences.txt");
+        gridO.WriteAreas(_grid, _initialValues, "iteration 0 areas.txt");
 
         Console.WriteLine($"Iteration: 0");
         for (var j = 0; j < _initialValues.Count; j++)
@@ -108,6 +112,8 @@ public class InverseProblemSolver
 
         for (var i = 1; i <= MethodsConfig.MaxIterations && CheckFunctional(functional, previousFunctional); i++)
         {
+            _slaeAssembler.SetCurrentSolutions(_solutions);
+
             equation = _slaeAssembler
                 .SetCurrentPhaseDifferences(_currentPhaseDifferences)
                 .BuildEquation();
@@ -135,8 +141,8 @@ public class InverseProblemSolver
                 Console.WriteLine($"{equation.Solution[j]} {parametersDeltas[j]} {alphas[j]}");
             }
 
-            //resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, $"iteration {i} phase differences.txt");
-            //gridO.WriteAreas(_grid, equation.Solution, $"iteration {i} areas.txt");
+            resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, $"iteration {i} phase differences.txt");
+            gridO.WriteAreas(_grid, equation.Solution, $"iteration {i} areas.txt");
         }
 
         Console.WriteLine();
@@ -182,17 +188,17 @@ public class InverseProblemSolver
 
     private void ChangeMaterials()
     {
-        _directProblemSolver[0].SetMaterials(_parametersCollection[0].Materials);
+        _directProblemSolver.SetMaterials(_parametersCollection[0].Materials);
     }
 
     private void ChangeFrequency(double frequency)
     {
-        _directProblemSolver[0].SetFrequency(frequency);
+        _directProblemSolver.SetFrequency(frequency);
     }
 
     private void ChangeSource(Source source)
     {
-        _directProblemSolver[0].SetSource(source);
+        _directProblemSolver.SetSource(source);
     }
 
     private void CalculatePhaseDifferences()
@@ -206,10 +212,12 @@ public class InverseProblemSolver
             for (var j = 0; j < _receiverLines.Length; j++)
             {
                 ChangeSource(_sources[j]);
-                SolveDirectProblem();
+                var solution = SolveDirectProblem();
 
-                var fieldM = _femSolution.Calculate(_receiverLines[j].PointM);
-                var fieldN = _femSolution.Calculate(_receiverLines[j].PointN);
+                _solutions[i, j] = solution;
+
+                var fieldM = solution.Calculate(_receiverLines[j].PointM);
+                var fieldN = solution.Calculate(_receiverLines[j].PointN);
 
                 _currentPhaseDifferences[i, j] = (fieldM.Phase - fieldN.Phase) * 180d / Math.PI;
 
@@ -220,10 +228,8 @@ public class InverseProblemSolver
         Console.WriteLine();
     }
 
-    private void SolveDirectProblem()
+    private FEMSolution SolveDirectProblem()
     {
-        var solution = _directProblemSolver[0].AssembleSLAE().Solve();
-
-        _femSolution = new FEMSolution(_grid, solution, _localBasisFunctionsProvider[0]);
+       return new FEMSolution(_grid, _directProblemSolver.AssembleSLAE().Solve().Clone(), _localBasisFunctionsProvider);
     }
 }

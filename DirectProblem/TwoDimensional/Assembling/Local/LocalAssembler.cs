@@ -1,7 +1,9 @@
-﻿using DirectProblem.Core.Base;
+﻿using System.Numerics;
+using DirectProblem.Core.Base;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.Core.Local;
 using DirectProblem.FEM.Assembling.Local;
+using Vector = DirectProblem.Core.Base.Vector;
 
 namespace DirectProblem.TwoDimensional.Assembling.Local;
 
@@ -10,7 +12,11 @@ public class LocalAssembler : ILocalAssembler
     private readonly ILocalMatrixAssembler _localMatrixAssembler;
     private Material[] _materials;
     private double _frequency;
+    private IDenseValuesProvider<Complex> _denseValuesProvider;
     private readonly Matrix _matrix;
+    private readonly Vector _complexVector;
+    private readonly Vector _vector;
+    private readonly Vector _resultVector;
     private readonly int[] _complexIndexes;
 
     public LocalAssembler
@@ -22,6 +28,9 @@ public class LocalAssembler : ILocalAssembler
         _localMatrixAssembler = localMatrixAssembler;
         _materials = materials;
         _matrix = new Matrix(8);
+        _vector = new Vector(4);
+        _resultVector = new Vector(4);
+        _complexVector = new Vector(8);
         _complexIndexes = new int[8];
     }
 
@@ -39,12 +48,27 @@ public class LocalAssembler : ILocalAssembler
         return this;
     }
 
+    public LocalAssembler SetDenseValuesProvider(IDenseValuesProvider<Complex> denseValuesProvider)
+    {
+        _denseValuesProvider = denseValuesProvider;
+
+        return this;
+    }
+
     public LocalMatrix AssembleMatrix(Element element)
     {
         var matrix = GetComplexMatrix(element);
         var indexes = GetComplexIndexes(element);
 
         return new LocalMatrix(indexes, matrix);
+    }
+
+    public LocalVector AssembleVector(Element element)
+    {
+        var vector = GetComplexVector(element);
+        var indexes = GetComplexIndexes(element);
+
+        return new LocalVector(indexes, vector);
     }
 
     private Matrix GetStiffnessMatrix(Element element)
@@ -82,6 +106,34 @@ public class LocalAssembler : ILocalAssembler
         }
 
         return _matrix;
+    }
+
+    private Vector GetComplexVector(Element element)
+    {
+        var mass = GetMassMatrix(element);
+        var denseValues = _denseValuesProvider.GetValues(element);
+
+        for (var i = 0; i < denseValues.Length; i++)
+        {
+            _vector[i] = _frequency * denseValues[i].Real;
+        }
+
+        Matrix.Multiply(mass, _vector, _resultVector);
+
+        for (var i = 0; i < _resultVector.Count; i++)
+        {
+            _complexVector[i * 2] = _resultVector[i];
+            _vector[i] = _frequency * denseValues[i].Imaginary;
+        }
+
+        Matrix.Multiply(mass, _vector, _resultVector);
+
+        for (var i = 0; i < _resultVector.Count; i++)
+        {
+            _complexVector[i * 2 + 1] = _resultVector[i];
+        }
+
+        return _complexVector;
     }
 
     private int[] GetComplexIndexes(Element element)

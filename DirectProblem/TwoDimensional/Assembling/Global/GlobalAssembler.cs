@@ -7,13 +7,14 @@ using DirectProblem.Core.Local;
 using DirectProblem.FEM.Assembling;
 using DirectProblem.FEM.Assembling.Local;
 using DirectProblem.SLAE;
+using DirectProblem.TwoDimensional.Assembling.Local;
 using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
 
 namespace DirectProblem.TwoDimensional.Assembling.Global;
 
 public class GlobalAssembler<TNode>
 {
-    private readonly Grid<Node2D> _grid;
+    private Grid<Node2D> _grid;
     private readonly IMatrixPortraitBuilder<TNode, SparseMatrix> _matrixPortraitBuilder;
     private readonly ILocalAssembler _localAssembler;
     private readonly IInserter<SparseMatrix> _inserter;
@@ -51,6 +52,13 @@ public class GlobalAssembler<TNode>
         _complexIndexes = new int[4];
     }
 
+    public GlobalAssembler<TNode> SetGrid(Grid<Node2D> grid)
+    {
+        _grid = grid;
+
+        return this;
+    }
+
     public GlobalAssembler<TNode> AssembleEquation(Grid<TNode> grid)
     {
         var globalMatrix = _matrixPortraitBuilder.Build(grid);
@@ -69,19 +77,17 @@ public class GlobalAssembler<TNode>
             );
         }
 
-        if (_equation.Matrix.Equals(globalMatrix))
-        {
-            Console.WriteLine("Lel");
-        }
-
         globalMatrix.Copy(_equation.Matrix);
+        //_equation.Solution.Clear();
         _equation.RightPart.Clear();
 
         foreach (var element in grid)
         {
             var localMatrix = _localAssembler.AssembleMatrix(element);
+            var localVector = _localAssembler.AssembleVector(element);
 
             _inserter.InsertMatrix(_equation.Matrix, localMatrix);
+            _inserter.InsertVector(_equation.RightPart, localVector);
         }
 
         return this;

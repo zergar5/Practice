@@ -6,12 +6,17 @@ using DirectProblem.Core.GridComponents;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using InverseProblem.Parameters;
+using System.Numerics;
+using DirectProblem.GridGenerator;
 using Vector = DirectProblem.Core.Base.Vector;
+using DirectProblem.GridGenerator.Intervals.Splitting;
+using System;
 
 namespace InverseProblem.Assembling;
 
 public class SLAEAssembler
 {
+    private readonly GridBuilder2D _gridBuilder;
     private readonly DirectProblemSolver[] _directProblemSolver;
     private readonly LocalBasisFunctionsProvider[] _localBasisFunctionsProvider;
 
@@ -22,6 +27,7 @@ public class SLAEAssembler
     private readonly Parameter[] _parameters;
     private readonly double[,] _truePhaseDifferences;
     private double[,] _weightsSquares;
+    private FEMSolution[,] _solutions;
     private double[,] _phaseDifferences;
     private readonly double[,,] _phaseDifferencesDerivatives;
     private readonly Equation<Matrix> _equation;
@@ -32,6 +38,7 @@ public class SLAEAssembler
 
     public SLAEAssembler
     (
+        GridBuilder2D gridBuilder,
         DirectProblemSolver[] directProblemSolver,
         LocalBasisFunctionsProvider[] localBasisFunctionsProvider,
         ParametersCollection[] parametersCollection,
@@ -43,6 +50,7 @@ public class SLAEAssembler
         double[,] truePhaseDifferences
     )
     {
+        _gridBuilder = gridBuilder;
         _directProblemSolver = directProblemSolver;
         _localBasisFunctionsProvider = localBasisFunctionsProvider;
 
@@ -65,7 +73,34 @@ public class SLAEAssembler
 
     public SLAEAssembler SetGrid(Grid<Node2D> grid)
     {
-        _grid = grid;
+        _grid = _gridBuilder
+            .SetRAxis(new AxisSplitParameter(
+                    _parametersCollection[0].RControlPoints,
+                    new UniformSplitter(8),
+                    new StepProportionalSplitter(0.00625, 1.1),
+                    new StepProportionalSplitter(0.1, 1.1)
+                )
+            )
+            .SetZAxis(new AxisSplitParameter(
+                    _parametersCollection[0].ZControlPoints,
+                    new StepProportionalSplitter(0.00625, 1 / 1.1),
+                    new StepUniformSplitter(0.00625),
+                    new StepUniformSplitter(0.00625),
+                    new StepProportionalSplitter(0.00625, 1.1)
+                )
+            )
+            .SetAreas(grid.Areas!)
+            .Build();
+
+        foreach (var directProblemSolver in _directProblemSolver)
+        {
+            directProblemSolver.SetGrid(_grid);
+        }
+
+        foreach (var localBasisFunctionsProvider in _localBasisFunctionsProvider)
+        {
+            localBasisFunctionsProvider.SetGrid(_grid);
+        }
 
         return this;
     }
@@ -74,6 +109,12 @@ public class SLAEAssembler
     {
         _weightsSquares = weightsSquares;
 
+        return this;
+    }
+
+    public SLAEAssembler SetCurrentSolutions(FEMSolution[,] solutions)
+    {
+        _solutions = solutions;
         return this;
     }
 
@@ -106,6 +147,13 @@ public class SLAEAssembler
     private void ChangeSource(Source source, int solverId)
     {
         _directProblemSolver[solverId].SetSource(source);
+    }
+
+    private void ChangeDense(FEMSolution solution, int parameterIndex, double delta, int solverId)
+    {
+        _directProblemSolver[solverId].SetDenseProvider(
+            new FieldPartDenseValuesProvider(solution, _grid, parameterIndex, delta)
+        );
     }
 
     private FEMSolution SolveDirectProblem(int solverId)
@@ -189,7 +237,7 @@ public class SLAEAssembler
         Task.WaitAll(_tasks);
     }
 
-    private void CalculatePhaseDifferencesDerivatives(int parameterIndex, double delta, int solverId)
+    private void CalculatePhaseDifferencesDerivatives(int parameterNumber, double delta, int solverId)
     {
         for (var i = 0; i < _frequencies.Length; i++)
         {
@@ -197,18 +245,55 @@ public class SLAEAssembler
 
             for (var j = 0; j < _receiverLines.Length; j++)
             {
-                ChangeSource(_sources[j], solverId);
-                var femSolution = SolveDirectProblem(solverId);
+                //var baseSolution = _directProblemSolver[solverId].GetEquation().Solution.Clone();
+                //SolveDirectProblem(solverId);
 
-                var fieldM = femSolution.Calculate(_receiverLines[j].PointM);
-                var fieldN = femSolution.Calculate(_receiverLines[j].PointN);
+                //var newSigmaSolution = _directProblemSolver[solverId].GetEquation().Solution;
+                //var matrixA = _directProblemSolver[solverId].GetEquation().Matrix;
 
-                _phaseDifferencesDerivatives[parameterIndex, i, j] = (fieldM.Phase - fieldN.Phase) * 180d / Math.PI;
+                //for (var k = 0; k < baseSolution.Count; k++)
+                //{
+                //    baseSolution[k] = newSigmaSolution[k] - baseSolution[k];
+                //}
 
-                _phaseDifferencesDerivatives[parameterIndex, i, j] =
-                    (_phaseDifferencesDerivatives[parameterIndex, i, j] - _phaseDifferences[i, j]) / delta;
+                ChangeDense(_solutions[i, j], _parameters[parameterNumber].Index, delta, solverId);
 
-                Console.Write($"derivative {parameterIndex} frequency {i} source {j}                           \r");
+                //_directProblemSolver[solverId].SetDenseProvider(
+                //    new FieldPartDenseValuesProvider(_solutions[i, j], _grid, _parameters[parameterNumber].Index, delta)
+                //);
+
+                //var trueRightPart = SparseMatrix.Multiply(matrixA, baseSolution);
+
+                ChangeSource(_sources[j] with { Current = 0 }, solverId);
+                //_directProblemSolver[solverId].AssembleSLAE();
+                //var sigmaDiffRightPart = _directProblemSolver[solverId].GetEquation().RightPart.Clone();
+
+                //var diff = trueRightPart.Norm - sigmaDiffRightPart.Norm;
+                //Console.WriteLine(diff);
+                //Console.WriteLine(trueRightPart.Norm);
+                //Console.WriteLine(sigmaDiffRightPart.Norm);
+
+                var diffSolution = SolveDirectProblem(solverId);
+                
+                //for (var k = 0; k < trueRightPart.Count; k++)
+                //{
+                //    diff = sigmaDiffRightPart[i] - trueRightPart[i];
+                //}
+
+                var fieldM = _solutions[i, j].Calculate(_receiverLines[j].PointM);
+                var fieldN = _solutions[i, j].Calculate(_receiverLines[j].PointN);
+                
+                var diffFieldM = diffSolution.Calculate(_receiverLines[j].PointM);
+                var diffFieldN = diffSolution.Calculate(_receiverLines[j].PointN);
+
+                var withDeltaFieldM = fieldM + diffFieldM;
+                var withDeltaFieldN = fieldN + diffFieldN;
+
+                var withDeltaPhaseDifference = (withDeltaFieldM.Phase - withDeltaFieldN.Phase) * 180d / Math.PI;
+
+                _phaseDifferencesDerivatives[parameterNumber, i, j] = (withDeltaPhaseDifference - _phaseDifferences[i, j]) / delta;
+
+                Console.Write($"derivative {parameterNumber} frequency {i} source {j}                           \r");
             }
         }
     }

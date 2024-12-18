@@ -1,14 +1,16 @@
-﻿using DirectProblem.Core;
-using DirectProblem.Core.Base;
+﻿using System.Numerics;
+using DirectProblem.Core;
 using DirectProblem.Core.Boundary;
 using DirectProblem.Core.Global;
 using DirectProblem.Core.GridComponents;
+using DirectProblem.FEM.Assembling.Local;
 using DirectProblem.SLAE.Preconditions;
 using DirectProblem.SLAE.Solvers;
 using DirectProblem.TwoDimensional.Assembling;
 using DirectProblem.TwoDimensional.Assembling.Boundary;
 using DirectProblem.TwoDimensional.Assembling.Global;
 using DirectProblem.TwoDimensional.Assembling.Local;
+using Vector = DirectProblem.Core.Base.Vector;
 
 namespace DirectProblem;
 
@@ -55,6 +57,7 @@ public class DirectProblemSolver
         _localBasisFunctionsProvider.SetGrid(grid);
         _localMatrixAssembler.SetGrid(grid);
         _firstBoundaryProvider.SetGrid(grid);
+        _globalAssembler.SetGrid(grid);
         _firstConditions = _firstBoundaryProvider.GetConditions(
                 grid.Nodes.RLength - 1, grid.Nodes.ZLength - 1);
 
@@ -64,6 +67,13 @@ public class DirectProblemSolver
     public DirectProblemSolver SetMaterials(Material[] materials)
     {
         _localAssembler.SetMaterials(materials);
+
+        return this;
+    }
+
+    public DirectProblemSolver SetDenseProvider(IDenseValuesProvider<Complex> denseProvider)
+    {
+        _localAssembler.SetDenseValuesProvider(denseProvider);
 
         return this;
     }
@@ -102,4 +112,6 @@ public class DirectProblemSolver
 
         return solution;
     }
+
+    public Equation<SparseMatrix> GetEquation() => _equation;
 }

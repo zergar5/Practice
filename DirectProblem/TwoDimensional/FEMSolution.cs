@@ -13,6 +13,7 @@ public class FEMSolution
     private readonly Grid<Node2D> _grid;
     private readonly Vector _solution;
     private readonly LocalBasisFunctionsProvider _localBasisFunctionsProvider;
+    private static readonly object _lock = new object();
 
     public FEMSolution
     (
@@ -32,15 +33,18 @@ public class FEMSolution
         {
             var element = _grid.Elements.First(x => ElementHas(x, point));
 
-            var basisFunctions = _localBasisFunctionsProvider.GetBilinearFunctions(element);
-
             var sumS = 0d;
             var sumC = 0d;
 
-            for (var i = 0; i < element.NodesIndexes.Length; i++)
+            lock (_lock)
             {
-                sumS += _solution[element.NodesIndexes[i] * 2] * basisFunctions[i].Calculate(point);
-                sumC += _solution[element.NodesIndexes[i] * 2 + 1] * basisFunctions[i].Calculate(point);
+                var basisFunctions = _localBasisFunctionsProvider.GetBilinearFunctions(element);
+
+                for (var i = 0; i < element.NodesIndexes.Length; i++)
+                {
+                    sumS += _solution[element.NodesIndexes[i] * 2] * basisFunctions[i].Calculate(point);
+                    sumC += _solution[element.NodesIndexes[i] * 2 + 1] * basisFunctions[i].Calculate(point);
+                }
             }
 
             var values = new Complex(sumS, sumC);

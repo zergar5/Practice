@@ -22,6 +22,10 @@ public class LOS
     public LOS SetPrecondition(SparseMatrix preconditionMatrix)
     {
         _preconditionMatrix = preconditionMatrix;
+        //_r = new Vector(_preconditionMatrix.Count);
+        //_z = new Vector(_preconditionMatrix.Count);
+        //_p = new Vector(_preconditionMatrix.Count);
+
         return this;
     }
 
