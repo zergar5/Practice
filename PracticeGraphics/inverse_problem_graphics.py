@@ -130,7 +130,7 @@ def draw_areas_plot_for_true_values(areas):
     plt.show()
 
 # Директория, откуда нужно считать файлы
-directory = "..\\DirectProblem\\Results\\"
+directory = "..\\InverseProblem\\Results\\2hFieldPart8SigmasCloseToWell\\"
 
 # Обработка каждого файла в директории
 for file_name in os.listdir(directory):

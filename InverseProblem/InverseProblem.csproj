@@ -17,4 +17,8 @@
     <ProjectReference Include="..\DirectProblem\DirectProblem.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Results\4hFieldPart8SigmasCloseToWell\" />
+  </ItemGroup>
+
 </Project>

@@ -10,6 +10,7 @@ public readonly record struct StepUniformSplitter : IIntervalSplitter
     {
         _step = step;
     }
+
     public IEnumerable<double> EnumerateValues(Interval interval)
     {
         var stepNumber = 0;
