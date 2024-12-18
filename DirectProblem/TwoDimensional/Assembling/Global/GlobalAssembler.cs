@@ -69,11 +69,6 @@ public class GlobalAssembler<TNode>
             );
         }
 
-        if (_equation.Matrix.Equals(globalMatrix))
-        {
-            Console.WriteLine("Lel");
-        }
-
         globalMatrix.Copy(_equation.Matrix);
         _equation.RightPart.Clear();
 
