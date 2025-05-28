@@ -112,6 +112,4 @@ public class DirectProblemSolver
 
         return solution;
     }
-
-    public Equation<SparseMatrix> GetEquation() => _equation;
 }

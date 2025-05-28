@@ -10,7 +10,7 @@ using Vector = DirectProblem.Core.Base.Vector;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var grid = Grids.GetUniformGridWith0Dot003125StepWith4Materials();
+var grid = Grids.GetGridWith0Dot003125StepWithElementCloseToWellAnd8Sigmas();
 
 var gridO = new GridIO("../DirectProblem/Results/");
 
@@ -18,8 +18,7 @@ gridO.WriteMaterials(grid, "nvkat2d.dat");
 gridO.WriteElements(grid, "nvtr.dat");
 gridO.WriteNodes(grid, "rz.dat");
 
-
-var mu = 4 * Math.PI * 10e-7;
+var mu = 4 * Math.PI * 1e-7;
 
 var materials = new Material[]
 {
@@ -34,7 +33,7 @@ var materials = new Material[]
     new(mu, 1),
 };
 
-gridO.WriteAreas(grid, new Vector([0.5, 0.05, 1d / 30, 0.01, 1d / 3d, 0.2, 0.1, 0.25, 1]), "true areas.txt");
+gridO.WriteAreas(grid, new Vector(materials.Select(m => m.Sigma).ToArray()), "true areas.txt");
 
 var omegas = new[] { 4e4, 2e5, 1e6, 2e6 };
 var current = 1;

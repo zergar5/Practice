@@ -7,7 +7,6 @@ using DirectProblem.Core.Local;
 using DirectProblem.FEM.Assembling;
 using DirectProblem.FEM.Assembling.Local;
 using DirectProblem.SLAE;
-using DirectProblem.TwoDimensional.Assembling.Local;
 using DirectProblem.TwoDimensional.Assembling.MatrixTemplates;
 
 namespace DirectProblem.TwoDimensional.Assembling.Global;
