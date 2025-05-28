@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using DirectProblem;
+﻿using DirectProblem;
 using DirectProblem.Core;
 using DirectProblem.Core.Base;
 using DirectProblem.Core.Global;
@@ -97,8 +96,8 @@ public class InverseProblemSolver
 
         _slaeAssembler.SetGrid(_grid);
 
-        var resultO = new ResultIO("../InverseProblem/Results/2hFieldPart8SigmasCloseToWell/");
-        var gridO = new GridIO("../InverseProblem/Results/2hFieldPart8SigmasCloseToWell/");
+        var resultO = new ResultIO("../InverseProblem/Results/4hFieldPart8SigmasNearToWell/");
+        var gridO = new GridIO("../InverseProblem/Results/4hFieldPart8SigmasNearToWell/");
 
         CalculatePhaseDifferences();
         resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, "iteration 0 phase differences.txt");
@@ -110,7 +109,7 @@ public class InverseProblemSolver
             Console.WriteLine($"{_initialValues[j]}");
         }
 
-        for (var i = 1; i <= MethodsConfig.MaxIterations && CheckFunctional(functional, previousFunctional); i++)
+        for (var i = 1; i <= MethodsConfig.MaxIterations && CheckFunctional(functional, previousFunctional) && i <= 8; i++)
         {
             _slaeAssembler.SetCurrentSolutions(_solutions);
 
@@ -182,7 +181,7 @@ public class InverseProblemSolver
     private bool CheckFunctional(double currentFunctional, double previousFunctional)
     {
         var functionalRatio = Math.Abs(currentFunctional / previousFunctional);
-        return Math.Abs(double.Max(1 / functionalRatio, functionalRatio) - 1) > 1e-1 &&
+        return Math.Abs(double.Max(1 / functionalRatio, functionalRatio) - 1) >= MethodsConfig.FunctionalPrecision &&
                currentFunctional >= MethodsConfig.FunctionalPrecision;
     }
 

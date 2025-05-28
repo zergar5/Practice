@@ -6,11 +6,9 @@ using DirectProblem.Core.GridComponents;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using InverseProblem.Parameters;
-using System.Numerics;
 using DirectProblem.GridGenerator;
 using Vector = DirectProblem.Core.Base.Vector;
 using DirectProblem.GridGenerator.Intervals.Splitting;
-using System;
 
 namespace InverseProblem.Assembling;
 
@@ -76,17 +74,18 @@ public class SLAEAssembler
         _grid = _gridBuilder
             .SetRAxis(new AxisSplitParameter(
                     _parametersCollection[0].RControlPoints,
-                    new UniformSplitter(8),
-                    new StepProportionalSplitter(0.00625, 1.1),
-                    new StepProportionalSplitter(0.1, 1.1)
+                    new UniformSplitter(4),
+                    new StepProportionalSplitter(0.0125, 1.1),
+                    new StepProportionalSplitter(0.1, 1.1),
+                    new StepProportionalSplitter(0.25, 1.1)
                 )
             )
             .SetZAxis(new AxisSplitParameter(
                     _parametersCollection[0].ZControlPoints,
-                    new StepProportionalSplitter(0.00625, 1 / 1.1),
-                    new StepUniformSplitter(0.00625),
-                    new StepUniformSplitter(0.00625),
-                    new StepProportionalSplitter(0.00625, 1.1)
+                    new StepProportionalSplitter(0.0125, 1 / 1.1),
+                    new StepUniformSplitter(0.0125),
+                    new StepUniformSplitter(0.0125),
+                    new StepProportionalSplitter(0.0125, 1.1)
                 )
             )
             .SetAreas(grid.Areas!)
