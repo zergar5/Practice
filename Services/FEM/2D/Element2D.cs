@@ -1,17 +1,27 @@
-﻿using Domain.Enums;
+﻿using System.Collections.Immutable;
+using Application.FEM.Core;
+using Domain.Enums;
 
-namespace Domain.Element;
+namespace Application.FEM._2D;
 
 public interface IElement2D : IElement
 {
-    public double Length { get; set; }
-    public double Height { get; set; }
+    public double Length { get; }
+    public double Height { get; }
 }
 
 public class Element2D : Element, IElement2D
 {
-    public double Length { get; set; }
-    public double Height { get; set; }
+    private readonly int[] _nodeIndexes;
+
+    public override ImmutableArray<int> NodeIndexes => [.. _nodeIndexes];
+    public double Length { get; }
+    public double Height { get; }
+
+    public Element2D(int[] nodeIndexes)
+    {
+        _nodeIndexes = nodeIndexes;
+    }
 
     public BoundInfo GetBoundNodeIndexes(Bound2D bound, int[]? indexes = null)
     {

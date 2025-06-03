@@ -115,6 +115,7 @@ public class SparseMatrix
 
         return result;
     }
+
     public SparseMatrix Clone()
     {
         var rowIndexes = new int[_rowsIndexes.Length];

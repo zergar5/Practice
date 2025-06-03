@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="FEM\1D\MatrixTemplates\" />
+    <Folder Include="FEM\Assembling\Global\" />
+    <Folder Include="FEM\Assembling\1D\" />
+    <Folder Include="FEM\Assembling\Providers\" />
+    <Folder Include="FEM\Assembling\BoundaryConditions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DirectProblem\DirectProblem.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+</Project>
