@@ -1,19 +1,18 @@
-﻿using System.Numerics;
-using Application.FEM.Core.BasisFunctions;
+﻿using Application.FEM.Core.BasisFunctions;
 using Domain.Nodes;
 
 namespace Application.FEM._2D.BasisFunctions;
 
-public class BasisFunction2D<TResult> : IBasisFunction<INode2D, TResult> where TResult : INumber<TResult>
+public class BasisFunction2D : IBasisFunction<Node2D>
 {
-    private readonly Func<double, TResult> _xFunction;
-    private readonly Func<double, TResult> _yFunction;
+    private readonly IBasisFunction<double> _xFunction;
+    private readonly IBasisFunction<double> _yFunction;
 
-    public BasisFunction2D(Func<double, TResult> xFunction, Func<double, TResult> yFunction)
+    public BasisFunction2D(IBasisFunction<double> xFunction, IBasisFunction<double> yFunction)
     {
         _xFunction = xFunction;
         _yFunction = yFunction;
     }
 
-    public TResult Evaluate(INode2D node) => _xFunction(node.X) * _yFunction(node.Y);
+    public double Evaluate(Node2D node) => _xFunction.Evaluate(node.X) * _yFunction.Evaluate(node.Y);
 }

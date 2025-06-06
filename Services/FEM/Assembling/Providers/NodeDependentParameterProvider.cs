@@ -7,7 +7,7 @@ public interface INodeDependentParameterProvider<out TResult> where TResult : IN
     public TResult Get(int nodeIndex);
 }
 
-public class NodeDependentParameterProvider<TResult, TNode> : INodeDependentParameterProvider<TResult> 
+public class NodeDependentParameterProvider<TResult, TNode> : INodeDependentParameterProvider<TResult>
     where TResult : INumber<TResult>
 {
     private readonly TNode[] _nodes;

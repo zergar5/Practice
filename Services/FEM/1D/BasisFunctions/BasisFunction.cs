@@ -1,18 +1,15 @@
-﻿using System.Numerics;
-using Application.FEM.Core.BasisFunctions;
-using Domain.Nodes;
+﻿using Application.FEM.Core.BasisFunctions;
 
 namespace Application.FEM._1D.BasisFunctions;
 
-public class BasisFunction<TResult> : IBasisFunction<INode, TResult>
-    where TResult : INumber<TResult>
+public class BasisFunction : IBasisFunction<double>
 {
-    private readonly Func<double, TResult> _xFunction;
+    private readonly Func<double, double> _xFunction;
 
-    public BasisFunction(Func<double, TResult> xFunction)
+    public BasisFunction(Func<double, double> xFunction)
     {
         _xFunction = xFunction;
     }
 
-    public TResult Evaluate(INode node) => _xFunction(node.X);
+    public double Evaluate(double node) => _xFunction(node);
 }

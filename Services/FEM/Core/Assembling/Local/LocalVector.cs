@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using Services.MathObjects.Vectors;
+﻿using Services.MathObjects.Vectors;
+using System.Numerics;
 
 namespace Application.FEM.Core.Assembling.Local;
 

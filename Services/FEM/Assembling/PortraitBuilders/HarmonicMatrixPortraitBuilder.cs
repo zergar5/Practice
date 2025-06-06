@@ -1,12 +1,12 @@
-﻿using System.Numerics;
-using Application.FEM.Core;
+﻿using Application.FEM.Core;
+using Application.FEM.Core.Grid;
 using Domain.Nodes;
 
 namespace Application.FEM.Assembling.PortraitBuilders;
 
-public class HarmonicMatrixPortraitBuilder<T> : MatrixPortraitBuilder<T> where T : INumber<T>
+public class HarmonicMatrixPortraitBuilder : MatrixPortraitBuilder
 {
-    protected override List<SortedSet<int>> BuildAdjacencyList(IGrid<INode> grid)
+    protected override List<SortedSet<int>> BuildAdjacencyList(IGrid<Node> grid)
     {
         var adjacencyList = new List<SortedSet<int>>(grid.Nodes.Length * 2);
 

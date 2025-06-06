@@ -1,13 +1,15 @@
 ﻿namespace Domain.Splittings;
 
-public interface IProportionalSplitting : IUniformSplitting
+public class ProportionalSplitting
 {
+    public required Interval Interval { get; set; }
+    public int Steps { get; set; }
     public double DischargeRatio { get; set; }
 }
 
-public class ProportionalSplitting : IProportionalSplitting
+public class StepProportionalSplitting
 {
-    public required IInterval Interval { get; set; }
+    public required Interval Interval { get; set; }
     public double Step { get; set; }
     public double DischargeRatio { get; set; }
 }

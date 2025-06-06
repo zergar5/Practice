@@ -1,4 +1,4 @@
-﻿using Services.MathObjects.Matrices;
+﻿using Application.MathObjects.Matrices;
 
 namespace Application.FEM._1D.MatrixTemplates;
 
@@ -10,24 +10,6 @@ public class LagrangeMatrixTemplates
         {
             { 2, 1 },
             { 1, 2 }
-        }
-    );
-
-    public static IMatrix<int> MassRMatrix => new Matrix<int>
-    (
-        new[,]
-        {
-            { 1, 1 },
-            { 1, 3 }
-        }
-    );
-
-    public static IMatrix<int> RotorMassMatrix => new Matrix<int>
-    (
-        new[,]
-        {
-            { -3, 1 },
-            { 1, 1 }
         }
     );
 

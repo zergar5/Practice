@@ -7,9 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="FEM\1D\MatrixTemplates\" />
+    <None Remove="FEM\Core\Assembling\Local\CylindricalLocalMatricesAssembler.cs~RFee5fed.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="FEM\2D\Grid\" />
     <Folder Include="FEM\Assembling\Global\" />
-    <Folder Include="FEM\Assembling\1D\" />
     <Folder Include="FEM\Assembling\Providers\" />
     <Folder Include="FEM\Assembling\BoundaryConditions\" />
   </ItemGroup>

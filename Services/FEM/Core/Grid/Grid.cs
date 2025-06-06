@@ -1,16 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
-using Domain.Nodes;
 
-namespace Application.FEM.Core;
+namespace Application.FEM.Core.Grid;
 
-public interface IGrid<TNode> : IEnumerable<IElement> where TNode : INode
+public interface IGrid<TNode> : IEnumerable<IElement>
 {
     public ImmutableArray<TNode> Nodes { get; }
     public ImmutableArray<IElement> Elements { get; }
 }
 
-public class Grid<TNode> : IGrid<TNode> where TNode : INode
+public class Grid<TNode> : IGrid<TNode>
 {
     private readonly TNode[] _nodes;
     private readonly IElement[] _elements;

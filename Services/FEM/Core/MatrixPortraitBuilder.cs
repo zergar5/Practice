@@ -1,18 +1,18 @@
-﻿using System.Numerics;
-using Application.FEM.Core;
+﻿using Application.FEM.Core.Grid;
 using Domain.Nodes;
 using Services.MathObjects.Matrices;
+using System.Numerics;
 
-namespace Application.FEM.Assembling.PortraitBuilders;
+namespace Application.FEM.Core;
 
 public interface IMatrixPortraitBuilder
 {
-    ISparseMatrix<T> Build<T>(IGrid<INode> grid) where T : INumber<T>;
+    ISparseMatrix<T> Build<T>(IGrid<Node> grid) where T : INumber<T>;
 }
 
 public abstract class MatrixPortraitBuilder : IMatrixPortraitBuilder
 {
-    public virtual ISparseMatrix<T> Build<T>(IGrid<INode> grid) where T : INumber<T>
+    public virtual ISparseMatrix<T> Build<T>(IGrid<Node> grid) where T : INumber<T>
     {
         var adjacencyList = BuildAdjacencyList(grid);
 
@@ -23,5 +23,5 @@ public abstract class MatrixPortraitBuilder : IMatrixPortraitBuilder
         return new SparseMatrix<T>(rowsIndexes, columnsIndexes);
     }
 
-    protected abstract List<SortedSet<int>> BuildAdjacencyList(IGrid<INode> grid);
+    protected abstract List<SortedSet<int>> BuildAdjacencyList(IGrid<Node> grid);
 }

@@ -142,13 +142,6 @@ public class LocalMatrixAssembler : ILocalMatrixAssembler
         return _massZ;
     }
 
-    private int GetMuIndex(int i)
-    {
-        return i % 2;
-    }
-
-    private int GetNuIndex(int i)
-    {
-        return i / 2;
-    }
+    private static int GetMuIndex(int i) => i % 2;
+    private int GetNuIndex(int i) => i / 2;
 }

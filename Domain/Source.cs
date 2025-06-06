@@ -1,15 +1,9 @@
-﻿using Domain.Nodes;
+﻿using System.Numerics;
 
 namespace Domain;
 
-public interface ISource<TNode> where TNode : INode
-{
-    TNode Node { get; set; }
-    double Power { get; set; }
-}
-
-public class Source<TNode> : ISource<TNode> where TNode : INode
+public class Source<TNode, TPower> where TPower : INumber<TPower>
 {
     public required TNode Node { get; set; }
-    public double Power { get; set; }
+    public required TPower Power { get; set; }
 }

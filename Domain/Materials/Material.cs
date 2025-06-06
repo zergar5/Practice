@@ -1,13 +1,12 @@
 ﻿namespace Domain.Materials;
 
-public interface IMaterial
-{
-    int Id { get; set; }
-}
-
-public class MaterialWithSigmaMu : IMaterial
+public class Material
 {
     public int Id { get; set; }
+}
+
+public class MaterialWithSigmaMu : Material
+{
     public double Mu { get; set; }
     public double Sigma { get; set; }
 }

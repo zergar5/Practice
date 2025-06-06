@@ -1,6 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using Services.MathObjects.Vectors;
+using System.Collections.Immutable;
 using System.Numerics;
-using Services.MathObjects.Vectors;
 
 namespace Services.MathObjects.Matrices;
 

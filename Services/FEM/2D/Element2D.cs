@@ -1,26 +1,21 @@
-﻿using System.Collections.Immutable;
-using Application.FEM.Core;
+﻿using Application.FEM._1D;
+using Application.FEM.Core.Grid;
 using Domain.Enums;
 
 namespace Application.FEM._2D;
 
 public interface IElement2D : IElement
 {
-    public double Length { get; }
     public double Height { get; }
 }
 
 public class Element2D : Element, IElement2D
 {
-    private readonly int[] _nodeIndexes;
-
-    public override ImmutableArray<int> NodeIndexes => [.. _nodeIndexes];
-    public double Length { get; }
     public double Height { get; }
 
-    public Element2D(int[] nodeIndexes)
+    public Element2D(int materialId, int[] nodeIndexes, double length, double height) : base(materialId, nodeIndexes, length)
     {
-        _nodeIndexes = nodeIndexes;
+        Height = height;
     }
 
     public BoundInfo GetBoundNodeIndexes(Bound2D bound, int[]? indexes = null)

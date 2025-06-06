@@ -1,11 +1,6 @@
-﻿using System.Numerics;
-using Domain.Nodes;
+﻿namespace Application.FEM.Core.BasisFunctions;
 
-namespace Application.FEM.Core.BasisFunctions;
-
-public interface IBasisFunction<in TNode, out TResult>
-    where TNode : INode
-    where TResult : INumber<TResult>
+public interface IBasisFunction<in TNode>
 {
-    public TResult Evaluate(TNode node);
+    public double Evaluate(TNode node);
 }

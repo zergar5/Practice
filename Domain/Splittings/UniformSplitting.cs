@@ -1,13 +1,13 @@
 ﻿namespace Domain.Splittings;
 
-public interface IUniformSplitting
+public class UniformSplitting
 {
-    public IInterval Interval { get; set; }
-    public double Step { get; set; }
+    public required Interval Interval { get; set; }
+    public int Steps { get; set; }
 }
 
-public class UniformSplitting : IUniformSplitting
+public class StepUniformSplitting
 {
-    public required IInterval Interval { get; set; }
+    public required Interval Interval { get; set; }
     public double Step { get; set; }
 }

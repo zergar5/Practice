@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using Services.MathObjects.Matrices;
+﻿using Application.MathObjects.Matrices;
+using System.Numerics;
 
 namespace Application.FEM.Core.Assembling.Local;
 
@@ -18,6 +18,7 @@ public class LocalMatrix<T> : ILocalMatrix<T> where T : INumber<T>
     public int RowCount => _matrix.RowCount;
     public int ColumnCount => _matrix.ColumnCount;
 
+    // TODO: Подумать как можно сделать более удобные получаемые данные, например "выдирать" строку из матрицы в виде ReadOnlySpan
     public KeyValuePair<(int, int), T> this[int i, int j] => new((_indexesFromGlobal[i], _indexesFromGlobal[j]), _matrix[i, j]);
 
     public LocalMatrix(IMatrix<T> matrix, int[] indexesFromGlobal)

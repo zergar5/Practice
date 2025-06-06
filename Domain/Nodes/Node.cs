@@ -1,11 +1,11 @@
 ﻿namespace Domain.Nodes;
 
-public interface INode
+public class Node
 {
     public double X { get; set; }
 }
 
-public class Node : INode
+public static class NodeExtensions
 {
-    public double X { get; set; }
+    public static double R(this Node node) => node.X;
 }

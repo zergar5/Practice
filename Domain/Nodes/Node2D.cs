@@ -1,12 +1,12 @@
 ﻿namespace Domain.Nodes;
 
-public interface INode2D : INode
+public class Node2D : Node
 {
     public double Y { get; set; }
 }
 
-public class Node2D : INode2D
+public static class Node2DExtensions
 {
-    public double X { get; set; }
-    public double Y { get; set; }
+    public static double R(this Node2D node) => node.X;
+    public static double Z(this Node2D node) => node.Y;
 }

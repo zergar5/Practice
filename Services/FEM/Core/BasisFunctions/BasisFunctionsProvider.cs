@@ -1,12 +1,8 @@
-﻿using System.Numerics;
-using Domain.Nodes;
+﻿using Application.FEM.Core.Grid;
 
 namespace Application.FEM.Core.BasisFunctions;
 
-public interface IBasisFunctionsProvider<in TNode, in TElement>
-    where TNode : INode
-    where TElement : IElement
+public interface IBasisFunctionsProvider<in TNode, in TElement> where TElement : IElement
 {
-    public IBasisFunction<TNode, TFunctionResult>[] GetFunctions<TFunctionResult>(TElement element)
-        where TFunctionResult : INumber<TFunctionResult>;
+    public IBasisFunction<TNode>[] GetFunctions(TElement element);
 }

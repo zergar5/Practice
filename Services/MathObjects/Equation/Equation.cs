@@ -1,6 +1,7 @@
-﻿using System.Numerics;
+﻿using Application.MathObjects.Matrices;
 using Services.MathObjects.Matrices;
 using Services.MathObjects.Vectors;
+using System.Numerics;
 
 namespace Services.MathObjects.Equation;
 
