@@ -1,16 +1,22 @@
-﻿using Domain.Enums;
+﻿using Domain.Edges;
+using Domain.Enums;
 
 namespace Domain.Boundaries;
 
-public interface IBoundRaw<TAttachment, TCondition>
+public interface IBoundRaw<TAttachment>
 {
     public TAttachment Attachment { get; set; }
-    public BoundaryConditionType ConditionType { get; set; }
-    public TCondition Condition { get; set; }
+    public IBoundaryCondition Condition { get; set; }
 }
 
-//public class BoundRawWithFirstCondition<TAttachment> : IBoundRaw<IBoundaryCondition>
-//{
-//    public BoundaryConditionType ConditionType { get; set; }
-//    public IBoundaryCondition Condition { get; set; }
-//}
+public class ControlPointBound : IBoundRaw<int>
+{
+    public int Attachment { get; set; }
+    public required IBoundaryCondition Condition { get; set; }
+}
+
+public class EdgeBound : IBoundRaw<Edge>
+{
+    public required Edge Attachment { get; set; }
+    public required IBoundaryCondition Condition { get; set; }
+}

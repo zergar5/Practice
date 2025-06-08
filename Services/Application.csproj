@@ -14,7 +14,10 @@
     <Folder Include="FEM\2D\Grid\" />
     <Folder Include="FEM\Assembling\Global\" />
     <Folder Include="FEM\Assembling\Providers\" />
-    <Folder Include="FEM\Assembling\BoundaryConditions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.5" />
   </ItemGroup>
 
   <ItemGroup>

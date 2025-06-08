@@ -4,5 +4,6 @@ public enum BoundaryConditionType
 {
     First,
     Second,
-    Third
+    Third,
+    Source,
 }

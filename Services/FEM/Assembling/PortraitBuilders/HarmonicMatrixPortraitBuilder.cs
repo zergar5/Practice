@@ -1,4 +1,4 @@
-﻿using Application.FEM.Core;
+﻿using Application.FEM.Core.Assembling;
 using Application.FEM.Core.Grid;
 using Domain.Nodes;
 

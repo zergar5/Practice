@@ -1,22 +1,17 @@
-﻿using Application.MathObjects.Matrices;
-using Services.MathObjects.Matrices;
-using Services.MathObjects.Vectors;
-using System.Numerics;
+﻿using System.Numerics;
+using Application.MathObjects.Matrices;
+using Application.MathObjects.Vectors;
 
-namespace Services.MathObjects.Equation;
+namespace Application.MathObjects.Equation;
 
-public interface IEquation<out TMatrix, T>
-    where TMatrix : IMatrix<T>, ISparseMatrix<T>
-    where T : INumber<T>
+public interface IEquation<out TMatrix, T> where T : INumberBase<T>
 {
     public TMatrix Matrix { get; }
     public IVector<T> Solution { get; }
     public IVector<T> RightPart { get; }
 }
 
-public class Equation<TMatrix, T> : IEquation<TMatrix, T>
-    where TMatrix : IMatrix<T>, ISparseMatrix<T>
-    where T : INumber<T>
+public class Equation<TMatrix, T> : IEquation<TMatrix, T> where T : INumberBase<T>
 {
     public TMatrix Matrix { get; }
     public IVector<T> Solution { get; }

@@ -1,13 +1,13 @@
 ﻿using Application.FEM.Core.Assembling.Local;
-using Services.MathObjects.Matrices;
-using Services.MathObjects.Vectors;
 using System.Numerics;
+using Application.MathObjects.Matrices;
+using Application.MathObjects.Vectors;
 
 namespace Application.FEM.Core.Assembling.Inserters;
 
-public interface ISparseInserter<T> : IGenericInserter<T, ISparseMatrix<T>> where T : INumber<T>;
+public interface ISparseInserter<T> : IGenericInserter<T, ISparseMatrix<T>> where T : INumberBase<T>;
 
-public abstract class SparseInserterBase<T> : ISparseInserter<T> where T : INumber<T>
+public abstract class SparseInserterBase<T> : ISparseInserter<T> where T : INumberBase<T>
 {
     public abstract void InsertMatrix(ISparseMatrix<T> globalMatrix, ILocalMatrix<T> localMatrix);
     public virtual void InsertVector(IVector<T> globalVector, ILocalVector<T> localVector)
@@ -20,7 +20,7 @@ public abstract class SparseInserterBase<T> : ISparseInserter<T> where T : INumb
     }
 }
 
-public class SparseInserter<T> : SparseInserterBase<T> where T : INumber<T>
+public class SparseInserter<T> : SparseInserterBase<T> where T : INumberBase<T>
 {
     public override void InsertMatrix(ISparseMatrix<T> globalMatrix, ILocalMatrix<T> localMatrix)
     {

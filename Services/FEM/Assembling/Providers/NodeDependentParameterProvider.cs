@@ -2,13 +2,13 @@
 
 namespace Application.FEM.Assembling.Providers;
 
-public interface INodeDependentParameterProvider<out TResult> where TResult : INumber<TResult>
+public interface INodeDependentParameterProvider<out TResult> where TResult : INumberBase<TResult>
 {
     public TResult Get(int nodeIndex);
 }
 
 public class NodeDependentParameterProvider<TResult, TNode> : INodeDependentParameterProvider<TResult>
-    where TResult : INumber<TResult>
+    where TResult : INumberBase<TResult>
 {
     private readonly TNode[] _nodes;
     private readonly Func<TNode, TResult> _function;

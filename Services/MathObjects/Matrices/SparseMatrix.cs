@@ -1,10 +1,10 @@
-﻿using Services.MathObjects.Vectors;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using System.Numerics;
+using Application.MathObjects.Vectors;
 
-namespace Services.MathObjects.Matrices;
+namespace Application.MathObjects.Matrices;
 
-public interface ISparseMatrix<T> where T : INumber<T>
+public interface ISparseMatrix<T> where T : INumberBase<T>
 {
     public int RowCount { get; }
     public int ColumnCount { get; }
@@ -17,7 +17,7 @@ public interface ISparseMatrix<T> where T : INumber<T>
     public ISparseMatrix<T> Clone();
 }
 
-public abstract class SparseMatrixBase<T> : ISparseMatrix<T> where T : INumber<T>
+public abstract class SparseMatrixBase<T> : ISparseMatrix<T> where T : INumberBase<T>
 {
     public abstract ImmutableArray<int> RowIndexes { get; }
     public abstract ImmutableArray<int> ColumnIndexes { get; }
@@ -25,7 +25,7 @@ public abstract class SparseMatrixBase<T> : ISparseMatrix<T> where T : INumber<T
     public abstract int RowCount { get; }
     public abstract int ColumnCount { get; }
 
-    public virtual ImmutableArray<int> this[int rowIndex] => ColumnIndexes[RowIndexes[rowIndex]..RowIndexes[rowIndex + 1]];
+    public ImmutableArray<int> this[int rowIndex] => ColumnIndexes[RowIndexes[rowIndex]..RowIndexes[rowIndex + 1]];
     public abstract T this[int rowIndex, int columnIndex] { get; set; }
 
     public virtual IVector<T> Multiply(ISparseMatrix<T> matrix, IVector<T> vector, IVector<T>? result = null)
@@ -52,9 +52,11 @@ public abstract class SparseMatrixBase<T> : ISparseMatrix<T> where T : INumber<T
 
     public abstract ISparseMatrix<T> Copy(ISparseMatrix<T> sparseMatrix);
     public abstract ISparseMatrix<T> Clone();
+    protected int IndexOf(int rowIndex, int columnIndex) => ColumnIndexes.IndexOf(columnIndex, RowIndexes[rowIndex],
+        RowIndexes[rowIndex + 1] - RowIndexes[rowIndex]);
 }
 
-public class SparseMatrix<T> : SparseMatrixBase<T>, ISparseMatrix<T> where T : INumber<T>
+public class SparseMatrix<T> : SparseMatrixBase<T>, ISparseMatrix<T> where T : INumberBase<T>
 {
     private readonly int[] _rowIndexes;
     private readonly int[] _columnIndexes;
@@ -157,7 +159,4 @@ public class SparseMatrix<T> : SparseMatrixBase<T>, ISparseMatrix<T> where T : I
             _upperValues.ToArray()
         );
     }
-
-    private int IndexOf(int rowIndex, int columnIndex) => ColumnIndexes.IndexOf(columnIndex, RowIndexes[rowIndex],
-        RowIndexes[rowIndex + 1] - RowIndexes[rowIndex]);
 }

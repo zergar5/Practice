@@ -1,9 +1,9 @@
-﻿using Services.MathObjects.Vectors;
-using System.Numerics;
+﻿using System.Numerics;
+using Application.MathObjects.Vectors;
 
 namespace Application.MathObjects.Matrices;
 
-public interface IMatrix<T> where T : INumber<T>
+public interface IMatrix<T> where T : INumberBase<T>
 {
     public int RowCount { get; }
     public int ColumnCount { get; }
@@ -12,7 +12,7 @@ public interface IMatrix<T> where T : INumber<T>
     public IMatrix<T> Clone();
 }
 
-public abstract class MatrixBase<T> : IMatrix<T> where T : INumber<T>
+public abstract class MatrixBase<T> : IMatrix<T> where T : INumberBase<T>
 {
     public abstract int RowCount { get; }
     public abstract int ColumnCount { get; }
@@ -37,7 +37,7 @@ public abstract class MatrixBase<T> : IMatrix<T> where T : INumber<T>
     public virtual IMatrix<T> Clone() => Copy(new Matrix<T>(RowCount, ColumnCount));
 }
 
-public class Matrix<T> : MatrixBase<T> where T : INumber<T>
+public class Matrix<T> : MatrixBase<T> where T : INumberBase<T>
 {
     protected readonly T[,] Values;
     public override int RowCount => Values.GetLength(0);
@@ -61,9 +61,9 @@ public class Matrix<T> : MatrixBase<T> where T : INumber<T>
 public static class MatrixExtensions
 {
     public static IMatrix<TResult> Sum<TSelf, TOther, TResult>(this IMatrix<TSelf> matrixA, IMatrix<TOther> matrixB, IMatrix<TResult>? result = null)
-        where TSelf : INumber<TSelf>
-        where TOther : INumber<TOther>
-        where TResult : INumber<TResult>
+        where TSelf : INumberBase<TSelf>
+        where TOther : INumberBase<TOther>
+        where TResult : INumberBase<TResult>
     {
         if (matrixA.RowCount != matrixB.RowCount || matrixA.ColumnCount != matrixB.ColumnCount)
             throw new ArgumentOutOfRangeException($"{nameof(matrixA)} and {nameof(matrixB)} must have same size");
@@ -82,9 +82,9 @@ public static class MatrixExtensions
     }
 
     public static IMatrix<TResult> Multiply<TSelf, TCoefficient, TResult>(this IMatrix<TSelf> matrix, TCoefficient coefficient, IMatrix<TResult>? result = null)
-        where TSelf : INumber<TSelf>
-        where TCoefficient : INumber<TCoefficient>
-        where TResult : INumber<TResult>
+        where TSelf : INumberBase<TSelf>
+        where TCoefficient : INumberBase<TCoefficient>
+        where TResult : INumberBase<TResult>
     {
         result ??= new Matrix<TResult>(matrix.RowCount);
 
@@ -100,14 +100,14 @@ public static class MatrixExtensions
     }
 
     public static IVector<TResult> Multiply<TSelf, TOther, TResult>(this IMatrix<TSelf> matrix, IVector<TOther> vector, IVector<TResult>? result = null)
-        where TSelf : INumber<TSelf>
-        where TOther : INumber<TOther>
-        where TResult : INumber<TResult>
+        where TSelf : INumberBase<TSelf>
+        where TOther : INumberBase<TOther>
+        where TResult : INumberBase<TResult>
     {
         if (matrix.RowCount != vector.Count)
             throw new ArgumentOutOfRangeException($"{nameof(matrix)} and {nameof(vector)} must have same size");
 
-        if (result == null) result = new Services.MathObjects.Vectors.Vector<TResult>(matrix.RowCount);
+        if (result == null) result = new Vectors.Vector<TResult>(matrix.RowCount);
         else result.Clear();
 
         for (var i = 0; i < matrix.RowCount; i++)

@@ -6,7 +6,7 @@ namespace Application.FEM.Core.Assembling.Local;
 
 public interface ILocalStiffnessMatrixAssembler<in TElement, T>
     where TElement : IElement
-    where T : INumber<T>
+    where T : INumberBase<T>
 
 {
     public IMatrix<T> AssembleStiffnessMatrix(TElement element);
@@ -14,7 +14,7 @@ public interface ILocalStiffnessMatrixAssembler<in TElement, T>
 
 public interface ILocalMassMatrixAssembler<in TElement, T>
     where TElement : IElement
-    where T : INumber<T>
+    where T : INumberBase<T>
 {
     public IMatrix<T> AssembleMassMatrix(TElement element);
 }
@@ -22,4 +22,4 @@ public interface ILocalMassMatrixAssembler<in TElement, T>
 public interface ILocalMatricesAssembler<in TElement, T> :
     ILocalStiffnessMatrixAssembler<TElement, T>, ILocalMassMatrixAssembler<TElement, T>
     where TElement : IElement
-    where T : INumber<T>;
+    where T : INumberBase<T>;

@@ -1,15 +1,15 @@
 ﻿using System.Collections;
 using System.Numerics;
 
-namespace Services.MathObjects.Vectors;
+namespace Application.MathObjects.Vectors;
 
-public interface IVector<T> : IEnumerable<T> where T : INumber<T>
+public interface IVector<T> : IEnumerable<T> where T : INumberBase<T>
 {
     public int Count { get; }
     public T this[int i] { get; set; }
     public double Norm { get; }
-    public double ScalarProduct(IVector<T> vectorA, IVector<T> vectorB);
     public double ScalarProduct(IVector<T> vector);
+    public double ScalarProduct();
     public IVector<T> Sum(IVector<T> vectorA, IVector<T> vectorB, IVector<T>? result = null);
     public IVector<T> Subtract(IVector<T> vectorA, IVector<T> vectorB, IVector<T>? result = null);
     public IVector<T> Multiply(T number, IVector<T> vector, IVector<T>? result = null);
@@ -18,14 +18,14 @@ public interface IVector<T> : IEnumerable<T> where T : INumber<T>
     public IVector<T> Copy(IVector<T> vector);
 }
 
-public abstract class VectorBase<T> : IVector<T> where T : INumber<T>
+public abstract class VectorBase<T> : IVector<T> where T : INumberBase<T>
 {
     public abstract int Count { get; }
     public abstract T this[int i] { get; set; }
     public abstract double Norm { get; }
 
-    public virtual double ScalarProduct(IVector<T> vectorA, IVector<T> vectorB) => vectorA.Select((t, i) => double.CreateChecked(t * vectorB[i])).Sum();
     public virtual double ScalarProduct(IVector<T> vector) => ScalarProduct(this, vector);
+    public virtual double ScalarProduct() => ScalarProduct(this, this);
     public virtual IVector<T> Sum(IVector<T> vectorA, IVector<T> vectorB, IVector<T>? result = null)
     {
         if (vectorA.Count != vectorB.Count)
@@ -86,10 +86,22 @@ public abstract class VectorBase<T> : IVector<T> where T : INumber<T>
 
     public abstract IEnumerator<T> GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    protected virtual double ScalarProduct(IVector<T> vectorA, IVector<T> vectorB)
+    {
+        var result = T.Zero;
+
+        for (var i = 0; i < vectorA.Count; i++)
+        {
+            result += vectorA[i] * vectorB[i];
+        }
+
+        return double.CreateChecked(result);
+    }
 }
 
 
-public class Vector<T> : VectorBase<T> where T : INumber<T>
+public class Vector<T> : VectorBase<T> where T : INumberBase<T>
 {
     private readonly T[] _vector;
 

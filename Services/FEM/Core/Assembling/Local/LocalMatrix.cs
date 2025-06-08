@@ -3,14 +3,14 @@ using System.Numerics;
 
 namespace Application.FEM.Core.Assembling.Local;
 
-public interface ILocalMatrix<T> where T : INumber<T>
+public interface ILocalMatrix<T> where T : INumberBase<T>
 {
     public int RowCount { get; }
     public int ColumnCount { get; }
     public KeyValuePair<(int, int), T> this[int i, int j] { get; }
 }
 
-public class LocalMatrix<T> : ILocalMatrix<T> where T : INumber<T>
+public class LocalMatrix<T> : ILocalMatrix<T> where T : INumberBase<T>
 {
     private readonly IMatrix<T> _matrix;
     private readonly int[] _indexesFromGlobal;

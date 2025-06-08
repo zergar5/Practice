@@ -1,15 +1,15 @@
-﻿using Services.MathObjects.Vectors;
-using System.Numerics;
+﻿using System.Numerics;
+using Application.MathObjects.Vectors;
 
 namespace Application.FEM.Core.Assembling.Local;
 
-public interface ILocalVector<T> where T : INumber<T>
+public interface ILocalVector<T> where T : INumberBase<T>
 {
     public int Count { get; }
     public KeyValuePair<int, T> this[int i] { get; }
 }
 
-public class LocalVector<T> : ILocalVector<T> where T : INumber<T>
+public class LocalVector<T> : ILocalVector<T> where T : INumberBase<T>
 {
     private readonly IVector<T> _vector;
     private readonly int[] _indexesFromGlobal;

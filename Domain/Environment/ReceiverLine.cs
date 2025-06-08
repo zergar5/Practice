@@ -1,4 +1,4 @@
-﻿namespace Domain;
+﻿namespace Domain.Environment;
 
 public class ReceiverLine<TNode>
 {
