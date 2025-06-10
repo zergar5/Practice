@@ -1,5 +1,7 @@
 ﻿using DirectProblem;
 using DirectProblem.Core.GridComponents;
+using DirectProblem.GridGenerator;
+using DirectProblem.IO;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using InverseProblem;
@@ -8,10 +10,8 @@ using InverseProblem.Parameters;
 using InverseProblem.SLAE;
 using System.Diagnostics;
 using System.Globalization;
-using DirectProblem.GridGenerator;
-using Vector = DirectProblem.Core.Base.Vector;
 using System.Numerics;
-using DirectProblem.IO;
+using Vector = DirectProblem.Core.Base.Vector;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 

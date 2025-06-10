@@ -10,9 +10,6 @@ public interface IVector<T> : IEnumerable<T> where T : INumberBase<T>
     public double Norm { get; }
     public double ScalarProduct(IVector<T> vector);
     public double ScalarProduct();
-    public IVector<T> Sum(IVector<T> vectorA, IVector<T> vectorB, IVector<T>? result = null);
-    public IVector<T> Subtract(IVector<T> vectorA, IVector<T> vectorB, IVector<T>? result = null);
-    public IVector<T> Multiply(T number, IVector<T> vector, IVector<T>? result = null);
     public void Clear();
     public IVector<T> Clone();
     public IVector<T> Copy(IVector<T> vector);
@@ -26,49 +23,6 @@ public abstract class VectorBase<T> : IVector<T> where T : INumberBase<T>
 
     public virtual double ScalarProduct(IVector<T> vector) => ScalarProduct(this, vector);
     public virtual double ScalarProduct() => ScalarProduct(this, this);
-    public virtual IVector<T> Sum(IVector<T> vectorA, IVector<T> vectorB, IVector<T>? result = null)
-    {
-        if (vectorA.Count != vectorB.Count)
-            throw new ArgumentOutOfRangeException($"{nameof(vectorA)} and {nameof(vectorB)} must have same size");
-
-        result ??= new Vector<T>(vectorA.Count);
-
-        for (var i = 0; i < vectorA.Count; i++)
-        {
-            result[i] = vectorA[i] + vectorB[i];
-        }
-
-        return result;
-    }
-
-    public virtual IVector<T> Subtract(IVector<T> vectorA, IVector<T> vectorB, IVector<T>? result = null)
-    {
-        if (vectorA.Count != vectorB.Count)
-            throw new ArgumentOutOfRangeException(
-                $"{nameof(vectorA)} and {nameof(vectorB)} must have same size");
-
-        result ??= new Vector<T>(vectorA.Count);
-
-        for (var i = 0; i < vectorA.Count; i++)
-        {
-            result[i] = vectorA[i] - vectorB[i];
-        }
-
-        return result;
-    }
-
-    public virtual IVector<T> Multiply(T number, IVector<T> vector, IVector<T>? result = null)
-    {
-        result ??= new Vector<T>(vector.Count);
-
-        for (var i = 0; i < vector.Count; i++)
-        {
-            result[i] = number * vector[i];
-        }
-
-        return result;
-    }
-
     public abstract void Clear();
     public abstract IVector<T> Clone();
     public virtual IVector<T> Copy(IVector<T> vector)
@@ -133,4 +87,58 @@ public class Vector<T> : VectorBase<T> where T : INumberBase<T>
     }
 
     public override IEnumerator<T> GetEnumerator() => ((IEnumerable<T>)_vector).GetEnumerator();
+}
+
+public static class VectorExtensions
+{
+    public static IVector<TResult> Sum<TSelf, TOther, TResult>(this IVector<TSelf> vectorA, IVector<TOther> vectorB, IVector<TResult>? result = null)
+        where TSelf : INumberBase<TSelf>
+        where TOther : INumberBase<TOther>
+        where TResult : INumberBase<TResult>
+    {
+        if (vectorA.Count != vectorB.Count)
+            throw new ArgumentOutOfRangeException($"{nameof(vectorA)} and {nameof(vectorB)} must have same size");
+
+        result ??= new Vector<TResult>(vectorA.Count);
+
+        for (var i = 0; i < vectorA.Count; i++)
+        {
+            result[i] = TResult.CreateChecked(vectorA[i]) + TResult.CreateChecked(vectorB[i]);
+        }
+
+        return result;
+    }
+
+    public static IVector<TResult> Subtract<TSelf, TOther, TResult>(this IVector<TSelf> vectorA, IVector<TOther> vectorB, IVector<TResult>? result = null)
+        where TSelf : INumberBase<TSelf>
+        where TOther : INumberBase<TOther>
+        where TResult : INumberBase<TResult>
+    {
+        if (vectorA.Count != vectorB.Count)
+            throw new ArgumentOutOfRangeException($"{nameof(vectorA)} and {nameof(vectorB)} must have same size");
+
+        result ??= new Vector<TResult>(vectorA.Count);
+
+        for (var i = 0; i < vectorA.Count; i++)
+        {
+            result[i] = TResult.CreateChecked(vectorA[i]) - TResult.CreateChecked(vectorB[i]);
+        }
+
+        return result;
+    }
+
+    public static IVector<TResult> Multiply<TSelf, TCoefficient, TResult>(this IVector<TSelf> vector, TCoefficient number, IVector<TResult>? result = null)
+        where TSelf : INumberBase<TSelf>
+        where TCoefficient : INumberBase<TCoefficient>
+        where TResult : INumberBase<TResult>
+    {
+        result ??= new Vector<TResult>(vector.Count);
+
+        for (var i = 0; i < vector.Count; i++)
+        {
+            result[i] = TResult.CreateChecked(number) * TResult.CreateChecked(vector[i]);
+        }
+
+        return result;
+    }
 }

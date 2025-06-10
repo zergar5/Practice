@@ -1,7 +1,6 @@
-﻿using System.Numerics;
-using Application.MathObjects.Equation;
+﻿using Application.MathObjects.Equation;
 using Application.MathObjects.Vectors;
-using DirectProblem.Core.Global;
+using System.Numerics;
 
 namespace Application.EquationSystems.Solvers;
 

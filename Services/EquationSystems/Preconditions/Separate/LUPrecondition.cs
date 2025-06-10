@@ -1,8 +1,6 @@
-﻿using System.Numerics;
-using Application.MathObjects.Matrices;
+﻿using Application.MathObjects.Matrices;
 using Application.MathObjects.Vectors;
-using DirectProblem.Core.Base;
-using DirectProblem.Core.Global;
+using System.Numerics;
 
 namespace Application.EquationSystems.Preconditions.Separate;
 

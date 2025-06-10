@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using Application.MathObjects.Matrices;
+﻿using Application.MathObjects.Matrices;
+using System.Numerics;
 
 namespace Application.EquationSystems.Solvers.Sparse;
 

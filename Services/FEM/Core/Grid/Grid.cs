@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Domain.Nodes;
+using System.Collections;
 using System.Collections.Immutable;
 
 namespace Application.FEM.Core.Grid;
@@ -29,4 +30,26 @@ public class Grid<TNode> : IGrid<TNode>
     }
 
     public IEnumerator<IElement> GetEnumerator() => ((IEnumerable<IElement>)Elements).GetEnumerator();
+}
+
+public static class GridExtensions
+{
+    public static bool Has(this IGrid<Node2D> grid, Node2D node)
+    {
+        var lowerLeftCorner = grid.Nodes[0];
+        var upperRightCorner = grid.Nodes[^1];
+        return PointInRectangle(node, lowerLeftCorner, upperRightCorner);
+    }
+
+    public static IElement? FindNodeElement(this IGrid<Node2D> grid, Node2D node)
+    {
+        return grid.Elements.FirstOrDefault(e => PointInRectangle(node, grid.Nodes[e.NodeIndexes[0]], grid.Nodes[e.NodeIndexes[^1]]));
+    }
+
+    // TODO вынести потом в другой место, связанное с геометрией, например завести class Rectangle
+    public static bool PointInRectangle(Node2D node, Node2D lowerLeftCorner, Node2D upperRightCorner)
+    {
+        return node.X > lowerLeftCorner.X && node.Y > lowerLeftCorner.Y &&
+               node.X < upperRightCorner.X && node.Y < upperRightCorner.Y;
+    }
 }

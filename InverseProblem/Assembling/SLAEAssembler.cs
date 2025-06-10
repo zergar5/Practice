@@ -3,12 +3,12 @@ using DirectProblem.Core;
 using DirectProblem.Core.Base;
 using DirectProblem.Core.Global;
 using DirectProblem.Core.GridComponents;
+using DirectProblem.GridGenerator;
+using DirectProblem.GridGenerator.Intervals.Splitting;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using InverseProblem.Parameters;
-using DirectProblem.GridGenerator;
 using Vector = DirectProblem.Core.Base.Vector;
-using DirectProblem.GridGenerator.Intervals.Splitting;
 
 namespace InverseProblem.Assembling;
 
@@ -273,7 +273,7 @@ public class SLAEAssembler
                 //Console.WriteLine(sigmaDiffRightPart.Norm);
 
                 var diffSolution = SolveDirectProblem(solverId);
-                
+
                 //for (var k = 0; k < trueRightPart.Count; k++)
                 //{
                 //    diff = sigmaDiffRightPart[i] - trueRightPart[i];
@@ -281,7 +281,7 @@ public class SLAEAssembler
 
                 var fieldM = _solutions[i, j].Calculate(_receiverLines[j].PointM);
                 var fieldN = _solutions[i, j].Calculate(_receiverLines[j].PointN);
-                
+
                 var diffFieldM = diffSolution.Calculate(_receiverLines[j].PointM);
                 var diffFieldN = diffSolution.Calculate(_receiverLines[j].PointN);
 

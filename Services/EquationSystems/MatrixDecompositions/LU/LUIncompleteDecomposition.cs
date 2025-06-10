@@ -1,10 +1,9 @@
-﻿using System.Numerics;
-using Application.MathObjects.Matrices;
-using DirectProblem.SLAE.Preconditions;
+﻿using Application.MathObjects.Matrices;
+using System.Numerics;
 
 namespace Application.EquationSystems.MatrixDecompositions.LU;
 
-public class LUIncompleteDecomposition<T> : IPreconditioner<ISparseMatrix<T>> where T : INumberBase<T>
+public class LUIncompleteDecomposition<T> : IMatrixDecomposition<ISparseMatrix<T>> where T : INumberBase<T>
 {
     public ISparseMatrix<T> Decompose(ISparseMatrix<T> matrix)
     {

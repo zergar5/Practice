@@ -1,7 +1,7 @@
 ﻿using Application.FEM.Core.Assembling.Local;
-using System.Numerics;
 using Application.MathObjects.Matrices;
 using Application.MathObjects.Vectors;
+using System.Numerics;
 
 namespace Application.FEM.Core.Assembling.Inserters;
 

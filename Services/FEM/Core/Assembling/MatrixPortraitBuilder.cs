@@ -1,7 +1,7 @@
 ﻿using Application.FEM.Core.Grid;
+using Application.MathObjects.Matrices;
 using Domain.Nodes;
 using System.Numerics;
-using Application.MathObjects.Matrices;
 
 namespace Application.FEM.Core.Assembling;
 

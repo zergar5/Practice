@@ -1,7 +1,7 @@
 ﻿using Application.FEM.Core.Assembling.Boundaries.First;
+using Domain.Boundaries;
 using Domain.Edges;
 using System.Numerics;
-using Domain.Boundaries;
 
 namespace Application.FEM.Assembling._2D.Boundaries.First;
 

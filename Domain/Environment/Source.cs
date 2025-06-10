@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace Domain.Environment;
+﻿namespace Domain.Environment;
 
 public class Source<TNode>
 {

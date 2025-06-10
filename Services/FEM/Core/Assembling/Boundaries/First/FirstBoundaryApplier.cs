@@ -1,17 +1,17 @@
 ﻿using Application.MathObjects.Equation;
-using System.Numerics;
 using Application.MathObjects.Matrices;
+using System.Numerics;
 
 namespace Application.FEM.Core.Assembling.Boundaries.First;
 
-public interface IFirstBoundaryApplier<in TMatrix, T, TBoundary> 
-    where T : INumberBase<T> 
+public interface IFirstBoundaryApplier<in TMatrix, T, TBoundary>
+    where T : INumberBase<T>
     where TBoundary : INumberBase<TBoundary>
 {
     public void Exclude(IEquation<TMatrix, T> equation, FirstBoundaryValue<TBoundary> conditionValue);
 }
 
-public abstract class SparseMatrixFirstBoundaryApplierBase<T, TBoundary> : IFirstBoundaryApplier<SparseMatrix<T>, T, TBoundary> 
+public abstract class SparseMatrixFirstBoundaryApplierBase<T, TBoundary> : IFirstBoundaryApplier<SparseMatrix<T>, T, TBoundary>
     where T : INumberBase<T>
     where TBoundary : INumberBase<TBoundary>
 {

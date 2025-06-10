@@ -1,6 +1,5 @@
-﻿using System.Numerics;
-using Application.MathObjects.Matrices;
-using Application.MathObjects.Vectors;
+﻿using Application.MathObjects.Vectors;
+using System.Numerics;
 
 namespace Application.MathObjects.Equation;
 

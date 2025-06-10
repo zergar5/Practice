@@ -229,6 +229,6 @@ public class InverseProblemSolver
 
     private FEMSolution SolveDirectProblem()
     {
-       return new FEMSolution(_grid, _directProblemSolver.AssembleSLAE().Solve().Clone(), _localBasisFunctionsProvider);
+        return new FEMSolution(_grid, _directProblemSolver.AssembleSLAE().Solve().Clone(), _localBasisFunctionsProvider);
     }
 }

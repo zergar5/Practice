@@ -1,42 +1,35 @@
-﻿using System.Linq.Expressions;
-using System.Numerics;
+﻿using System.Collections.ObjectModel;
+using System.Linq.Dynamic.Core;
 using Domain.Nodes;
+using System.Linq.Expressions;
+using System.Numerics;
 
 namespace Application.FEM.Core.Expressions;
 
 public interface IExpressionParser
 {
-    public LambdaExpression Parse(string expression);
+    public LambdaExpression Parse<T>(string expression) where T : INumberBase<T>;
 }
 
-public class ExpressionParser2D<T> : IExpressionParser where T : INumberBase<T>
+public class ExpressionParser2D : IExpressionParser
 {
-    public LambdaExpression Parse(string expression)
+    public LambdaExpression Parse<T>(string expression) where T : INumberBase<T>
     {
-        var pointParam = Expression.Parameter(typeof(Node2D), "node");
+        var nodeParameter = Expression.Parameter(typeof(Node2D), "node");
 
-        var xProperty = Expression.PropertyOrField(pointParam, nameof(Node2D.X));
-        var yProperty = Expression.PropertyOrField(pointParam, nameof(Node2D.Y));
+        var xProperty = Expression.PropertyOrField(nodeParameter, nameof(Node2D.X));
+        var yProperty = Expression.PropertyOrField(nodeParameter, nameof(Node2D.Y));
 
-        //var parameterReplacer = new ParameterExpressionReplacer(
-        //    ("x", xProperty),
-        //    ("y", yProperty)
-        //);
+        var parameterReplacer = new ParameterExpressionReplacer(new Dictionary<string, Expression>
+        {
+            { "x", xProperty },
+            { "y", yProperty },
+            { "r", xProperty },
+            { "z", yProperty }
+        });
 
-        var parsedBody = System.Linq.Dynamic.Core.DynamicExpressionParser
-            .ParseLambda([pointParam], typeof(T), expression)
-            .Body;
+        var parsedBody = DynamicExpressionParser.ParseLambda([nodeParameter], typeof(T), expression).Body;
 
-        //var body = parameterReplacer.Visit(parsedBody);
-
-        var parsedExpression = Expression.Lambda<Func<Node2D, double>>(parsedBody, pointParam);
-
-        return Expression.Lambda<Func<Node2D, double, double>>(parsedBody, pointParam).;
-    }
-
-    private void Exec()
-    {
-        var expr = Parse("");
-        var ktok = expr.Compile();
+        return Expression.Lambda<Func<Node2D, T>>(parameterReplacer.Visit(parsedBody), nodeParameter);
     }
 }

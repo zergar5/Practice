@@ -2,6 +2,18 @@
 
 public class IterativeMethodConfig
 {
-    public const double ResidualPrecision = 1e-15;
-    public const int MaxIterations = 100000;
+    public double ResidualPrecision { get; }
+    public int MaxIterations { get; }
+
+    public IterativeMethodConfig(int maxIterations, double residualPrecision)
+    {
+        ResidualPrecision = residualPrecision;
+        MaxIterations = maxIterations;
+    }
+
+    public IterativeMethodConfig()
+    {
+        ResidualPrecision = 1e-15;
+        MaxIterations = 10000;
+    }
 }

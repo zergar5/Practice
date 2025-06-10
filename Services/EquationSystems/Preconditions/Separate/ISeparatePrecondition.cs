@@ -1,6 +1,5 @@
-﻿using System.Numerics;
-using Application.MathObjects.Vectors;
-using DirectProblem.Core.Global;
+﻿using Application.MathObjects.Vectors;
+using System.Numerics;
 
 namespace Application.EquationSystems.Preconditions.Separate;
 
