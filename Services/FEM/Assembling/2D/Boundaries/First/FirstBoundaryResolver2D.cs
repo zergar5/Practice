@@ -2,6 +2,9 @@
 using Domain.Boundaries;
 using Domain.Edges;
 using System.Numerics;
+using Application.FEM.Core.Expressions;
+using Application.FEM.Core.Grid;
+using Domain.Nodes;
 
 namespace Application.FEM.Assembling._2D.Boundaries.First;
 
@@ -9,6 +12,15 @@ public interface IFirstBoundaryResolver2D<out T> : IFirstBoundaryResolver<T, Edg
 
 public class FirstBoundaryResolver2D<T> : IFirstBoundaryResolver2D<T> where T : INumberBase<T>
 {
+    private readonly ExpressionParser2D _expressionParser;
+    private readonly IGrid<Node2D> _grid;
+
+    public FirstBoundaryResolver2D(ExpressionParser2D expressionParser, IGrid<Node2D> grid)
+    {
+        _expressionParser = expressionParser;
+        _grid = grid;
+    }
+
     public IFirstBoundaryValue<T>[] ResolveBoundaryValues(IBoundRaw<Edge> bound)
     {
         throw new NotImplementedException();

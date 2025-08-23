@@ -8,6 +8,6 @@ public interface IArea
 public class Area : IArea
 {
     public int MaterialId { get; set; }
-    public int BeginId { get; set; }
-    public int EndId { get; set; }
+    public int LeftControlPointId { get; set; }
+    public int RightControlPointId { get; set; }
 }

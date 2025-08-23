@@ -90,10 +90,10 @@ public class GridBuilder2D : IGridBuilder<Node2D, Grid2DParameters>
         var areas = gridParameters.Areas;
 
         var area = areas.First(a =>
-            leftBottom.X <= xControlPoints[a.BeginXControlPointId] &&
-            leftBottom.Y <= yControlPoints[a.BeginYControlPointId] &&
-            xControlPoints[a.EndXControlPointId] <= rightTop.X &&
-            yControlPoints[a.EndYControlPointId] <= rightTop.Y
+            leftBottom.X <= xControlPoints[a.LeftLowerControlPointId] &&
+            leftBottom.Y <= yControlPoints[a.RightLowerControlPointId] &&
+            xControlPoints[a.LeftUpperControlPointId] <= rightTop.X &&
+            yControlPoints[a.RightUpperControlPointId] <= rightTop.Y
         );
 
         return area.MaterialId;
@@ -101,8 +101,7 @@ public class GridBuilder2D : IGridBuilder<Node2D, Grid2DParameters>
 
     public class Grid2DParameters
     {
-        public required double[] XControlPoints { get; set; }
-        public required double[] YControlPoints { get; set; }
+        public required Node2D[] ControlPoints { get; set; }
         public required ISplitStrategy[] XSplitStrategies { get; set; }
         public required ISplitStrategy[] YSplitStrategies { get; set; }
         public required Area2D[] Areas { get; set; }
