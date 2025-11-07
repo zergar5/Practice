@@ -1,14 +1,17 @@
-﻿namespace Application.FEM.Core.BasisFunctions;
+﻿using System.Numerics;
+using Application.FEM._1D.BasisFunctions;
+
+namespace Application.FEM.Core.BasisFunctions;
 
 public class LinearFunctionsProvider
 {
-    public static Func<double, double> CreateFirstFunction(double rightCoordinate, double h)
+    public static IBasisFunction<double, double> CreateFirstFunction(double rightCoordinate, double h)
     {
-        return coordinate => (rightCoordinate - coordinate) / h;
+        return new BasisFunction(coordinate => (rightCoordinate - coordinate) / h);
     }
 
-    public static Func<double, double> CreateSecondFunction(double leftCoordinate, double h)
+    public static IBasisFunction<double, double> CreateSecondFunction(double leftCoordinate, double h)
     {
-        return coordinate => (coordinate - leftCoordinate) / h;
+        return new BasisFunction(coordinate => (coordinate - leftCoordinate) / h);
     }
 }

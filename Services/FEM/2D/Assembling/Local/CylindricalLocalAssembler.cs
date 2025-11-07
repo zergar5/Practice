@@ -1,4 +1,8 @@
-﻿using Application.FEM.Core.Assembling.Local;
+﻿using System.Buffers;
+using Application.DirectProblem;
+using Application.DirectProblem._2D;
+using Application.DirectProblem._2D.Cylindrical.Harmonic;
+using Application.FEM.Core.Assembling.Local;
 using Application.FEM.Core.Grid;
 using Application.MathObjects.Matrices;
 using Domain.Materials;
@@ -6,44 +10,41 @@ using Domain.Nodes;
 
 namespace Application.FEM._2D.Assembling.Local;
 
-public class HarmonicCylindricalLocalMatrixAssembler2D : ILocalMatrixAssembler<Element2D, double>
+public class HarmonicRotorLocalMatrixAssembler2D : ILocalMatrixAssembler<IElement2D, double>
 {
-    private readonly ICylindricalLocalMatricesAssembler<Element2D, double> _cylindricalLocalMatricesAssembler;
-    // TODO параметры ниже нужно доставать из текущего скопа или пройвадера
-    private readonly Grid<Node2D> _grid;
-    private readonly MaterialWithSigmaMu[] _materials;
-    private readonly double _frequency;
+    private readonly IDirectProblemContextProvider<HarmonicRotorDirectProblem2DContext> _problemContextProvider;
+    private readonly ICylindricalLocalMatricesAssembler<IElement2D, double> _cylindricalLocalMatricesAssembler;
 
-    public HarmonicCylindricalLocalMatrixAssembler2D
+    public HarmonicRotorLocalMatrixAssembler2D
     (
-        ICylindricalLocalMatricesAssembler<Element2D, double> cylindricalLocalMatricesAssembler,
-        Grid<Node2D> grid,
-        MaterialWithSigmaMu[] materials,
-        double frequency
+        IDirectProblemContextProvider<HarmonicRotorDirectProblem2DContext> problemContextProvider,
+        ICylindricalLocalMatricesAssembler<IElement2D, double> cylindricalLocalMatricesAssembler
     )
     {
+        _problemContextProvider = problemContextProvider;
         _cylindricalLocalMatricesAssembler = cylindricalLocalMatricesAssembler;
-        _grid = grid;
-        _materials = materials;
-        _frequency = frequency;
     }
 
-    public ILocalMatrix<double> AssembleMatrix(Element2D element)
+    public ILocalMatrix<double> AssembleMatrix(IElement2D element)
     {
-        var matrix = new Matrix<double>(element.NodeIndexes.Length * 2);
-        var material = _materials[element.MaterialId];
+        var problemContext = _problemContextProvider.Get();
+        var grid = problemContext.Grid;
+        var material = problemContext.Materials[element.MaterialId];
+        var frequency = problemContext.Frequency;
 
-        var r = _grid.Nodes[element.NodeIndexes[0]].R();
+        var matrix = MatrixPool<double>.Rent(element.NodeIndexes.Length * 2);
+            
+        var r = grid.Nodes[element.NodeIndexes[0]].R();
         var mass = _cylindricalLocalMatricesAssembler.AssembleMassMatrix(element, r);
         var stiffness = _cylindricalLocalMatricesAssembler.AssembleStiffnessMatrix(element, r);
 
-        stiffness.Multiply(1d / material.Mu, stiffness);
+        stiffness.Multiply(1d / MaterialWithSigmaMu.Mu, stiffness);
 
         for (var i = 0; i < element.NodeIndexes.Length; i++)
         {
             for (var j = 0; j < element.NodeIndexes.Length; j++)
             {
-                var massValue = _frequency * material.Sigma * mass[i, j];
+                var massValue = frequency * material.Sigma * mass[i, j];
                 matrix[i * 2, j * 2] = stiffness[i, j];
                 matrix[i * 2, j * 2 + 1] = -massValue;
                 matrix[i * 2 + 1, j * 2] = massValue;
@@ -53,12 +54,16 @@ public class HarmonicCylindricalLocalMatrixAssembler2D : ILocalMatrixAssembler<E
 
         var indexes = GetComplexIndexes(element);
 
+        MatrixPool<double>.Return(mass);
+        MatrixPool<double>.Return(stiffness);
+
         return new LocalMatrix<double>(matrix, indexes);
     }
 
-    private int[] GetComplexIndexes(Element2D element)
+    private static int[] GetComplexIndexes(IElement2D element)
     {
-        var complexIndexes = new int[element.NodeIndexes.Length * 2];
+        var complexIndexes = ArrayPool<int>.Shared.Rent(element.NodeIndexes.Length * 2);
+
         for (var i = 0; i < element.NodeIndexes.Length; i++)
         {
             complexIndexes[i * 2] = 2 * element.NodeIndexes[i];

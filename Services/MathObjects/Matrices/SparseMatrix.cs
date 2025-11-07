@@ -1,4 +1,5 @@
 ﻿using Application.MathObjects.Vectors;
+using System;
 using System.Collections.Immutable;
 using System.Numerics;
 
@@ -8,41 +9,50 @@ public interface ISparseMatrix<T> where T : INumberBase<T>
 {
     public int RowCount { get; }
     public int ColumnCount { get; }
-    public ImmutableArray<int> RowIndexes { get; }
-    public ImmutableArray<int> ColumnIndexes { get; }
+    public IReadOnlyList<int> RowIndexes { get; }
+    public IReadOnlyList<int> ColumnIndexes { get; }
     public T this[int i, int j] { get; set; }
-    public ImmutableArray<int> this[int i] { get; }
+    public ReadOnlySpan<int> this[int i] { get; }
     public ISparseMatrix<T> Copy(ISparseMatrix<T> sparseMatrix);
     public ISparseMatrix<T> Clone();
 }
 
 public abstract class SparseMatrixBase<T> : ISparseMatrix<T> where T : INumberBase<T>
 {
-    public abstract ImmutableArray<int> RowIndexes { get; }
-    public abstract ImmutableArray<int> ColumnIndexes { get; }
+    protected readonly int[] RowIndexesInner;
+    protected readonly int[] ColumnIndexesInner;
+
+    protected SparseMatrixBase(int[] rowIndexes, int[] columnIndexes)
+    {
+        RowIndexesInner = rowIndexes;
+        ColumnIndexesInner = columnIndexes;
+    }
+
+    public abstract IReadOnlyList<int> RowIndexes { get; }
+    public abstract IReadOnlyList<int> ColumnIndexes { get; }
 
     public abstract int RowCount { get; }
     public abstract int ColumnCount { get; }
 
-    public ImmutableArray<int> this[int rowIndex] => ColumnIndexes[RowIndexes[rowIndex]..RowIndexes[rowIndex + 1]];
+    public ReadOnlySpan<int> this[int rowIndex] => ColumnIndexesInner[RowIndexesInner[rowIndex]..RowIndexesInner[rowIndex + 1]];
+
     public abstract T this[int rowIndex, int columnIndex] { get; set; }
 
     public abstract ISparseMatrix<T> Copy(ISparseMatrix<T> sparseMatrix);
     public abstract ISparseMatrix<T> Clone();
-    protected int FindGlobalColumnIndexInRow(int rowIndex, int columnIndex) => ColumnIndexes.IndexOf(columnIndex, RowIndexes[rowIndex],
-        RowIndexes[rowIndex + 1] - RowIndexes[rowIndex]);
+
+    protected int FindMatrixElementIndexInFlatArray(int rowIndex, int columnIndex) => Array.IndexOf(ColumnIndexesInner, columnIndex, RowIndexesInner[rowIndex],
+        RowIndexesInner[rowIndex + 1] - RowIndexesInner[rowIndex]);
 }
 
 public class SparseMatrix<T> : SparseMatrixBase<T>, ISparseMatrix<T> where T : INumberBase<T>
 {
-    private readonly int[] _rowIndexes;
-    private readonly int[] _columnIndexes;
     private readonly T[] _diagonal;
     private readonly T[] _lowerValues;
     private readonly T[] _upperValues;
 
-    public override ImmutableArray<int> RowIndexes => [.. _rowIndexes];
-    public override ImmutableArray<int> ColumnIndexes => [.. _columnIndexes];
+    public override IReadOnlyList<int> RowIndexes => RowIndexesInner.AsReadOnly();
+    public override IReadOnlyList<int> ColumnIndexes => ColumnIndexesInner.AsReadOnly();
 
     public override int RowCount => _diagonal.Length;
     public override int ColumnCount => _diagonal.Length;
@@ -51,7 +61,7 @@ public class SparseMatrix<T> : SparseMatrixBase<T>, ISparseMatrix<T> where T : I
     {
         get
         {
-            if (rowIndex < 0 || columnIndex < 0) throw new ArgumentOutOfRangeException(nameof(rowIndex));
+            if (rowIndex < 0 || columnIndex < 0) throw new IndexOutOfRangeException(nameof(rowIndex) + nameof(columnIndex));
 
             if (rowIndex == columnIndex)
             {
@@ -61,14 +71,14 @@ public class SparseMatrix<T> : SparseMatrixBase<T>, ISparseMatrix<T> where T : I
             if (columnIndex > rowIndex)
             {
                 (rowIndex, columnIndex) = (columnIndex, rowIndex);
-                var index = FindGlobalColumnIndexInRow(rowIndex, columnIndex);
-                return index != -1 ? _upperValues[index] : default;
+                var index = FindMatrixElementIndexInFlatArray(rowIndex, columnIndex);
+                return index != -1 ? _upperValues[index] : throw new ArgumentOutOfRangeException(nameof(rowIndex) + nameof(columnIndex));
 
             }
             else
             {
-                var index = FindGlobalColumnIndexInRow(rowIndex, columnIndex);
-                return index != -1 ? _lowerValues[index] : default;
+                var index = FindMatrixElementIndexInFlatArray(rowIndex, columnIndex);
+                return index != -1 ? _lowerValues[index] : throw new ArgumentOutOfRangeException(nameof(rowIndex) + nameof(columnIndex));
             }
         }
         set
@@ -84,21 +94,19 @@ public class SparseMatrix<T> : SparseMatrixBase<T>, ISparseMatrix<T> where T : I
             if (columnIndex > rowIndex)
             {
                 (rowIndex, columnIndex) = (columnIndex, rowIndex);
-                var index = FindGlobalColumnIndexInRow(rowIndex, columnIndex);
+                var index = FindMatrixElementIndexInFlatArray(rowIndex, columnIndex);
                 if (index != -1) _upperValues[index] = value;
             }
             else
             {
-                var index = FindGlobalColumnIndexInRow(rowIndex, columnIndex);
+                var index = FindMatrixElementIndexInFlatArray(rowIndex, columnIndex);
                 if (index != -1) _lowerValues[index] = value;
             }
         }
     }
 
-    public SparseMatrix(int[] rowIndexes, int[] columnIndexes)
+    public SparseMatrix(int[] rowIndexes, int[] columnIndexes) : base(rowIndexes, columnIndexes)
     {
-        _rowIndexes = rowIndexes;
-        _columnIndexes = columnIndexes;
         _diagonal = new T[rowIndexes.Length - 1];
         _lowerValues = new T[rowIndexes[^1]];
         _upperValues = new T[rowIndexes[^1]];
@@ -111,10 +119,8 @@ public class SparseMatrix<T> : SparseMatrixBase<T>, ISparseMatrix<T> where T : I
         T[] diagonal,
         T[] lowerValues,
         T[] upperValues
-    )
+    ) : base(rowIndexes, columnIndexes)
     {
-        _rowIndexes = rowIndexes;
-        _columnIndexes = columnIndexes;
         _diagonal = diagonal;
         _lowerValues = lowerValues;
         _upperValues = upperValues;
@@ -129,8 +135,8 @@ public class SparseMatrix<T> : SparseMatrixBase<T>, ISparseMatrix<T> where T : I
     {
         return new SparseMatrix<T>
         (
-            _rowIndexes.ToArray(),
-            _columnIndexes.ToArray(),
+            RowIndexesInner.ToArray(),
+            ColumnIndexesInner.ToArray(),
             _diagonal.ToArray(),
             _lowerValues.ToArray(),
             _upperValues.ToArray()

@@ -10,5 +10,3 @@ public interface IGenericInserter<T, in TMatrix> where T : INumberBase<T>
     public void InsertMatrix(TMatrix globalMatrix, ILocalMatrix<T> localMatrix);
     public void InsertVector(IVector<T> globalVector, ILocalVector<T> localVector);
 }
-
-public interface IInserter<T> : IGenericInserter<T, IMatrix<T>> where T : INumberBase<T>;

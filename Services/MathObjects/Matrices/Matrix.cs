@@ -1,4 +1,5 @@
 ﻿using Application.MathObjects.Vectors;
+using DirectProblem.Core.Base;
 using System.Numerics;
 
 namespace Application.MathObjects.Matrices;
@@ -10,6 +11,7 @@ public interface IMatrix<T> where T : INumberBase<T>
     public T this[int i, int j] { get; set; }
     public IMatrix<T> Copy(IMatrix<T> matrix);
     public IMatrix<T> Clone();
+    public void Clear();
 }
 
 public abstract class MatrixBase<T> : IMatrix<T> where T : INumberBase<T>
@@ -35,6 +37,17 @@ public abstract class MatrixBase<T> : IMatrix<T> where T : INumberBase<T>
     }
 
     public virtual IMatrix<T> Clone() => Copy(new Matrix<T>(RowCount, ColumnCount));
+
+    public void Clear()
+    {
+        for (var i = 0; i < RowCount; i++)
+        {
+            for (var j = 0; j < ColumnCount; j++)
+            {
+                this[i, j] = T.Zero;
+            }
+        }
+    }
 }
 
 public class Matrix<T> : MatrixBase<T> where T : INumberBase<T>
@@ -54,7 +67,7 @@ public class Matrix<T> : MatrixBase<T> where T : INumberBase<T>
     public override T this[int i, int j]
     {
         get => Values[i, j];
-        set => Values[j, i] = value;
+        set => Values[i, j] = value;
     }
 }
 

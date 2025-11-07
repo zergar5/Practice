@@ -2,7 +2,9 @@
 
 namespace Application.FEM.Core.Grid;
 
-public interface IGridBuilder<TNode, in TGridParameters> where TNode : Node
+public interface IGridBuilder<out TNode, out TElement, in TGridParameters>
+    where TNode : Node
+    where TElement : IElement
 {
-    public Grid<TNode> Build(TGridParameters gridParameters);
+    public IGrid<TNode, TElement> Build(TGridParameters gridParameters);
 }

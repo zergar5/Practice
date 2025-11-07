@@ -1,28 +1,32 @@
-﻿using Application.FEM._1D.BasisFunctions;
+﻿using System.Buffers;
+using Application.DirectProblem;
+using Application.DirectProblem._2D;
+using Application.FEM._1D.BasisFunctions;
+using Application.FEM._2D.Grid;
 using Application.FEM.Core.BasisFunctions;
 using Application.FEM.Core.Grid;
 using Domain.Nodes;
 
 namespace Application.FEM._2D.BasisFunctions;
 
-public class BilinearBasisFunctionsProvider : IBasisFunctionsProvider<Node2D, Element2D>
+public class BilinearBasisFunctionsProvider : IBasisFunctionsProvider<Node2D, double, IElement2D>
 {
-    // TODO сетка должна доставаться из контекста или провайдера
-    private readonly Grid<Node2D> _grid;
+    private readonly IDirectProblemContextProvider<DirectProblem2DContext> _problemContextProvider;
 
-    public BilinearBasisFunctionsProvider(Grid<Node2D> grid)
+    public BilinearBasisFunctionsProvider(IDirectProblemContextProvider<DirectProblem2DContext> problemContextProvider)
     {
-        _grid = grid;
+        _problemContextProvider = problemContextProvider;
     }
 
-    public IBasisFunction<Node2D>[] GetFunctions(Element2D element)
+    public IBasisFunction<Node2D, double>[] GetFunctions(IElement2D element)
     {
-        var bilinearBasisFunctions = new BasisFunction2D[4];
+        var grid = _problemContextProvider.Get().Grid;
+        var bilinearBasisFunctions = ArrayPool<IBasisFunction<Node2D, double>>.Shared.Rent(4);
 
-        var firstXFunction = new BasisFunction(LinearFunctionsProvider.CreateFirstFunction(_grid.Nodes[element.NodeIndexes[1]].X, element.Length));
-        var secondXFunction = new BasisFunction(LinearFunctionsProvider.CreateSecondFunction(_grid.Nodes[element.NodeIndexes[0]].X, element.Length));
-        var firstYFunction = new BasisFunction(LinearFunctionsProvider.CreateFirstFunction(_grid.Nodes[element.NodeIndexes[2]].Y, element.Height));
-        var secondYFunction = new BasisFunction(LinearFunctionsProvider.CreateSecondFunction(_grid.Nodes[element.NodeIndexes[0]].Y, element.Height));
+        var firstXFunction = LinearFunctionsProvider.CreateFirstFunction(grid.Nodes.ElementAt(element.NodeIndexes[1]).X, element.Length);
+        var secondXFunction = LinearFunctionsProvider.CreateSecondFunction(grid.Nodes.ElementAt(element.NodeIndexes[0]).X, element.Length);
+        var firstYFunction = LinearFunctionsProvider.CreateFirstFunction(grid.Nodes.ElementAt(element.NodeIndexes[2]).Y, element.Height);
+        var secondYFunction = LinearFunctionsProvider.CreateSecondFunction(grid.Nodes.ElementAt(element.NodeIndexes[0]).Y, element.Height);
 
         bilinearBasisFunctions[0] = new BasisFunction2D(firstXFunction, firstYFunction);
         bilinearBasisFunctions[1] = new BasisFunction2D(secondXFunction, firstYFunction);

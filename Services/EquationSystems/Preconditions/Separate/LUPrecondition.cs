@@ -1,16 +1,24 @@
-﻿using Application.MathObjects.Matrices;
+﻿using Application.EquationSystems.MatrixDecompositions;
+using Application.MathObjects.Matrices;
 using Application.MathObjects.Vectors;
+using DirectProblem.Core.Base;
 using System.Numerics;
 
 namespace Application.EquationSystems.Preconditions.Separate;
 
-public class LUPrecondition<T> : ISeparatePrecondition<T> where T : INumberBase<T>
+public class LUPrecondition<T> : ISeparatePrecondition<ISparseMatrix<T>, T> where T : INumberBase<T>
 {
-    private readonly ISparseMatrix<T> _decomposedMatrix;
+    private readonly IMatrixDecomposition<ISparseMatrix<T>> _matrixDecomposition;
+    private ISparseMatrix<T> _decomposedMatrix;
 
-    public LUPrecondition(ISparseMatrix<T> decomposedMatrix)
+    public LUPrecondition(IMatrixDecomposition<ISparseMatrix<T>> matrixDecomposition)
     {
-        _decomposedMatrix = decomposedMatrix;
+        _matrixDecomposition = matrixDecomposition;
+    }
+
+    public void DecomposeMatrix(ISparseMatrix<T> matrix)
+    {
+        _decomposedMatrix = _matrixDecomposition.Decompose(matrix);
     }
 
     public IVector<T> ForwardElimination(IVector<T> vector, IVector<T>? result = null)

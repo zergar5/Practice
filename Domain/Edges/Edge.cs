@@ -1,7 +1,7 @@
 ﻿namespace Domain.Edges;
 
-public class Edge
+public class Edge<TNode>
 {
-    public int BeginId { get; set; }
-    public int EndId { get; set; }
+    public required TNode BeginNode { get; set; }
+    public required TNode EndNode { get; set; }
 }

@@ -1,24 +1,27 @@
-﻿using Domain.Nodes;
+﻿using Application.FEM._2D;
+using Domain.Nodes;
 using System.Collections;
 using System.Collections.Immutable;
 
 namespace Application.FEM.Core.Grid;
 
-public interface IGrid<TNode> : IEnumerable<IElement>
+public interface IGrid<out TNode, out TElement> : IEnumerable<TElement>
+    where TElement : IElement
 {
-    public ImmutableArray<TNode> Nodes { get; }
-    public ImmutableArray<IElement> Elements { get; }
+    public IReadOnlyList<TNode> Nodes { get; }
+    public IReadOnlyList<TElement> Elements { get; }
 }
 
-public class Grid<TNode> : IGrid<TNode>
+public class Grid<TNode, TElement> : IGrid<TNode, TElement>
+    where TElement : IElement
 {
     private readonly TNode[] _nodes;
-    private readonly IElement[] _elements;
+    private readonly TElement[] _elements;
 
-    public ImmutableArray<TNode> Nodes => [.. _nodes];
-    public ImmutableArray<IElement> Elements => [.. _elements];
+    public IReadOnlyList<TNode> Nodes => _nodes.AsReadOnly();
+    public IReadOnlyList<TElement> Elements => _elements.AsReadOnly();
 
-    public Grid(TNode[] nodes, IElement[] elements)
+    public Grid(TNode[] nodes, TElement[] elements)
     {
         _nodes = nodes;
         _elements = elements;
@@ -29,19 +32,19 @@ public class Grid<TNode> : IGrid<TNode>
         return GetEnumerator();
     }
 
-    public IEnumerator<IElement> GetEnumerator() => ((IEnumerable<IElement>)Elements).GetEnumerator();
+    public IEnumerator<TElement> GetEnumerator() => Elements.GetEnumerator();
 }
 
 public static class GridExtensions
 {
-    public static bool Has(this IGrid<Node2D> grid, Node2D node)
+    public static bool Has(this IGrid<Node2D, IElement2D> grid, Node2D node)
     {
         var lowerLeftCorner = grid.Nodes[0];
         var upperRightCorner = grid.Nodes[^1];
         return PointInRectangle(node, lowerLeftCorner, upperRightCorner);
     }
 
-    public static IElement? FindNodeElement(this IGrid<Node2D> grid, Node2D node)
+    public static IElement2D? FindNodeElement(this IGrid<Node2D, IElement2D> grid, Node2D node)
     {
         return grid.Elements.FirstOrDefault(e => PointInRectangle(node, grid.Nodes[e.NodeIndexes[0]], grid.Nodes[e.NodeIndexes[^1]]));
     }
@@ -49,7 +52,7 @@ public static class GridExtensions
     // TODO вынести потом в другой место, связанное с геометрией, например завести class Rectangle
     public static bool PointInRectangle(Node2D node, Node2D lowerLeftCorner, Node2D upperRightCorner)
     {
-        return node.X > lowerLeftCorner.X && node.Y > lowerLeftCorner.Y &&
-               node.X < upperRightCorner.X && node.Y < upperRightCorner.Y;
+        return node.X >= lowerLeftCorner.X && node.Y >= lowerLeftCorner.Y &&
+               node.X <= upperRightCorner.X && node.Y <= upperRightCorner.Y;
     }
 }

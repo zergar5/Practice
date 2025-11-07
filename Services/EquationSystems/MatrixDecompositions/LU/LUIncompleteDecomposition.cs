@@ -25,6 +25,7 @@ public class LUIncompleteDecomposition<T> : IMatrixDecomposition<ISparseMatrix<T
                     if (!matrix[iPrevious].Contains(rowColumns[k])) continue;
 
                     var kColumn = rowColumns[k];
+
                     sumL += matrix[i, kColumn] * matrix[kColumn, iPrevious];
                     sumU += matrix[kColumn, i] * matrix[iPrevious, kColumn];
                 }

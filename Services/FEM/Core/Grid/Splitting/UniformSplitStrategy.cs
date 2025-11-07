@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using Common.Extensions;
+using Domain;
 using Interval = Domain.Interval;
 
 namespace Application.FEM.Core.Grid.Splitting;
@@ -15,13 +16,13 @@ public class UniformSplitStrategy : ISplitStrategy
     public IEnumerable<double> ExecuteSplit(Interval interval)
     {
         var step = interval.Length() / _steps;
-
         var stepNumber = 0;
         var value = interval.Begin + stepNumber * step;
 
         while (interval.Has(value))
         {
             yield return value;
+
             stepNumber++;
             value = interval.Begin + stepNumber * step;
         }
@@ -41,13 +42,13 @@ public class StepUniformSplitStrategy : ISplitStrategy
     public IEnumerable<double> ExecuteSplit(Interval interval)
     {
         var steps = interval.Length() / _step;
-        // заменить 1e-15 на глобальную точность для чисел double
-        if (!(Math.Abs(steps % _step) <= 1e-15))
+
+        if (!Math.Abs(steps % 1).EqualsWithPrecision(0))
         {
             throw new ArgumentException("Invalid step or interval");
         }
 
-        _uniformSplitStrategy ??= new UniformSplitStrategy((int)Math.Round(steps));
+        _uniformSplitStrategy ??= new UniformSplitStrategy((int)steps);
 
         var values = _uniformSplitStrategy.ExecuteSplit(interval);
 

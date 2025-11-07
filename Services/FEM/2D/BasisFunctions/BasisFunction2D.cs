@@ -3,12 +3,12 @@ using Domain.Nodes;
 
 namespace Application.FEM._2D.BasisFunctions;
 
-public class BasisFunction2D : IBasisFunction<Node2D>
+public class BasisFunction2D : IBasisFunction<Node2D, double>
 {
-    private readonly IBasisFunction<double> _xFunction;
-    private readonly IBasisFunction<double> _yFunction;
+    private readonly IBasisFunction<double, double> _xFunction;
+    private readonly IBasisFunction<double, double> _yFunction;
 
-    public BasisFunction2D(IBasisFunction<double> xFunction, IBasisFunction<double> yFunction)
+    public BasisFunction2D(IBasisFunction<double, double> xFunction, IBasisFunction<double, double> yFunction)
     {
         _xFunction = xFunction;
         _yFunction = yFunction;

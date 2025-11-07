@@ -1,7 +1,7 @@
-﻿using System.Numerics;
-using DirectProblem.Core;
+﻿using DirectProblem.Core;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.FEM.Assembling.Local;
+using System.Numerics;
 
 namespace DirectProblem.TwoDimensional.Assembling.Local;
 

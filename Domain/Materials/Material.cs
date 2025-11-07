@@ -7,6 +7,6 @@ public class Material
 
 public class MaterialWithSigmaMu : Material
 {
-    public double Mu { get; set; }
+    public static double Mu => 4 * Math.PI * 1e-7;
     public double Sigma { get; set; }
 }

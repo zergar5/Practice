@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using DirectProblem.Core;
+﻿using DirectProblem.Core;
 using DirectProblem.Core.Boundary;
 using DirectProblem.Core.Global;
 using DirectProblem.Core.GridComponents;
@@ -10,6 +9,7 @@ using DirectProblem.TwoDimensional.Assembling;
 using DirectProblem.TwoDimensional.Assembling.Boundary;
 using DirectProblem.TwoDimensional.Assembling.Global;
 using DirectProblem.TwoDimensional.Assembling.Local;
+using System.Numerics;
 using Vector = DirectProblem.Core.Base.Vector;
 
 namespace DirectProblem;

@@ -4,8 +4,7 @@ using Application.MathObjects.Matrices;
 
 namespace Application.FEM._2D.Assembling.Local;
 
-// TODO все матрицы нужно иницилизировать в скопе и переиспользовать
-public class RotorLocalStiffnessMatrixAssembler2D : ICylindricalLocalStiffnessMatrixAssembler<Element2D, double>
+public class RotorLocalStiffnessMatrixAssembler2D : ICylindricalLocalStiffnessMatrixAssembler<IElement2D, double>
 {
     private readonly ICylindricalLocalStiffnessMatrixAssembler1D<double> _cylindricalLocalRotorStiffnessMatrixAssembler1D;
     private readonly ICylindricalLocalStiffnessMatrixAssembler1D<double> _cylindricalLocalStiffnessMatrixAssembler1D;
@@ -29,7 +28,7 @@ public class RotorLocalStiffnessMatrixAssembler2D : ICylindricalLocalStiffnessMa
         _localMassMatrixAssembler1D = localMassMatrixAssembler1D;
     }
 
-    public IMatrix<double> AssembleStiffnessMatrix(Element2D element, double r)
+    public IMatrix<double> AssembleStiffnessMatrix(IElement2D element, double r)
     {
         var rotorStiffness = _cylindricalLocalRotorStiffnessMatrixAssembler1D.AssembleStiffnessMatrix(element.Length, r);
 
@@ -39,27 +38,33 @@ public class RotorLocalStiffnessMatrixAssembler2D : ICylindricalLocalStiffnessMa
         var massR = _cylindricalLocalMassMatrixAssembler1D.AssembleMassMatrix(element.Length, r);
         var massZ = _localMassMatrixAssembler1D.AssembleMassMatrix(element.Height);
 
-        var stiffness = new Matrix<double>(4);
+        var stiffness = MatrixPool<double>.Rent(element.NodeIndexes.Length);
 
         for (var i = 0; i < element.NodeIndexes.Length; i++)
         {
             for (var j = 0; j <= i; j++)
             {
                 stiffness[i, j] = stiffnessR[GetMuIndex(i), GetMuIndex(j)] * massZ[GetNuIndex(i), GetNuIndex(j)] +
-                                   massR[GetMuIndex(i), GetMuIndex(j)] * stiffnessZ[GetNuIndex(i), GetNuIndex(j)] +
-                                   rotorStiffness[GetMuIndex(i), GetMuIndex(j)] * massZ[GetNuIndex(i), GetNuIndex(j)];
+                                            massR[GetMuIndex(i), GetMuIndex(j)] * stiffnessZ[GetNuIndex(i), GetNuIndex(j)] +
+                                            rotorStiffness[GetMuIndex(i), GetMuIndex(j)] * massZ[GetNuIndex(i), GetNuIndex(j)];
                 stiffness[j, i] = stiffness[i, j];
             }
         }
+
+        MatrixPool<double>.Return(rotorStiffness);
+        MatrixPool<double>.Return(stiffnessR);
+        MatrixPool<double>.Return(stiffnessZ);
+        MatrixPool<double>.Return(massR);
+        MatrixPool<double>.Return(massZ);
 
         return stiffness;
     }
 
     private static int GetMuIndex(int i) => i % 2;
-    private int GetNuIndex(int i) => i / 2;
+    private static int GetNuIndex(int i) => i / 2;
 }
 
-public class CylindricalLocalMassMatrixAssembler2D : ICylindricalLocalStiffnessMatrixAssembler<Element2D, double>
+public class CylindricalLocalMassMatrixAssembler2D : ICylindricalLocalMassMatrixAssembler<IElement2D, double>
 {
     private readonly ICylindricalLocalMassMatrixAssembler1D<double> _cylindricalLocalMassMatrixAssembler1D;
     private readonly ILocalMassMatrixAssembler1D<double> _localMassMatrixAssembler1D;
@@ -74,12 +79,12 @@ public class CylindricalLocalMassMatrixAssembler2D : ICylindricalLocalStiffnessM
         _localMassMatrixAssembler1D = localMassMatrixAssembler1D;
     }
 
-    public IMatrix<double> AssembleStiffnessMatrix(Element2D element, double r)
+    public IMatrix<double> AssembleMassMatrix(IElement2D element, double r)
     {
         var massR = _cylindricalLocalMassMatrixAssembler1D.AssembleMassMatrix(element.Length, r);
         var massZ = _localMassMatrixAssembler1D.AssembleMassMatrix(element.Height);
 
-        var mass = new Matrix<double>(4);
+        var mass = MatrixPool<double>.Rent(element.NodeIndexes.Length);
 
         for (var i = 0; i < element.NodeIndexes.Length; i++)
         {
@@ -90,9 +95,12 @@ public class CylindricalLocalMassMatrixAssembler2D : ICylindricalLocalStiffnessM
             }
         }
 
+        MatrixPool<double>.Return(massR);
+        MatrixPool<double>.Return(massZ);
+
         return mass;
     }
 
     private static int GetMuIndex(int i) => i % 2;
-    private int GetNuIndex(int i) => i / 2;
+    private static int GetNuIndex(int i) => i / 2;
 }

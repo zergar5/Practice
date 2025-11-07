@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using DirectProblem.Core.GridComponents;
+﻿using DirectProblem.Core.GridComponents;
 
 namespace DirectProblem.FEM.Assembling.Local;
 

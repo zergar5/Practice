@@ -2,7 +2,7 @@
 
 namespace Application.FEM._1D.BasisFunctions;
 
-public class BasisFunction : IBasisFunction<double>
+public class BasisFunction : IBasisFunction<double, double>
 {
     private readonly Func<double, double> _xFunction;
 

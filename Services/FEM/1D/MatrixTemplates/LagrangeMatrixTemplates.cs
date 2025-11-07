@@ -2,7 +2,7 @@
 
 namespace Application.FEM._1D.MatrixTemplates;
 
-public class LagrangeMatrixTemplates
+public static class LagrangeMatrixTemplates
 {
     public static IMatrix<int> MassMatrix => new Matrix<int>
     (

@@ -6,7 +6,7 @@ using static Application.FEM._2D.Grid.GridBuilder2D;
 
 namespace Application.FEM._2D.Grid;
 
-public class GridBuilder2D : IGridBuilder<Node2D, Grid2DParameters>
+public class GridBuilder2D : IGridBuilder<Node2D, IElement2D, Grid2DParameters>
 {
     private readonly AxisSplitter _axisSplitter;
 
@@ -15,34 +15,34 @@ public class GridBuilder2D : IGridBuilder<Node2D, Grid2DParameters>
         _axisSplitter = axisSplitter;
     }
 
-    public Grid<Node2D> Build(Grid2DParameters gridParameters)
+    public IGrid<Node2D, IElement2D> Build(Grid2DParameters gridParameters)
     {
         var xAxis = _axisSplitter.SplitAxis(gridParameters.XControlPoints, gridParameters.XSplitStrategies).ToArray();
         var yAxis = _axisSplitter.SplitAxis(gridParameters.YControlPoints, gridParameters.YSplitStrategies).ToArray();
         var nodes = GenerateNodes(xAxis, yAxis).ToArray();
         var elements = GenerateElements(gridParameters, nodes, xAxis.Length, yAxis.Length);
 
-        return new Grid<Node2D>(nodes, elements);
+        return new Grid<Node2D, IElement2D>(nodes, elements);
     }
 
-    private static IEnumerable<Node2D> GenerateNodes(IEnumerable<double> xAxis, IEnumerable<double> yAxis)
+    private static IEnumerable<Node2D> GenerateNodes(double[] xAxis, double[] yAxis)
     {
-        foreach (var xNode in xAxis)
+        foreach (var yNode in yAxis)
         {
-            foreach (var yNode in yAxis)
+            foreach (var xNode in xAxis)
             {
                 yield return new Node2D { X = xNode, Y = yNode };
             }
         }
     }
 
-    private ElementBase[] GenerateElements(Grid2DParameters gridParameters, Node2D[] nodes, int totalXNodes, int totalYNodes)
+    private IElement2D[] GenerateElements(Grid2DParameters gridParameters, Node2D[] nodes, int totalXNodes, int totalYNodes)
     {
         var totalXElements = totalXNodes - 1;
         var totalYElements = totalYNodes - 1;
         var totalElements = totalXElements * totalYElements;
 
-        var elements = new ElementBase[totalElements];
+        var elements = new IElement2D[totalElements];
 
         for (var topRow = 1; topRow < totalYNodes; topRow++)
         {
@@ -52,7 +52,7 @@ public class GridBuilder2D : IGridBuilder<Node2D, Grid2DParameters>
             {
                 var leftColumn = rightColumn - 1;
                 var elementIndex = leftColumn + bottomRow * totalXElements;
-                var nodesIndexes = GetNodesIndexes(leftColumn, rightColumn, bottomRow, topRow, totalXElements);
+                var nodesIndexes = GetNodesIndexes(leftColumn, rightColumn, bottomRow, topRow, totalXNodes);
 
                 var leftBottom = nodes[nodesIndexes[0]];
                 var leftTop = nodes[nodesIndexes[2]];
@@ -83,17 +83,17 @@ public class GridBuilder2D : IGridBuilder<Node2D, Grid2DParameters>
         return indexes;
     }
 
-    private int GetElementMaterial(Node2D leftBottom, Node2D rightTop, Grid2DParameters gridParameters)
+    private static int GetElementMaterial(Node2D leftBottom, Node2D rightTop, Grid2DParameters gridParameters)
     {
         var xControlPoints = gridParameters.XControlPoints;
         var yControlPoints = gridParameters.YControlPoints;
         var areas = gridParameters.Areas;
 
         var area = areas.First(a =>
-            leftBottom.X <= xControlPoints[a.LeftLowerControlPointId] &&
-            leftBottom.Y <= yControlPoints[a.RightLowerControlPointId] &&
-            xControlPoints[a.LeftUpperControlPointId] <= rightTop.X &&
-            yControlPoints[a.RightUpperControlPointId] <= rightTop.Y
+            xControlPoints[a.XStartControlPointId] <= leftBottom.X &&
+            yControlPoints[a.YStartControlPointId] <= leftBottom.Y &&
+            rightTop.X <= xControlPoints[a.XEndControlPointId] &&
+               rightTop.Y <= yControlPoints[a.YEndControlPointId]
         );
 
         return area.MaterialId;
@@ -101,7 +101,8 @@ public class GridBuilder2D : IGridBuilder<Node2D, Grid2DParameters>
 
     public class Grid2DParameters
     {
-        public required Node2D[] ControlPoints { get; set; }
+        public required double[] XControlPoints { get; set; }
+        public required double[] YControlPoints { get; set; }
         public required ISplitStrategy[] XSplitStrategies { get; set; }
         public required ISplitStrategy[] YSplitStrategies { get; set; }
         public required Area2D[] Areas { get; set; }

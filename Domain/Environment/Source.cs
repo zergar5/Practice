@@ -1,7 +1,7 @@
 ﻿namespace Domain.Environment;
 
-public class Source<TNode>
+public class Source<TLocation>
 {
-    public required TNode Node { get; set; }
+    public required TLocation Location { get; set; }
     public required double Power { get; set; }
 }

@@ -1,6 +1,8 @@
-﻿namespace Application.FEM.Core.BasisFunctions;
+﻿using System.Numerics;
 
-public interface IBasisFunction<in TNode>
+namespace Application.FEM.Core.BasisFunctions;
+
+public interface IBasisFunction<in TNode, out T> where T : INumberBase<T>
 {
-    public double Evaluate(TNode node);
+    public T Evaluate(TNode node);
 }

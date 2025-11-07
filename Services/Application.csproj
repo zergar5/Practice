@@ -14,7 +14,13 @@
     <Folder Include="FEM\2D\Grid\" />
     <Folder Include="FEM\Assembling\Global\" />
     <Folder Include="FEM\Assembling\Providers\" />
-    <Folder Include="FEM\Core\Assembling\Global\" />
+    <Folder Include="FEM\Core\Assembling\Global\Sources\" />
+    <Folder Include="InverseProblem\Parameters\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="FEM\2D\Assembling\Boundaries\First\DefinedValueFirstBoundaryResolver2D.cs" />
+    <None Include="FEM\Assembling\2D\Boundaries\First\IDefinedValueFirstBoundaryResolver2D.cs" />
   </ItemGroup>
 
   <ItemGroup>

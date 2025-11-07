@@ -1,12 +1,14 @@
 ﻿using Application.FEM._1D;
 using Application.FEM.Core.Grid;
 using Domain.Enums;
+using static Application.FEM._2D.Element2D;
 
 namespace Application.FEM._2D;
 
 public interface IElement2D : IElement
 {
     public double Height { get; }
+    public BoundInfo GetBoundNodeIds(Bound2D bound, int[]? indexes = null);
 }
 
 public class Element2D : Element, IElement2D
@@ -18,7 +20,7 @@ public class Element2D : Element, IElement2D
         Height = height;
     }
 
-    public BoundInfo GetBoundNodeIndexes(Bound2D bound, int[]? indexes = null)
+    public BoundInfo GetBoundNodeIds(Bound2D bound, int[]? indexes = null)
     {
         indexes ??= new int[2];
         var boundSize = Length;
@@ -47,6 +49,7 @@ public class Element2D : Element, IElement2D
 
         return new BoundInfo
         {
+            NodeIds = indexes,
             Bound = bound,
             Size = boundSize,
         };
@@ -54,6 +57,7 @@ public class Element2D : Element, IElement2D
 
     public class BoundInfo
     {
+        public required int[] NodeIds { get; set; }
         public Bound2D Bound { get; set; }
         public double Size { get; set; }
     }

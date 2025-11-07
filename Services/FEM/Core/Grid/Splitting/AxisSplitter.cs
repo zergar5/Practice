@@ -4,17 +4,18 @@ namespace Application.FEM.Core.Grid.Splitting;
 
 public interface IAxisSplitter
 {
-    public IEnumerable<double> SplitAxis(IEnumerable<double> controlPoints, params ISplitStrategy[] splitStrategies);
+    public IEnumerable<double> SplitAxis(IReadOnlyCollection<double> controlPoints, params ISplitStrategy[] splitStrategies);
 }
 
 public class AxisSplitter : IAxisSplitter
 {
-    public IEnumerable<double> SplitAxis(IEnumerable<double> controlPoints, params ISplitStrategy[] splitStrategies)
+    public IEnumerable<double> SplitAxis(IReadOnlyCollection<double> controlPoints, params ISplitStrategy[] splitStrategies)
     {
-        if (controlPoints.Count() - 1 != splitStrategies.Length)
+        if (controlPoints.Count - 1 != splitStrategies.Length)
             throw new ArgumentException("Incorrect number of control points or splitters");
 
         var intervals = BuildIntervals(controlPoints).ToArray();
+
         foreach (var value in splitStrategies[0].ExecuteSplit(intervals[0]))
         {
             yield return value;
@@ -29,15 +30,15 @@ public class AxisSplitter : IAxisSplitter
         }
     }
 
-    private IEnumerable<Interval> BuildIntervals(IEnumerable<double> points)
+    private static IEnumerable<Interval> BuildIntervals(IReadOnlyCollection<double> points)
     {
         var begin = points.First();
+
         foreach (var point in points.Skip(1))
         {
-            var end = point;
-            yield return new Interval { Begin = begin, End = end };
+            yield return new Interval { Begin = begin, End = point };
 
-            begin = end;
+            begin = point;
         }
     }
 }

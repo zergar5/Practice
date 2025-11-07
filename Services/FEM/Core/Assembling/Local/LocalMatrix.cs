@@ -1,13 +1,15 @@
-﻿using Application.MathObjects.Matrices;
+﻿using System.Buffers;
+using Application.MathObjects.Matrices;
 using System.Numerics;
 
 namespace Application.FEM.Core.Assembling.Local;
 
-public interface ILocalMatrix<T> where T : INumberBase<T>
+public interface ILocalMatrix<out T> : IDisposable where T : INumberBase<T>
 {
     public int RowCount { get; }
     public int ColumnCount { get; }
-    public KeyValuePair<(int, int), T> this[int i, int j] { get; }
+    public T this[int i, int j] { get; }
+    public int GetGlobalIndexOfLocal(int index);
 }
 
 public class LocalMatrix<T> : ILocalMatrix<T> where T : INumberBase<T>
@@ -18,12 +20,19 @@ public class LocalMatrix<T> : ILocalMatrix<T> where T : INumberBase<T>
     public int RowCount => _matrix.RowCount;
     public int ColumnCount => _matrix.ColumnCount;
 
-    // TODO: Подумать как можно сделать более удобные получаемые данные, например "выдирать" строку из матрицы в виде ReadOnlySpan
-    public KeyValuePair<(int, int), T> this[int i, int j] => new((_indexesFromGlobal[i], _indexesFromGlobal[j]), _matrix[i, j]);
+    public T this[int i, int j] => _matrix[i, j];
 
     public LocalMatrix(IMatrix<T> matrix, int[] indexesFromGlobal)
     {
         _matrix = matrix;
         _indexesFromGlobal = indexesFromGlobal;
+    }
+
+    public int GetGlobalIndexOfLocal(int index) => _indexesFromGlobal[index];
+
+    public void Dispose()
+    {
+        MatrixPool<T>.Return(_matrix);
+        ArrayPool<int>.Shared.Return(_indexesFromGlobal);
     }
 }

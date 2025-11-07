@@ -1,19 +1,18 @@
-﻿using System.Collections.ObjectModel;
+﻿using Domain.Nodes;
 using System.Linq.Dynamic.Core;
-using Domain.Nodes;
 using System.Linq.Expressions;
 using System.Numerics;
 
 namespace Application.FEM.Core.Expressions;
 
-public interface IExpressionParser
+public interface IExpressionParser<in TNode>
 {
-    public LambdaExpression Parse<T>(string expression) where T : INumberBase<T>;
+    public Func<TNode, T> Parse<T>(string expression) where T : INumberBase<T>;
 }
 
-public class ExpressionParser2D : IExpressionParser
+public class ExpressionParser2D : IExpressionParser<Node2D>
 {
-    public LambdaExpression Parse<T>(string expression) where T : INumberBase<T>
+    public Func<Node2D, T> Parse<T>(string expression) where T : INumberBase<T>
     {
         var nodeParameter = Expression.Parameter(typeof(Node2D), "node");
 
@@ -30,6 +29,6 @@ public class ExpressionParser2D : IExpressionParser
 
         var parsedBody = DynamicExpressionParser.ParseLambda([nodeParameter], typeof(T), expression).Body;
 
-        return Expression.Lambda<Func<Node2D, T>>(parameterReplacer.Visit(parsedBody), nodeParameter);
+        return Expression.Lambda<Func<Node2D, T>>(parameterReplacer.Visit(parsedBody), nodeParameter).Compile();
     }
 }

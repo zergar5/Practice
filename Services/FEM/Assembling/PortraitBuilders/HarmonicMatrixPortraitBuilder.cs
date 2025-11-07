@@ -4,15 +4,20 @@ using Domain.Nodes;
 
 namespace Application.FEM.Assembling.PortraitBuilders;
 
-public class HarmonicMatrixPortraitBuilder : MatrixPortraitBuilder
+public class HarmonicMatrixPortraitBuilder<TNode, TElement> : MatrixPortraitBuilderBase<TNode, TElement>
+    where TNode : Node
+    where TElement : IElement
 {
-    protected override List<SortedSet<int>> BuildAdjacencyList(IGrid<Node> grid)
+    protected override List<SortedSet<int>> BuildAdjacencyList(IGrid<TNode, TElement> grid)
     {
-        var adjacencyList = new List<SortedSet<int>>(grid.Nodes.Length * 2);
-
-        for (var i = 0; i < grid.Nodes.Length * 2; i++)
+        if (AdjacencyList.Count != grid.Nodes.Count * 2)
         {
-            adjacencyList.Add([]);
+            AdjacencyList = new List<SortedSet<int>>(grid.Nodes.Count * 2);
+
+            for (var i = 0; i < grid.Nodes.Count * 2; i++)
+            {
+                AdjacencyList.Add([]);
+            }
         }
 
         foreach (var element in grid)
@@ -31,13 +36,13 @@ public class HarmonicMatrixPortraitBuilder : MatrixPortraitBuilder
                         {
                             var complexNodeIndex = nodeIndex * 2 + j;
                             if (currentComplexNode > complexNodeIndex)
-                                adjacencyList[currentComplexNode].Add(complexNodeIndex);
+                                AdjacencyList[currentComplexNode].Add(complexNodeIndex);
                         }
                     }
                 }
             }
         }
 
-        return adjacencyList;
+        return AdjacencyList;
     }
 }

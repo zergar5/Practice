@@ -1,4 +1,5 @@
-﻿using Application.FEM.Core;
+﻿using System.Buffers;
+using Application.DirectProblem._2D;
 using Application.FEM.Core.BasisFunctions;
 using Application.FEM.Core.Grid;
 using Application.MathObjects.Vectors;
@@ -7,19 +8,17 @@ using System.Numerics;
 
 namespace Application.FEM._2D;
 
-public interface IFEMSolutionResolver2D<out T> : IFEMSolutionResolver<T, Node2D> where T : INumberBase<T>;
-
-public class ComplexFEMSolutionResolver2D : IFEMSolutionResolver2D<Complex>
+public class ComplexSolutionResolver2D : ISolutionResolver2D<Complex>
 {
-    private readonly IGrid<Node2D> _grid;
+    private readonly IGrid<Node2D, IElement2D> _grid;
     private readonly IVector<double> _solution;
-    private readonly IBasisFunctionsProvider<Node2D, IElement> _basisFunctionsProvider;
+    private readonly IBasisFunctionsProvider<Node2D, double, IElement2D> _basisFunctionsProvider;
 
-    public ComplexFEMSolutionResolver2D
+    public ComplexSolutionResolver2D
     (
-        IGrid<Node2D> grid,
+        IGrid<Node2D, IElement2D> grid,
         IVector<double> solution,
-        IBasisFunctionsProvider<Node2D, IElement> basisFunctionsProvider
+        IBasisFunctionsProvider<Node2D, double, IElement2D> basisFunctionsProvider
     )
     {
         _grid = grid;
@@ -49,6 +48,8 @@ public class ComplexFEMSolutionResolver2D : IFEMSolutionResolver2D<Complex>
             }
 
             var values = new Complex(sumS, sumC);
+
+            ArrayPool<IBasisFunction<Node2D, double>>.Shared.Return(basisFunctions);
 
             //CourseHolder.WriteSolution(point, values);
 

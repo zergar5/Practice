@@ -1,8 +1,8 @@
-﻿using System.Numerics;
-using DirectProblem.Core.Base;
+﻿using DirectProblem.Core.Base;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.Core.Local;
 using DirectProblem.FEM.Assembling.Local;
+using System.Numerics;
 using Vector = DirectProblem.Core.Base.Vector;
 
 namespace DirectProblem.TwoDimensional.Assembling.Local;

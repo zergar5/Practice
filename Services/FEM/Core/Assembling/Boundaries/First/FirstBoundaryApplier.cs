@@ -4,21 +4,27 @@ using System.Numerics;
 
 namespace Application.FEM.Core.Assembling.Boundaries.First;
 
-public interface IFirstBoundaryApplier<in TMatrix, T, TBoundary>
+public interface IFirstBoundaryApplier<in TMatrix, T, in TBoundary>
     where T : INumberBase<T>
     where TBoundary : INumberBase<TBoundary>
 {
-    public void Exclude(IEquation<TMatrix, T> equation, FirstBoundaryValue<TBoundary> conditionValue);
+    public void Exclude(IEquation<TMatrix, T> equation, IFirstBoundaryValue<TBoundary> conditionValue);
 }
 
-public abstract class SparseMatrixFirstBoundaryApplierBase<T, TBoundary> : IFirstBoundaryApplier<SparseMatrix<T>, T, TBoundary>
+public class SparseMatrixFirstBoundaryApplier<T, TBoundary> : IFirstBoundaryApplier<ISparseMatrix<T>, T, TBoundary>
     where T : INumberBase<T>
     where TBoundary : INumberBase<TBoundary>
 {
-    public virtual void Exclude(IEquation<SparseMatrix<T>, T> equation, FirstBoundaryValue<TBoundary> conditionValue)
+    public virtual void Exclude(IEquation<ISparseMatrix<T>, T> equation, IFirstBoundaryValue<TBoundary> conditionValue)
     {
         var row = conditionValue.NodeId;
-        equation.RightPart[row] = T.CreateChecked(conditionValue.Value);
+
+        ExcludeRow(equation, row, T.CreateChecked(conditionValue.Value));
+    }
+
+    protected void ExcludeRow(IEquation<ISparseMatrix<T>, T> equation, int row, T valueForRightPart)
+    {
+        equation.RightPart[row] = T.CreateChecked(valueForRightPart);
         equation.Matrix[row, row] = T.One;
 
         foreach (var j in equation.Matrix[row])
@@ -35,10 +41,13 @@ public abstract class SparseMatrixFirstBoundaryApplierBase<T, TBoundary> : IFirs
     }
 }
 
-public class ComplexFirstBoundaryApplier : SparseMatrixFirstBoundaryApplierBase<double, Complex>
+public class ComplexFirstBoundaryApplier : SparseMatrixFirstBoundaryApplier<double, Complex>
 {
-    public override void Exclude(IEquation<SparseMatrix<double>, double> equation, FirstBoundaryValue<Complex> conditionValue)
+    public override void Exclude(IEquation<ISparseMatrix<double>, double> equation, IFirstBoundaryValue<Complex> conditionValue)
     {
-        throw new NotImplementedException();
+        var complexRow = 2 * conditionValue.NodeId;
+
+        ExcludeRow(equation, complexRow, conditionValue.Value.Real);
+        ExcludeRow(equation, complexRow + 1, conditionValue.Value.Imaginary);
     }
 }

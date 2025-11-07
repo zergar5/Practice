@@ -25,6 +25,7 @@ public class ProportionalSplitStrategy : ISplitStrategy
         while (interval.Has(value))
         {
             yield return value;
+
             var nextValue = interval.Begin + step * (Math.Pow(_dischargeRatio, stepNumber + 1) - 1d) / (_dischargeRatio - 1d);
 
             value = nextValue;
@@ -56,18 +57,22 @@ public class StepProportionalSplitStrategy : ISplitStrategy
         if (_dischargeRatio < 1)
         {
             value = interval.End;
+
             var dischargeRatio = 1 / _dischargeRatio;
 
             while (interval.Has(value))
             {
                 values.Add(value);
+
                 var nextValue = value - _step * Math.Pow(dischargeRatio, stepNumber);
 
                 value = nextValue;
                 stepNumber++;
 
                 if (!(interval.Begin > value)) continue;
+
                 values.Add(interval.Begin);
+
                 break;
             }
 
@@ -76,16 +81,20 @@ public class StepProportionalSplitStrategy : ISplitStrategy
         else
         {
             value = interval.Begin;
+
             while (interval.Has(value))
             {
                 values.Add(value);
+
                 var nextValue = value + _step * Math.Pow(_dischargeRatio, stepNumber);
 
                 value = nextValue;
                 stepNumber++;
 
                 if (!(interval.End < value)) continue;
+
                 values.Add(interval.End);
+
                 break;
             }
         }

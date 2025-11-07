@@ -25,6 +25,7 @@ public abstract class VectorBase<T> : IVector<T> where T : INumberBase<T>
     public virtual double ScalarProduct() => ScalarProduct(this, this);
     public abstract void Clear();
     public abstract IVector<T> Clone();
+
     public virtual IVector<T> Copy(IVector<T> vector)
     {
         if (Count != vector.Count)

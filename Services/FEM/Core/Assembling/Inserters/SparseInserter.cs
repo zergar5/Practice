@@ -14,8 +14,7 @@ public abstract class SparseInserterBase<T> : ISparseInserter<T> where T : INumb
     {
         for (var i = 0; i < localVector.Count; i++)
         {
-            var indexedValue = localVector[i];
-            globalVector[indexedValue.Key] += indexedValue.Value;
+            globalVector[localVector.GetGlobalIndexOfLocal(i)] += localVector[i];
         }
     }
 }
@@ -26,19 +25,17 @@ public class SparseInserter<T> : SparseInserterBase<T> where T : INumberBase<T>
     {
         for (var i = 0; i < localMatrix.RowCount; i++)
         {
+            var rowIndex = localMatrix.GetGlobalIndexOfLocal(i);
+
             for (var j = 0; j < i; j++)
             {
-                var indexedValue = localMatrix[i, j];
-                var (rowIndex, columnIndex) = indexedValue.Key;
+                var columnIndex = localMatrix.GetGlobalIndexOfLocal(j);
 
-                globalMatrix[rowIndex, columnIndex] += indexedValue.Value;
-                globalMatrix[columnIndex, rowIndex] += indexedValue.Value;
+                globalMatrix[rowIndex, columnIndex] += localMatrix[i, j];
+                globalMatrix[columnIndex, rowIndex] += localMatrix[j, i];
             }
 
-            var indexedDiagonalValue = localMatrix[i, i];
-            var (elementIndex, _) = indexedDiagonalValue.Key;
-
-            globalMatrix[elementIndex, elementIndex] += indexedDiagonalValue.Value;
+            globalMatrix[rowIndex, rowIndex] += localMatrix[i, i];
         }
     }
 }
