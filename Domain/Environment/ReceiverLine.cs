@@ -1,7 +1,7 @@
 ﻿namespace Domain.Environment;
 
-public class ReceiverLine<TNode>
+public class ReceiverLine<TLocation>
 {
-    public required TNode ReceiverM { get; set; }
-    public required TNode ReceiverN { get; set; }
+    public required TLocation ReceiverM { get; set; }
+    public required TLocation ReceiverN { get; set; }
 }

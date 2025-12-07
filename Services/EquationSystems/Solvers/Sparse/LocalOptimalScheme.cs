@@ -2,23 +2,22 @@
 using Application.MathObjects.Equation;
 using Application.MathObjects.Matrices;
 using Application.MathObjects.Vectors;
-using System.Numerics;
 using DirectProblem.FEM;
 
 namespace Application.EquationSystems.Solvers.Sparse;
 
-public class LocalOptimalScheme<T> : ISparseSLAESolver<T> where T : INumberBase<T>
+public class LocalOptimalScheme : ISparseSLAESolver
 {
-    private readonly ISeparatePrecondition<ISparseMatrix<T>, T> _precondition;
+    private readonly ISeparatePrecondition<ISparseMatrix<double>> _precondition;
     private readonly IterativeMethodConfig _config;
 
-    public LocalOptimalScheme(ISeparatePrecondition<ISparseMatrix<T>, T> precondition, IterativeMethodConfig config)
+    public LocalOptimalScheme(ISeparatePrecondition<ISparseMatrix<double>> precondition, IterativeMethodConfig config)
     {
         _precondition = precondition;
         _config = config;
     }
 
-    public IVector<T> Solve(IEquation<ISparseMatrix<T>, T> equation)
+    public IVector<double> Solve(IEquation<ISparseMatrix<double>, double> equation)
     {
         var matrix = equation.Matrix;
         var solution = equation.Solution;
@@ -26,20 +25,20 @@ public class LocalOptimalScheme<T> : ISparseSLAESolver<T> where T : INumberBase<
 
         _precondition.DecomposeMatrix(equation.Matrix.Clone());
 
-        var r = matrix.Multiply(solution, VectorPool<T>.Rent(solution.Count));
+        var r = matrix.Multiply(solution, VectorPool<double>.Rent(solution.Count));
 
         _precondition.ForwardElimination(rightPart.Subtract(r, r), r);
 
-        var z = _precondition.BackSubstitution(r, VectorPool<T>.Rent(r.Count));
-        var p = matrix.Multiply(z, VectorPool<T>.Rent(z.Count));
+        var z = _precondition.BackSubstitution(r, VectorPool<double>.Rent(r.Count));
+        var p = matrix.Multiply(z, VectorPool<double>.Rent(z.Count));
 
         _precondition.ForwardElimination(p, p);
 
         var residual = r.ScalarProduct();
         var targetResidual = Math.Pow(_config.ResidualPrecision, 2);
 
-        var firstBufferVector = VectorPool<T>.Rent(z.Count);
-        var secondBufferVector = VectorPool<T>.Rent(firstBufferVector.Count);
+        var firstBufferVector = VectorPool<double>.Rent(z.Count);
+        var secondBufferVector = VectorPool<double>.Rent(firstBufferVector.Count);
 
         for (var i = 1; i <= _config.MaxIterations; i++)
         {
@@ -66,14 +65,14 @@ public class LocalOptimalScheme<T> : ISparseSLAESolver<T> where T : INumberBase<
             z = zNext;
             p = pNext;
 
-            CourseHolder.GetResidualInfo(i, residualNext);
+            //CourseHolder.GetResidualInfo(i, residualNext);
         }
 
-        VectorPool<T>.Return(r);
-        VectorPool<T>.Return(z);
-        VectorPool<T>.Return(p);
-        VectorPool<T>.Return(firstBufferVector);
-        VectorPool<T>.Return(secondBufferVector);
+        VectorPool<double>.Return(r);
+        VectorPool<double>.Return(z);
+        VectorPool<double>.Return(p);
+        VectorPool<double>.Return(firstBufferVector);
+        VectorPool<double>.Return(secondBufferVector);
 
         return solution;
     }

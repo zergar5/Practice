@@ -1,6 +1,4 @@
 ﻿using Application.FEM.Core.Grid;
-using Domain.DirectProblem;
-using System.Numerics;
 
 namespace Application.DirectProblem;
 

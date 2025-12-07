@@ -4,8 +4,7 @@ using Application.MathObjects.Matrices;
 
 namespace Application.FEM._1D.Assembling.Local;
 
-// TODO все матрицы нужно иницилизировать в скопе и переиспользовать
-public class LocalStiffnessMatrixAssembler1D : ILocalStiffnessMatrixAssembler1D<double>
+public class LocalStiffnessMatrixAssembler1D : ILocalStiffnessMatrixAssembler1D
 {
     private readonly IMatrix<int> _stiffnessMatrix;
 
@@ -20,7 +19,7 @@ public class LocalStiffnessMatrixAssembler1D : ILocalStiffnessMatrixAssembler1D<
     }
 }
 
-public class LocalMassMatrixAssembler1D : ILocalMassMatrixAssembler1D<double>
+public class LocalMassMatrixAssembler1D : ILocalMassMatrixAssembler1D
 {
     private readonly IMatrix<int> _massMatrix;
 

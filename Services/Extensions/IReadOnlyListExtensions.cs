@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace Application.Extensions;
+﻿namespace Application.Extensions;
 
 public static class IReadOnlyListExtensions
 {

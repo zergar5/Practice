@@ -1,5 +1,6 @@
 ﻿using Application.FEM.Core.Grid;
 using Application.FEM.Core.Grid.Splitting;
+using Common.Extensions;
 using Domain.Areas;
 using Domain.Nodes;
 using static Application.FEM._2D.Grid.GridBuilder2D;
@@ -90,10 +91,10 @@ public class GridBuilder2D : IGridBuilder<Node2D, IElement2D, Grid2DParameters>
         var areas = gridParameters.Areas;
 
         var area = areas.First(a =>
-            xControlPoints[a.XStartControlPointId] <= leftBottom.X &&
-            yControlPoints[a.YStartControlPointId] <= leftBottom.Y &&
-            rightTop.X <= xControlPoints[a.XEndControlPointId] &&
-               rightTop.Y <= yControlPoints[a.YEndControlPointId]
+            xControlPoints[a.XStartControlPointId].LessOrEqual(leftBottom.X) &&
+            yControlPoints[a.YStartControlPointId].LessOrEqual(leftBottom.Y) &&
+            rightTop.X.LessOrEqual(xControlPoints[a.XEndControlPointId]) &&
+            rightTop.Y.LessOrEqual(yControlPoints[a.YEndControlPointId])
         );
 
         return area.MaterialId;

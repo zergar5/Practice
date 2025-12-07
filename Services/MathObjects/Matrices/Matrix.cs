@@ -1,5 +1,4 @@
 ﻿using Application.MathObjects.Vectors;
-using DirectProblem.Core.Base;
 using System.Numerics;
 
 namespace Application.MathObjects.Matrices;
@@ -129,6 +128,24 @@ public static class MatrixExtensions
             {
                 result[i] += TResult.CreateChecked(matrix[i, j]) * TResult.CreateChecked(vector[j]);
             }
+        }
+
+        return result;
+    }
+
+    public static IMatrix<TResult> SumToDiagonal<TSelf, TOther, TResult>(this IMatrix<TSelf> matrix, IVector<TOther> vector, IMatrix<TResult>? result = null)
+        where TSelf : INumberBase<TSelf>
+        where TOther : INumberBase<TOther>
+        where TResult : INumberBase<TResult>
+    {
+        if (matrix.RowCount != vector.Count)
+            throw new ArgumentOutOfRangeException($"{nameof(matrix)} and {nameof(vector)} must have same size");
+
+        result ??= new Matrix<TResult>(matrix.RowCount);
+
+        for (var i = 0; i < matrix.RowCount; i++)
+        {
+            result[i, i] = TResult.CreateChecked(matrix[i, i]) + TResult.CreateChecked(vector[i]);
         }
 
         return result;

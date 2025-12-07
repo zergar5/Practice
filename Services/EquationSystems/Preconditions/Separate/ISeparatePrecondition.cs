@@ -1,11 +1,10 @@
 ﻿using Application.MathObjects.Vectors;
-using System.Numerics;
 
 namespace Application.EquationSystems.Preconditions.Separate;
 
-public interface ISeparatePrecondition<in TMatrix, T> where T : INumberBase<T>
+public interface ISeparatePrecondition<in TMatrix>
 {
     public void DecomposeMatrix(TMatrix matrix);
-    public IVector<T> ForwardElimination(IVector<T> vector, IVector<T>? result = null);
-    public IVector<T> BackSubstitution(IVector<T> vector, IVector<T>? result = null);
+    public IVector<double> ForwardElimination(IVector<double> vector, IVector<double>? result = null);
+    public IVector<double> BackSubstitution(IVector<double> vector, IVector<double>? result = null);
 }

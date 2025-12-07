@@ -1,9 +1,6 @@
 ﻿using Application.FEM._2D;
-using Domain.DirectProblem;
 using Domain.Edges;
-using Domain.Enums;
 using Domain.Nodes;
-using System.Numerics;
 
 namespace Application.DirectProblem._2D;
 

@@ -28,7 +28,7 @@ public class Grids
             )
             .SetAreas(new Area[]
             {
-                new(8, new Node2D(1e-4, -6d), new Node2D(3d, 0d)),
+                new(0, new Node2D(1e-4, -6d), new Node2D(3d, 0d)),
             })
             .Build();
 
@@ -55,7 +55,7 @@ public class Grids
             .SetAreas(new Area[]
             {
                 new(0, new Node2D(1e-4, -6d), new Node2D(0.1, 0d)),
-                new(7, new Node2D(0.1, -6d), new Node2D(3, 0d))
+                new(1, new Node2D(0.1, -6d), new Node2D(3, 0d))
             })
             .Build();
 
@@ -83,8 +83,8 @@ public class Grids
             {
                 new(0, new Node2D(1e-4, -6d), new Node2D(0.1, 0d)),
                 new(1, new Node2D(0.1, -2d), new Node2D(3, 0d)),
-                new(6, new Node2D(0.1, -4d), new Node2D(3, -2d)),
-                new(7, new Node2D(0.1, -6d), new Node2D(3, -4d)),
+                new(2, new Node2D(0.1, -4d), new Node2D(3, -2d)),
+                new(3, new Node2D(0.1, -6d), new Node2D(3, -4d)),
             })
             .Build();
 

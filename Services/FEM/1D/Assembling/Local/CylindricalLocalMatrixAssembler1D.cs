@@ -4,8 +4,7 @@ using Application.MathObjects.Matrices;
 
 namespace Application.FEM._1D.Assembling.Local;
 
-// TODO все матрицы нужно иницилизировать в скопе и переиспользовать
-public class CylindricalLocalStiffnessMatrixAssembler1D : ICylindricalLocalStiffnessMatrixAssembler1D<double>
+public class CylindricalLocalStiffnessMatrixAssembler1D : ICylindricalLocalStiffnessMatrixAssembler1D
 {
     private readonly IMatrix<int> _stiffnessMatrix;
 
@@ -20,11 +19,11 @@ public class CylindricalLocalStiffnessMatrixAssembler1D : ICylindricalLocalStiff
     }
 }
 
-public class CylindricalLocalMassMatrixAssembler1D : ICylindricalLocalMassMatrixAssembler1D<double>
+public class CylindricalLocalMassMatrixAssembler1D : ICylindricalLocalMassMatrixAssembler1D
 {
     private readonly IMatrix<int> _massMatrix;
     private readonly IMatrix<int> _additionMassMatrix;
-    
+
     public CylindricalLocalMassMatrixAssembler1D()
     {
         _massMatrix = LagrangeMatrixTemplates.MassMatrix;
@@ -43,7 +42,7 @@ public class CylindricalLocalMassMatrixAssembler1D : ICylindricalLocalMassMatrix
     }
 }
 
-public class RotorLocalMatrixAssembler1D : ICylindricalLocalStiffnessMatrixAssembler1D<double>
+public class RotorLocalMatrixAssembler1D : ICylindricalLocalStiffnessMatrixAssembler1D
 {
     private readonly IMatrix<int> _stiffnessMatrix;
     private readonly IMatrix<int> _rotorAdditionMassMatrix;

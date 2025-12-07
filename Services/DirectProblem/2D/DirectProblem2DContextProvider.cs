@@ -19,6 +19,5 @@ public class DirectProblem2DContextProvider : IDirectProblemContextProvider<Dire
 
 public class DirectProblem2DContext
 {
-    public Grid2DParameters GridParameters { get; set; } = null!;
     public IGrid<Node2D, IElement2D> Grid { get; set; } = null!;
 }

@@ -32,23 +32,32 @@ public class UniformSplitStrategy : ISplitStrategy
 public class StepUniformSplitStrategy : ISplitStrategy
 {
     private readonly double _step;
-    private UniformSplitStrategy? _uniformSplitStrategy;
+    private readonly bool _safe;
+    private UniformSplitStrategy _uniformSplitStrategy;
 
-    public StepUniformSplitStrategy(double step)
+    public StepUniformSplitStrategy(double step, bool safe = false)
     {
         _step = step;
+        _safe = safe;
     }
 
     public IEnumerable<double> ExecuteSplit(Interval interval)
     {
         var steps = interval.Length() / _step;
 
-        if (!Math.Abs(steps % 1).EqualsWithPrecision(0))
+        if (_safe)
         {
-            throw new ArgumentException("Invalid step or interval");
+            steps = Math.Ceiling(steps);
+        }
+        else
+        {
+            if (!Math.Abs(steps % 1).Equal(0))
+            {
+                throw new ArgumentException("Invalid step or interval");
+            }
         }
 
-        _uniformSplitStrategy ??= new UniformSplitStrategy((int)steps);
+        _uniformSplitStrategy = new UniformSplitStrategy((int)steps);
 
         var values = _uniformSplitStrategy.ExecuteSplit(interval);
 

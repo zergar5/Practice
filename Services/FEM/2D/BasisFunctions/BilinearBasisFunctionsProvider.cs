@@ -1,11 +1,8 @@
-﻿using System.Buffers;
-using Application.DirectProblem;
+﻿using Application.DirectProblem;
 using Application.DirectProblem._2D;
-using Application.FEM._1D.BasisFunctions;
-using Application.FEM._2D.Grid;
 using Application.FEM.Core.BasisFunctions;
-using Application.FEM.Core.Grid;
 using Domain.Nodes;
+using System.Buffers;
 
 namespace Application.FEM._2D.BasisFunctions;
 

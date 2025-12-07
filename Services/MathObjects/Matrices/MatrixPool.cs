@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Numerics;
 
 namespace Application.MathObjects.Matrices;
@@ -12,19 +11,9 @@ public static class MatrixPool<T> where T : INumberBase<T>
 
     public static IMatrix<T> Rent(int rows, int columns)
     {
-        if (MatrixPools.TryGetValue((rows, columns), out var pool))
-        {
-            if (pool.TryDequeue(out var matrix))
-            {
-                return matrix;
-            }
-        }
-        else
-        {
-            MatrixPools[(rows, columns)] = new ConcurrentQueue<IMatrix<T>>();
-        }
+        var pool = MatrixPools.GetOrAdd((rows, columns), _ => new ConcurrentQueue<IMatrix<T>>());
 
-        return new Matrix<T>(rows, columns);
+        return pool.TryDequeue(out var matrix) ? matrix : new Matrix<T>(rows, columns);
     }
 
     public static void Return(IMatrix<T> matrix)
@@ -38,7 +27,7 @@ public static class MatrixPool<T> where T : INumberBase<T>
 
         if (pool == null) return;
 
-        pool.Enqueue(matrix);
         matrix.Clear();
+        pool.Enqueue(matrix);
     }
 }

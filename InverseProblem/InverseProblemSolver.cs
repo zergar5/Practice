@@ -100,8 +100,8 @@ public class InverseProblemSolver
         var gridO = new GridIO("../InverseProblem/Results/4hFieldPart8SigmasNearToWell/");
 
         CalculatePhaseDifferences();
-        resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, "iteration 0 phase differences.txt");
-        gridO.WriteAreas(_grid, _initialValues, "iteration 0 areas.txt");
+        //resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, "iteration 0 phase differences.txt");
+        //gridO.WriteAreas(_grid, _initialValues, "iteration 0 areas.txt");
 
         Console.WriteLine($"Iteration: 0");
         for (var j = 0; j < _initialValues.Count; j++)
@@ -140,8 +140,8 @@ public class InverseProblemSolver
                 Console.WriteLine($"{equation.Solution[j]} {parametersDeltas[j]} {alphas[j]}");
             }
 
-            resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, $"iteration {i} phase differences.txt");
-            gridO.WriteAreas(_grid, equation.Solution, $"iteration {i} areas.txt");
+            //resultO.WriteInverseProblemIteration(_receiverLines, _currentPhaseDifferences, _frequencies, $"iteration {i} phase differences.txt");
+            //gridO.WriteAreas(_grid, equation.Solution, $"iteration {i} areas.txt");
         }
 
         Console.WriteLine();
@@ -225,6 +225,11 @@ public class InverseProblemSolver
         }
 
         Console.WriteLine();
+
+        //foreach (var phaseDifference in _currentPhaseDifferences)
+        //{
+        //    Console.WriteLine(phaseDifference);
+        //}
     }
 
     private FEMSolution SolveDirectProblem()

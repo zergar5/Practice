@@ -1,16 +1,11 @@
 ﻿using Application.EquationSystems.Solvers.Sparse;
 using Application.FEM._2D;
-using Application.FEM._2D.Assembling.Boundaries;
-using Application.FEM._2D.BasisFunctions;
-using Application.FEM.Assembling._2D.Boundaries;
-using Application.FEM.Assembling._2D.Boundaries.First;
 using Application.FEM.Core.Assembling.Boundaries.First;
 using Application.FEM.Core.Assembling.Global;
 using Application.FEM.Core.Assembling.Local;
 using Application.FEM.Core.BasisFunctions;
 using Application.FEM.Core.Grid;
 using Application.MathObjects.Matrices;
-using DirectProblem.Core.Boundary;
 using Domain.Boundaries;
 using Domain.Edges;
 using Domain.Enums;
@@ -27,11 +22,11 @@ public class HarmonicRotorDirectProblem2D : IHarmonicDirectProblem2DWithSources<
     private readonly IDirectProblemContextProvider<HarmonicRotorDirectProblem2DContext> _problemContextProvider;
     private readonly IGridBuilder<Node2D, IElement2D, Grid2DParameters> _gridBuilder;
     private readonly IBasisFunctionsProvider<Node2D, double, IElement2D> _basisFunctionsProvider;
-    private readonly ILocalMatrixAssembler<IElement2D, double> _localMatrixAssembler;
+    private readonly ILocalMatrixAssembler<IElement2D> _localMatrixAssembler;
     private readonly IDefinedValueFirstBoundaryResolver<Complex, Edge<Node2D>> _definedValueFirstBoundaryResolver;
-    private readonly IProblemWithSourcesEquationAssembler<double, Node2D, IElement2D, ISparseMatrix<double>, Complex> _equationAssembler;
-    private readonly ISparseSLAESolver<double> _slaeSolver;
-    
+    private readonly IProblemWithSourcesEquationAssembler<Node2D, IElement2D, ISparseMatrix<double>, Complex> _equationAssembler;
+    private readonly ISparseSLAESolver _slaeSolver;
+
     private IDefinedValueBoundaryCondition<Edge<Node2D>, Complex>[] _definedValueBoundaryConditions = [];
     private Source<Node2D>[] _sources;
 
@@ -40,10 +35,10 @@ public class HarmonicRotorDirectProblem2D : IHarmonicDirectProblem2DWithSources<
         IDirectProblemContextProvider<HarmonicRotorDirectProblem2DContext> problemContextProvider,
         IGridBuilder<Node2D, IElement2D, Grid2DParameters> gridBuilder,
         IBasisFunctionsProvider<Node2D, double, IElement2D> basisFunctionsProvider,
-        ILocalMatrixAssembler<IElement2D, double> localMatrixAssembler,
+        ILocalMatrixAssembler<IElement2D> localMatrixAssembler,
         IDefinedValueFirstBoundaryResolver<Complex, Edge<Node2D>> definedValueFirstBoundaryResolver,
-        IProblemWithSourcesEquationAssembler<double, Node2D, IElement2D, ISparseMatrix<double>, Complex> equationAssembler,
-        ISparseSLAESolver<double> slaeSolver
+        IProblemWithSourcesEquationAssembler<Node2D, IElement2D, ISparseMatrix<double>, Complex> equationAssembler,
+        ISparseSLAESolver slaeSolver
     )
     {
         _problemContextProvider = problemContextProvider;
@@ -60,10 +55,16 @@ public class HarmonicRotorDirectProblem2D : IHarmonicDirectProblem2DWithSources<
         var grid = _gridBuilder.Build(gridParameters);
         var context = _problemContextProvider.Get();
 
-        context.GridParameters = gridParameters;
         context.Grid = grid;
 
         return grid;
+    }
+
+    public void SetGrid(IGrid<Node2D, IElement2D> grid)
+    {
+        var context = _problemContextProvider.Get();
+
+        context.Grid = grid;
     }
 
     public void SetMaterials(MaterialWithSigmaMu[] materials)
@@ -97,7 +98,9 @@ public class HarmonicRotorDirectProblem2D : IHarmonicDirectProblem2DWithSources<
 
         _equationAssembler
             .AllocateEquation(context.Grid)
-            .AddMatrixToEquationLeftPart(_localMatrixAssembler)
+            .AddMatrixToEquationLeftPart(_localMatrixAssembler);
+
+        _equationAssembler
             .AccountSources(_sources)
             .ApplyFirstConditions(firstConditionValues);
 

@@ -4,21 +4,21 @@ using Application.MathObjects.Matrices;
 
 namespace Application.FEM._2D.Assembling.Local;
 
-public class RotorLocalStiffnessMatrixAssembler2D : ICylindricalLocalStiffnessMatrixAssembler<IElement2D, double>
+public class RotorLocalStiffnessMatrixAssembler2D : ICylindricalLocalStiffnessMatrixAssembler<IElement2D>
 {
-    private readonly ICylindricalLocalStiffnessMatrixAssembler1D<double> _cylindricalLocalRotorStiffnessMatrixAssembler1D;
-    private readonly ICylindricalLocalStiffnessMatrixAssembler1D<double> _cylindricalLocalStiffnessMatrixAssembler1D;
-    private readonly ILocalStiffnessMatrixAssembler1D<double> _localStiffnessMatrixAssembler1D;
-    private readonly ICylindricalLocalMassMatrixAssembler1D<double> _cylindricalLocalMassMatrixAssembler1D;
-    private readonly ILocalMassMatrixAssembler1D<double> _localMassMatrixAssembler1D;
+    private readonly ICylindricalLocalStiffnessMatrixAssembler1D _cylindricalLocalRotorStiffnessMatrixAssembler1D;
+    private readonly ICylindricalLocalStiffnessMatrixAssembler1D _cylindricalLocalStiffnessMatrixAssembler1D;
+    private readonly ILocalStiffnessMatrixAssembler1D _localStiffnessMatrixAssembler1D;
+    private readonly ICylindricalLocalMassMatrixAssembler1D _cylindricalLocalMassMatrixAssembler1D;
+    private readonly ILocalMassMatrixAssembler1D _localMassMatrixAssembler1D;
 
     public RotorLocalStiffnessMatrixAssembler2D
     (
-        ICylindricalLocalStiffnessMatrixAssembler1D<double> cylindricalLocalRotorStiffnessMatrixAssembler1D,
-        ICylindricalLocalStiffnessMatrixAssembler1D<double> cylindricalLocalStiffnessMatrixAssembler1D,
-        ILocalStiffnessMatrixAssembler1D<double> localStiffnessMatrixAssembler1D,
-        ICylindricalLocalMassMatrixAssembler1D<double> cylindricalLocalMassMatrixAssembler1D,
-        ILocalMassMatrixAssembler1D<double> localMassMatrixAssembler1D
+        ICylindricalLocalStiffnessMatrixAssembler1D cylindricalLocalRotorStiffnessMatrixAssembler1D,
+        ICylindricalLocalStiffnessMatrixAssembler1D cylindricalLocalStiffnessMatrixAssembler1D,
+        ILocalStiffnessMatrixAssembler1D localStiffnessMatrixAssembler1D,
+        ICylindricalLocalMassMatrixAssembler1D cylindricalLocalMassMatrixAssembler1D,
+        ILocalMassMatrixAssembler1D localMassMatrixAssembler1D
     )
     {
         _cylindricalLocalRotorStiffnessMatrixAssembler1D = cylindricalLocalRotorStiffnessMatrixAssembler1D;
@@ -38,9 +38,9 @@ public class RotorLocalStiffnessMatrixAssembler2D : ICylindricalLocalStiffnessMa
         var massR = _cylindricalLocalMassMatrixAssembler1D.AssembleMassMatrix(element.Length, r);
         var massZ = _localMassMatrixAssembler1D.AssembleMassMatrix(element.Height);
 
-        var stiffness = MatrixPool<double>.Rent(element.NodeIndexes.Length);
+        var stiffness = MatrixPool<double>.Rent(element.NodeIndexes.Count);
 
-        for (var i = 0; i < element.NodeIndexes.Length; i++)
+        for (var i = 0; i < element.NodeIndexes.Count; i++)
         {
             for (var j = 0; j <= i; j++)
             {
@@ -64,15 +64,15 @@ public class RotorLocalStiffnessMatrixAssembler2D : ICylindricalLocalStiffnessMa
     private static int GetNuIndex(int i) => i / 2;
 }
 
-public class CylindricalLocalMassMatrixAssembler2D : ICylindricalLocalMassMatrixAssembler<IElement2D, double>
+public class CylindricalLocalMassMatrixAssembler2D : ICylindricalLocalMassMatrixAssembler<IElement2D>
 {
-    private readonly ICylindricalLocalMassMatrixAssembler1D<double> _cylindricalLocalMassMatrixAssembler1D;
-    private readonly ILocalMassMatrixAssembler1D<double> _localMassMatrixAssembler1D;
+    private readonly ICylindricalLocalMassMatrixAssembler1D _cylindricalLocalMassMatrixAssembler1D;
+    private readonly ILocalMassMatrixAssembler1D _localMassMatrixAssembler1D;
 
     public CylindricalLocalMassMatrixAssembler2D
     (
-        ICylindricalLocalMassMatrixAssembler1D<double> cylindricalLocalMassMatrixAssembler1D,
-        ILocalMassMatrixAssembler1D<double> localMassMatrixAssembler1D
+        ICylindricalLocalMassMatrixAssembler1D cylindricalLocalMassMatrixAssembler1D,
+        ILocalMassMatrixAssembler1D localMassMatrixAssembler1D
     )
     {
         _cylindricalLocalMassMatrixAssembler1D = cylindricalLocalMassMatrixAssembler1D;
@@ -84,9 +84,9 @@ public class CylindricalLocalMassMatrixAssembler2D : ICylindricalLocalMassMatrix
         var massR = _cylindricalLocalMassMatrixAssembler1D.AssembleMassMatrix(element.Length, r);
         var massZ = _localMassMatrixAssembler1D.AssembleMassMatrix(element.Height);
 
-        var mass = MatrixPool<double>.Rent(element.NodeIndexes.Length);
+        var mass = MatrixPool<double>.Rent(element.NodeIndexes.Count);
 
-        for (var i = 0; i < element.NodeIndexes.Length; i++)
+        for (var i = 0; i < element.NodeIndexes.Count; i++)
         {
             for (var j = 0; j <= i; j++)
             {

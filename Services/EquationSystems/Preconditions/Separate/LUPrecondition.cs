@@ -1,36 +1,34 @@
 ﻿using Application.EquationSystems.MatrixDecompositions;
 using Application.MathObjects.Matrices;
 using Application.MathObjects.Vectors;
-using DirectProblem.Core.Base;
-using System.Numerics;
 
 namespace Application.EquationSystems.Preconditions.Separate;
 
-public class LUPrecondition<T> : ISeparatePrecondition<ISparseMatrix<T>, T> where T : INumberBase<T>
+public class LUPrecondition : ISeparatePrecondition<ISparseMatrix<double>>
 {
-    private readonly IMatrixDecomposition<ISparseMatrix<T>> _matrixDecomposition;
-    private ISparseMatrix<T> _decomposedMatrix;
+    private readonly IMatrixDecomposition<ISparseMatrix<double>> _matrixDecomposition;
+    private ISparseMatrix<double> _decomposedMatrix;
 
-    public LUPrecondition(IMatrixDecomposition<ISparseMatrix<T>> matrixDecomposition)
+    public LUPrecondition(IMatrixDecomposition<ISparseMatrix<double>> matrixDecomposition)
     {
         _matrixDecomposition = matrixDecomposition;
     }
 
-    public void DecomposeMatrix(ISparseMatrix<T> matrix)
+    public void DecomposeMatrix(ISparseMatrix<double> matrix)
     {
         _decomposedMatrix = _matrixDecomposition.Decompose(matrix);
     }
 
-    public IVector<T> ForwardElimination(IVector<T> vector, IVector<T>? result = null)
+    public IVector<double> ForwardElimination(IVector<double> vector, IVector<double>? result = null)
     {
         if (_decomposedMatrix.RowCount != vector.Count)
             throw new ArgumentOutOfRangeException($"{nameof(_decomposedMatrix)} and {nameof(vector)} must have same size");
 
-        result ??= new MathObjects.Vectors.Vector<T>(vector.Count);
+        result ??= new Vector<double>(vector.Count);
 
         for (var i = 0; i < _decomposedMatrix.RowCount; i++)
         {
-            var sum = T.Zero;
+            var sum = 0d;
 
             foreach (var j in _decomposedMatrix[i])
             {
@@ -43,7 +41,7 @@ public class LUPrecondition<T> : ISeparatePrecondition<ISparseMatrix<T>, T> wher
         return result;
     }
 
-    public IVector<T> BackSubstitution(IVector<T> vector, IVector<T>? result = null)
+    public IVector<double> BackSubstitution(IVector<double> vector, IVector<double>? result = null)
     {
         result = result == null ? vector.Clone() : vector.Copy(result);
 

@@ -1,16 +1,15 @@
 ﻿using Application.FEM.Core.Assembling.Local;
 using Application.MathObjects.Matrices;
 using Application.MathObjects.Vectors;
-using System.Numerics;
 
 namespace Application.FEM.Core.Assembling.Inserters;
 
-public interface ISparseInserter<T> : IGenericInserter<T, ISparseMatrix<T>> where T : INumberBase<T>;
+public interface ISparseInserter : IGenericInserter<ISparseMatrix<double>>;
 
-public abstract class SparseInserterBase<T> : ISparseInserter<T> where T : INumberBase<T>
+public abstract class SparseInserterBase : ISparseInserter
 {
-    public abstract void InsertMatrix(ISparseMatrix<T> globalMatrix, ILocalMatrix<T> localMatrix);
-    public virtual void InsertVector(IVector<T> globalVector, ILocalVector<T> localVector)
+    public abstract void InsertMatrix(ISparseMatrix<double> globalMatrix, ILocalMatrix<double> localMatrix);
+    public virtual void InsertVector(IVector<double> globalVector, ILocalVector<double> localVector)
     {
         for (var i = 0; i < localVector.Count; i++)
         {
@@ -19,9 +18,9 @@ public abstract class SparseInserterBase<T> : ISparseInserter<T> where T : INumb
     }
 }
 
-public class SparseInserter<T> : SparseInserterBase<T> where T : INumberBase<T>
+public class SparseInserter : SparseInserterBase
 {
-    public override void InsertMatrix(ISparseMatrix<T> globalMatrix, ILocalMatrix<T> localMatrix)
+    public override void InsertMatrix(ISparseMatrix<double> globalMatrix, ILocalMatrix<double> localMatrix)
     {
         for (var i = 0; i < localMatrix.RowCount; i++)
         {

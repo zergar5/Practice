@@ -1,9 +1,9 @@
-﻿using System.Buffers;
-using Application.DirectProblem._2D;
+﻿using Application.DirectProblem._2D;
 using Application.FEM.Core.BasisFunctions;
 using Application.FEM.Core.Grid;
 using Application.MathObjects.Vectors;
 using Domain.Nodes;
+using System.Buffers;
 using System.Numerics;
 
 namespace Application.FEM._2D;
@@ -41,7 +41,7 @@ public class ComplexSolutionResolver2D : ISolutionResolver2D<Complex>
             var sumC = 0d;
             var basisFunctions = _basisFunctionsProvider.GetFunctions(element);
 
-            for (var i = 0; i < element.NodeIndexes.Length; i++)
+            for (var i = 0; i < element.NodeIndexes.Count; i++)
             {
                 sumS += _solution[element.NodeIndexes[i] * 2] * basisFunctions[i].Evaluate(node);
                 sumC += _solution[element.NodeIndexes[i] * 2 + 1] * basisFunctions[i].Evaluate(node);
@@ -51,13 +51,9 @@ public class ComplexSolutionResolver2D : ISolutionResolver2D<Complex>
 
             ArrayPool<IBasisFunction<Node2D, double>>.Shared.Return(basisFunctions);
 
-            //CourseHolder.WriteSolution(point, values);
-
             return values;
         }
 
-        //CourseHolder.WriteAreaInfo();
-        //CourseHolder.WriteSolution(node, (double.NaN, double.NaN));
         return new Complex(double.NaN, double.NaN);
     }
 }

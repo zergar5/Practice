@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using Application.FEM._1D.BasisFunctions;
+﻿using Application.FEM._1D.BasisFunctions;
 
 namespace Application.FEM.Core.BasisFunctions;
 

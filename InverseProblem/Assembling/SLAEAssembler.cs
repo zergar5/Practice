@@ -71,25 +71,26 @@ public class SLAEAssembler
 
     public SLAEAssembler SetGrid(Grid<Node2D> grid)
     {
-        _grid = _gridBuilder
-            .SetRAxis(new AxisSplitParameter(
-                    _parametersCollection[0].RControlPoints,
-                    new UniformSplitter(4),
-                    new StepProportionalSplitter(0.0125, 1.1),
-                    new StepProportionalSplitter(0.1, 1.1),
-                    new StepProportionalSplitter(0.25, 1.1)
-                )
-            )
-            .SetZAxis(new AxisSplitParameter(
-                    _parametersCollection[0].ZControlPoints,
-                    new StepProportionalSplitter(0.0125, 1 / 1.1),
-                    new StepUniformSplitter(0.0125),
-                    new StepUniformSplitter(0.0125),
-                    new StepProportionalSplitter(0.0125, 1.1)
-                )
-            )
-            .SetAreas(grid.Areas!)
-            .Build();
+        _grid = grid;
+        //_grid = _gridBuilder
+        //    .SetRAxis(new AxisSplitParameter(
+        //            _parametersCollection[0].RControlPoints,
+        //            new UniformSplitter(4),
+        //            new StepProportionalSplitter(0.0125, 1.1),
+        //            new StepProportionalSplitter(0.1, 1.1),
+        //            new StepProportionalSplitter(0.25, 1.1)
+        //        )
+        //    )
+        //    .SetZAxis(new AxisSplitParameter(
+        //            _parametersCollection[0].ZControlPoints,
+        //            new StepProportionalSplitter(0.0125, 1 / 1.1),
+        //            new StepUniformSplitter(0.0125),
+        //            new StepUniformSplitter(0.0125),
+        //            new StepProportionalSplitter(0.0125, 1.1)
+        //        )
+        //    )
+        //    .SetAreas(grid.Areas!)
+        //    .Build();
 
         foreach (var directProblemSolver in _directProblemSolver)
         {
@@ -127,6 +128,12 @@ public class SLAEAssembler
     public Equation<Matrix> BuildEquation()
     {
         CalculatePhaseDifferences();
+
+        //foreach (var phaseDifference in _phaseDifferencesDerivatives)
+        //{
+        //    Console.WriteLine(phaseDifference);
+        //}
+
         AssembleMatrix();
         AssembleRightPart();
 

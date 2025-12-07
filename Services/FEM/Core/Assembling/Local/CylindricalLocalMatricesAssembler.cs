@@ -1,24 +1,18 @@
 ﻿using Application.FEM.Core.Grid;
 using Application.MathObjects.Matrices;
-using System.Numerics;
 
 namespace Application.FEM.Core.Assembling.Local;
 
-public interface ICylindricalLocalStiffnessMatrixAssembler<in TElement, T>
-    where TElement : IElement
-    where T : INumberBase<T>
+public interface ICylindricalLocalStiffnessMatrixAssembler<in TElement> where TElement : IElement
 {
-    public IMatrix<T> AssembleStiffnessMatrix(TElement element, double r);
+    public IMatrix<double> AssembleStiffnessMatrix(TElement element, double r);
 }
 
-public interface ICylindricalLocalMassMatrixAssembler<in TElement, T>
-    where TElement : IElement
-    where T : INumberBase<T>
+public interface ICylindricalLocalMassMatrixAssembler<in TElement> where TElement : IElement
 {
-    public IMatrix<T> AssembleMassMatrix(TElement element, double r);
+    public IMatrix<double> AssembleMassMatrix(TElement element, double r);
 }
 
-public interface ICylindricalLocalMatricesAssembler<in TElement, T> :
-    ICylindricalLocalStiffnessMatrixAssembler<TElement, T>, ICylindricalLocalMassMatrixAssembler<TElement, T>
-    where TElement : IElement
-    where T : INumberBase<T>;
+public interface ICylindricalLocalMatricesAssembler<in TElement> :
+    ICylindricalLocalStiffnessMatrixAssembler<TElement>, ICylindricalLocalMassMatrixAssembler<TElement>
+    where TElement : IElement;

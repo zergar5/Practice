@@ -36,15 +36,15 @@ public class ProportionalSplitStrategy : ISplitStrategy
 
 public class StepProportionalSplitStrategy : ISplitStrategy
 {
-    private readonly double _step;
+    private readonly double _startStep;
     private readonly double _dischargeRatio;
 
-    public StepProportionalSplitStrategy(double step, double dischargeRatio)
+    public StepProportionalSplitStrategy(double startStep, double dischargeRatio)
     {
         if (Math.Abs(dischargeRatio - 1d) < 1e-15)
             throw new NotSupportedException();
 
-        _step = step;
+        _startStep = startStep;
         _dischargeRatio = dischargeRatio;
     }
 
@@ -52,7 +52,7 @@ public class StepProportionalSplitStrategy : ISplitStrategy
     {
         var values = new List<double>();
         var stepNumber = 0;
-        var value = 0d;
+        double value;
 
         if (_dischargeRatio < 1)
         {
@@ -64,7 +64,7 @@ public class StepProportionalSplitStrategy : ISplitStrategy
             {
                 values.Add(value);
 
-                var nextValue = value - _step * Math.Pow(dischargeRatio, stepNumber);
+                var nextValue = value - _startStep * Math.Pow(dischargeRatio, stepNumber);
 
                 value = nextValue;
                 stepNumber++;
@@ -86,7 +86,7 @@ public class StepProportionalSplitStrategy : ISplitStrategy
             {
                 values.Add(value);
 
-                var nextValue = value + _step * Math.Pow(_dischargeRatio, stepNumber);
+                var nextValue = value + _startStep * Math.Pow(_dischargeRatio, stepNumber);
 
                 value = nextValue;
                 stepNumber++;

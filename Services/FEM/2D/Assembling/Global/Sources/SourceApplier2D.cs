@@ -7,27 +7,26 @@ using Application.FEM.Core.Assembling.Local;
 using Application.FEM.Core.Grid;
 using Application.MathObjects.Equation;
 using Application.MathObjects.Matrices;
+using Application.MathObjects.Vectors;
 using Domain.Enums;
 using Domain.Environment;
 using Domain.Nodes;
-using System.Numerics;
-using Application.MathObjects.Vectors;
 
 namespace Application.FEM._2D.Assembling.Global.Sources;
 
-public interface ISourceApplier2D<in TMatrix, T> : ISourceApplier<TMatrix, T, Node2D> where T : INumberBase<T>;
+public interface ISourceApplier2D<in TMatrix> : ISourceApplier<TMatrix, Node2D>;
 
-public class HarmonicRotorSparseMatrixSourceApplier2D : ISourceApplier2D<ISparseMatrix<double>, double>
+public class HarmonicRotorSparseMatrixSourceApplier2D : ISourceApplier2D<ISparseMatrix<double>>
 {
     private readonly IDirectProblemContextProvider<HarmonicRotorDirectProblem2DContext> _problemContextProvider;
-    private readonly ISparseInserter<double> _inserter;
+    private readonly ISparseInserter _inserter;
 
     private readonly IMatrix<int> _massMatrix;
 
     public HarmonicRotorSparseMatrixSourceApplier2D
     (
         IDirectProblemContextProvider<HarmonicRotorDirectProblem2DContext> problemContextProvider,
-        ISparseInserter<double> inserter
+        ISparseInserter inserter
     )
     {
         _problemContextProvider = problemContextProvider;

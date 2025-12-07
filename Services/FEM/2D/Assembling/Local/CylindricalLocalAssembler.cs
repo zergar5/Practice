@@ -1,24 +1,22 @@
-﻿using System.Buffers;
-using Application.DirectProblem;
-using Application.DirectProblem._2D;
+﻿using Application.DirectProblem;
 using Application.DirectProblem._2D.Cylindrical.Harmonic;
 using Application.FEM.Core.Assembling.Local;
-using Application.FEM.Core.Grid;
 using Application.MathObjects.Matrices;
 using Domain.Materials;
 using Domain.Nodes;
+using System.Buffers;
 
 namespace Application.FEM._2D.Assembling.Local;
 
-public class HarmonicRotorLocalMatrixAssembler2D : ILocalMatrixAssembler<IElement2D, double>
+public class HarmonicRotorLocalMatrixAssembler2D : ILocalMatrixAssembler<IElement2D>
 {
     private readonly IDirectProblemContextProvider<HarmonicRotorDirectProblem2DContext> _problemContextProvider;
-    private readonly ICylindricalLocalMatricesAssembler<IElement2D, double> _cylindricalLocalMatricesAssembler;
+    private readonly ICylindricalLocalMatricesAssembler<IElement2D> _cylindricalLocalMatricesAssembler;
 
     public HarmonicRotorLocalMatrixAssembler2D
     (
         IDirectProblemContextProvider<HarmonicRotorDirectProblem2DContext> problemContextProvider,
-        ICylindricalLocalMatricesAssembler<IElement2D, double> cylindricalLocalMatricesAssembler
+        ICylindricalLocalMatricesAssembler<IElement2D> cylindricalLocalMatricesAssembler
     )
     {
         _problemContextProvider = problemContextProvider;
@@ -32,17 +30,17 @@ public class HarmonicRotorLocalMatrixAssembler2D : ILocalMatrixAssembler<IElemen
         var material = problemContext.Materials[element.MaterialId];
         var frequency = problemContext.Frequency;
 
-        var matrix = MatrixPool<double>.Rent(element.NodeIndexes.Length * 2);
-            
+        var matrix = MatrixPool<double>.Rent(element.NodeIndexes.Count * 2);
+
         var r = grid.Nodes[element.NodeIndexes[0]].R();
         var mass = _cylindricalLocalMatricesAssembler.AssembleMassMatrix(element, r);
         var stiffness = _cylindricalLocalMatricesAssembler.AssembleStiffnessMatrix(element, r);
 
         stiffness.Multiply(1d / MaterialWithSigmaMu.Mu, stiffness);
 
-        for (var i = 0; i < element.NodeIndexes.Length; i++)
+        for (var i = 0; i < element.NodeIndexes.Count; i++)
         {
-            for (var j = 0; j < element.NodeIndexes.Length; j++)
+            for (var j = 0; j < element.NodeIndexes.Count; j++)
             {
                 var massValue = frequency * material.Sigma * mass[i, j];
                 matrix[i * 2, j * 2] = stiffness[i, j];
@@ -62,9 +60,9 @@ public class HarmonicRotorLocalMatrixAssembler2D : ILocalMatrixAssembler<IElemen
 
     private static int[] GetComplexIndexes(IElement2D element)
     {
-        var complexIndexes = ArrayPool<int>.Shared.Rent(element.NodeIndexes.Length * 2);
+        var complexIndexes = ArrayPool<int>.Shared.Rent(element.NodeIndexes.Count * 2);
 
-        for (var i = 0; i < element.NodeIndexes.Length; i++)
+        for (var i = 0; i < element.NodeIndexes.Count; i++)
         {
             complexIndexes[i * 2] = 2 * element.NodeIndexes[i];
             complexIndexes[i * 2 + 1] = complexIndexes[i * 2] + 1;

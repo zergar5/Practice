@@ -1,6 +1,5 @@
 ﻿using Application.DirectProblem;
 using Application.DirectProblem._2D;
-using Application.DirectProblem._2D.Cylindrical.Harmonic;
 using Application.Extensions;
 using Application.FEM.Assembling._2D.Boundaries;
 using Application.FEM.Core.Grid;
@@ -14,7 +13,6 @@ namespace Application.FEM._2D.Assembling.Boundaries;
 public class BoundCoverageResolver2D : IBoundCoverageResolver2D
 {
     private readonly IDirectProblemContextProvider<DirectProblem2DContext> _problemContextProvider;
-    private int? _widthInNodes;
 
     public BoundCoverageResolver2D(IDirectProblemContextProvider<DirectProblem2DContext> problemContextProvider)
     {
@@ -44,26 +42,26 @@ public class BoundCoverageResolver2D : IBoundCoverageResolver2D
         var attachmentBeginNode = attachment.BeginNode;
         var attachmentEndNode = attachment.EndNode;
 
-        if (attachmentBeginNode.Y.EqualsWithPrecision(gridLeftBottomNode.Y) &&
-            attachmentEndNode.Y.EqualsWithPrecision(gridLeftBottomNode.Y))
+        if (attachmentBeginNode.Y.Equal(gridLeftBottomNode.Y) &&
+            attachmentEndNode.Y.Equal(gridLeftBottomNode.Y))
         {
             return Bound2D.Lower;
         }
 
-        if (attachmentBeginNode.X.EqualsWithPrecision(gridLeftBottomNode.X) &&
-            attachmentEndNode.X.EqualsWithPrecision(gridLeftBottomNode.X))
+        if (attachmentBeginNode.X.Equal(gridLeftBottomNode.X) &&
+            attachmentEndNode.X.Equal(gridLeftBottomNode.X))
         {
             return Bound2D.Left;
         }
 
-        if (attachmentBeginNode.X.EqualsWithPrecision(gridRightUpperNode.X) &&
-            attachmentEndNode.X.EqualsWithPrecision(gridRightUpperNode.X))
+        if (attachmentBeginNode.X.Equal(gridRightUpperNode.X) &&
+            attachmentEndNode.X.Equal(gridRightUpperNode.X))
         {
             return Bound2D.Right;
         }
 
-        if (attachmentBeginNode.Y.EqualsWithPrecision(gridRightUpperNode.Y) &&
-            attachmentEndNode.Y.EqualsWithPrecision(gridRightUpperNode.Y))
+        if (attachmentBeginNode.Y.Equal(gridRightUpperNode.Y) &&
+            attachmentEndNode.Y.Equal(gridRightUpperNode.Y))
         {
             return Bound2D.Upper;
         }
@@ -185,13 +183,8 @@ public class BoundCoverageResolver2D : IBoundCoverageResolver2D
 
     private int ResolveGridWidthInNodes(IGrid<Node2D, IElement2D> grid)
     {
-        if (!_widthInNodes.HasValue)
-        {
-            var gridLeftBottomNode = grid.Nodes[0];
+        var gridLeftBottomNode = grid.Nodes[0];
 
-            _widthInNodes = grid.Nodes.FindIndex(n => n.X.EqualsWithPrecision(gridLeftBottomNode.X) && !n.Y.EqualsWithPrecision(gridLeftBottomNode.Y));
-        }
-
-        return _widthInNodes.Value;
+        return grid.Nodes.FindIndex(n => n.X.Equal(gridLeftBottomNode.X) && !n.Y.Equal(gridLeftBottomNode.Y));
     }
 }

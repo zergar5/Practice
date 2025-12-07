@@ -1,5 +1,5 @@
-﻿using System.Buffers;
-using Application.MathObjects.Matrices;
+﻿using Application.MathObjects.Matrices;
+using System.Buffers;
 using System.Numerics;
 
 namespace Application.FEM.Core.Assembling.Local;

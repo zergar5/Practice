@@ -1,15 +1,11 @@
-﻿using System.Numerics;
-using Application.MathObjects.Equation;
+﻿using Application.MathObjects.Equation;
 using Application.MathObjects.Matrices;
 using Application.MathObjects.Vectors;
-using DirectProblem.Core.Base;
-using DirectProblem.Core.Global;
 using DirectProblem.SLAE;
-using Vector = DirectProblem.Core.Base.Vector;
 
 namespace Application.EquationSystems.Solvers;
 
-public class GaussElimination : ISLAESolver<IMatrix<double>, double>
+public class GaussElimination : ISLAESolver<IMatrix<double>>
 {
     public IVector<double> Solve(IEquation<IMatrix<double>, double> equation)
     {
@@ -18,7 +14,7 @@ public class GaussElimination : ISLAESolver<IMatrix<double>, double>
             ForwardElimination(equation);
             return BackSubstitution(equation);
         }
-        catch (Exception)
+        catch (DivideByZeroException)
         {
             throw new DivideByZeroException();
         }

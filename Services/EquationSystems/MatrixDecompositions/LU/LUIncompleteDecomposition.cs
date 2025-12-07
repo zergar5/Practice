@@ -1,21 +1,20 @@
 ﻿using Application.MathObjects.Matrices;
-using System.Numerics;
 
 namespace Application.EquationSystems.MatrixDecompositions.LU;
 
-public class LUIncompleteDecomposition<T> : IMatrixDecomposition<ISparseMatrix<T>> where T : INumberBase<T>
+public class LUIncompleteDecomposition : IMatrixDecomposition<ISparseMatrix<double>>
 {
-    public ISparseMatrix<T> Decompose(ISparseMatrix<T> matrix)
+    public ISparseMatrix<double> Decompose(ISparseMatrix<double> matrix)
     {
         for (var i = 0; i < matrix.RowCount; i++)
         {
-            var sumD = T.Zero;
+            var sumD = 0d;
             var rowColumns = matrix[i];
 
             for (var j = 0; j < rowColumns.Length; j++)
             {
-                var sumL = T.Zero;
-                var sumU = T.Zero;
+                var sumL = 0d;
+                var sumU = 0d;
                 var jColumn = rowColumns[j];
 
                 for (var k = 0; k < j; k++)

@@ -1,7 +1,6 @@
 ﻿using Application.FEM.Core.Grid;
 using Application.MathObjects.Matrices;
 using Domain.Nodes;
-using System.Numerics;
 
 namespace Application.FEM.Core.Assembling;
 
@@ -9,7 +8,7 @@ public interface IMatrixPortraitBuilder<in TNode, in TElement>
     where TNode : Node
     where TElement : IElement
 {
-    ISparseMatrix<T> Build<T>(IGrid<TNode, TElement> grid) where T : INumberBase<T>;
+    ISparseMatrix<double> Build(IGrid<TNode, TElement> grid);
 }
 
 public abstract class MatrixPortraitBuilderBase<TNode, TElement> : IMatrixPortraitBuilder<TNode, TElement>
@@ -18,7 +17,7 @@ public abstract class MatrixPortraitBuilderBase<TNode, TElement> : IMatrixPortra
 {
     protected List<SortedSet<int>> AdjacencyList = [];
 
-    public virtual ISparseMatrix<T> Build<T>(IGrid<TNode, TElement> grid) where T : INumberBase<T>
+    public virtual ISparseMatrix<double> Build(IGrid<TNode, TElement> grid)
     {
         AdjacencyList = BuildAdjacencyList(grid);
 
@@ -26,7 +25,7 @@ public abstract class MatrixPortraitBuilderBase<TNode, TElement> : IMatrixPortra
         var rowsIndexes = AdjacencyList.Select(nodeSet => amount += nodeSet.Count).Prepend(0).ToArray();
         var columnsIndexes = AdjacencyList.SelectMany(nodeList => nodeList).ToArray();
 
-        return new SparseMatrix<T>(rowsIndexes, columnsIndexes);
+        return new SparseMatrix<double>(rowsIndexes, columnsIndexes);
     }
 
     protected abstract List<SortedSet<int>> BuildAdjacencyList(IGrid<TNode, TElement> grid);

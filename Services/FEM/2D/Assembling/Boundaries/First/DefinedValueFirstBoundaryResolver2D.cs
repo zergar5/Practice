@@ -1,9 +1,9 @@
-﻿using System.Numerics;
-using Application.FEM.Core.Assembling.Boundaries.First;
+﻿using Application.FEM.Core.Assembling.Boundaries.First;
 using Domain.Boundaries;
 using Domain.Edges;
 using Domain.Enums;
 using Domain.Nodes;
+using System.Numerics;
 
 namespace Application.FEM.Assembling._2D.Boundaries.First;
 
