@@ -1,5 +1,4 @@
-﻿using Domain.Materials;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace Application.DirectProblem._2D;
 

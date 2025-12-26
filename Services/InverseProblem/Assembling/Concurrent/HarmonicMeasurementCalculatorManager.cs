@@ -1,5 +1,4 @@
 ﻿using Application.DirectProblem._2D;
-using Application.InverseProblem.Assembling.Derivatives._2D.Harmonic;
 using Domain.Materials;
 using System.Collections.Concurrent;
 using System.Numerics;

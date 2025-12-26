@@ -42,26 +42,26 @@ public class BoundCoverageResolver2D : IBoundCoverageResolver2D
         var attachmentBeginNode = attachment.BeginNode;
         var attachmentEndNode = attachment.EndNode;
 
-        if (attachmentBeginNode.Y.Equal(gridLeftBottomNode.Y) &&
-            attachmentEndNode.Y.Equal(gridLeftBottomNode.Y))
+        if (attachmentBeginNode.Y.EqualTo(gridLeftBottomNode.Y) &&
+            attachmentEndNode.Y.EqualTo(gridLeftBottomNode.Y))
         {
             return Bound2D.Lower;
         }
 
-        if (attachmentBeginNode.X.Equal(gridLeftBottomNode.X) &&
-            attachmentEndNode.X.Equal(gridLeftBottomNode.X))
+        if (attachmentBeginNode.X.EqualTo(gridLeftBottomNode.X) &&
+            attachmentEndNode.X.EqualTo(gridLeftBottomNode.X))
         {
             return Bound2D.Left;
         }
 
-        if (attachmentBeginNode.X.Equal(gridRightUpperNode.X) &&
-            attachmentEndNode.X.Equal(gridRightUpperNode.X))
+        if (attachmentBeginNode.X.EqualTo(gridRightUpperNode.X) &&
+            attachmentEndNode.X.EqualTo(gridRightUpperNode.X))
         {
             return Bound2D.Right;
         }
 
-        if (attachmentBeginNode.Y.Equal(gridRightUpperNode.Y) &&
-            attachmentEndNode.Y.Equal(gridRightUpperNode.Y))
+        if (attachmentBeginNode.Y.EqualTo(gridRightUpperNode.Y) &&
+            attachmentEndNode.Y.EqualTo(gridRightUpperNode.Y))
         {
             return Bound2D.Upper;
         }
@@ -185,6 +185,6 @@ public class BoundCoverageResolver2D : IBoundCoverageResolver2D
     {
         var gridLeftBottomNode = grid.Nodes[0];
 
-        return grid.Nodes.FindIndex(n => n.X.Equal(gridLeftBottomNode.X) && !n.Y.Equal(gridLeftBottomNode.Y));
+        return grid.Nodes.FindIndex(n => n.X.EqualTo(gridLeftBottomNode.X) && !n.Y.EqualTo(gridLeftBottomNode.Y));
     }
 }

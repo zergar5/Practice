@@ -4,7 +4,6 @@ using DirectProblem.Core.Base;
 using DirectProblem.Core.Global;
 using DirectProblem.Core.GridComponents;
 using DirectProblem.GridGenerator;
-using DirectProblem.GridGenerator.Intervals.Splitting;
 using DirectProblem.TwoDimensional;
 using DirectProblem.TwoDimensional.Assembling.Local;
 using InverseProblem.Parameters;

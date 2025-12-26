@@ -1,5 +1,4 @@
-﻿using Application.MathObjects.Matrices;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Numerics;
 
 namespace Application.MathObjects.Vectors;

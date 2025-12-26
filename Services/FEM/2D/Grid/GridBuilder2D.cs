@@ -91,10 +91,10 @@ public class GridBuilder2D : IGridBuilder<Node2D, IElement2D, Grid2DParameters>
         var areas = gridParameters.Areas;
 
         var area = areas.First(a =>
-            xControlPoints[a.XStartControlPointId].LessOrEqual(leftBottom.X) &&
-            yControlPoints[a.YStartControlPointId].LessOrEqual(leftBottom.Y) &&
-            rightTop.X.LessOrEqual(xControlPoints[a.XEndControlPointId]) &&
-            rightTop.Y.LessOrEqual(yControlPoints[a.YEndControlPointId])
+            xControlPoints[a.XStartControlPointId].LessOrEqualThan(leftBottom.X) &&
+            yControlPoints[a.YStartControlPointId].LessOrEqualThan(leftBottom.Y) &&
+            rightTop.X.LessOrEqualThan(xControlPoints[a.XEndControlPointId]) &&
+            rightTop.Y.LessOrEqualThan(yControlPoints[a.YEndControlPointId])
         );
 
         return area.MaterialId;

@@ -2,7 +2,6 @@
 using Application.MathObjects.Equation;
 using Application.MathObjects.Matrices;
 using Application.MathObjects.Vectors;
-using DirectProblem.FEM;
 
 namespace Application.EquationSystems.Solvers.Sparse;
 
@@ -35,12 +34,15 @@ public class LocalOptimalScheme : ISparseSLAESolver
         _precondition.ForwardElimination(p, p);
 
         var residual = r.ScalarProduct();
+        var residualNext = residual;
         var targetResidual = Math.Pow(_config.ResidualPrecision, 2);
 
         var firstBufferVector = VectorPool<double>.Rent(z.Count);
         var secondBufferVector = VectorPool<double>.Rent(firstBufferVector.Count);
 
-        for (var i = 1; i <= _config.MaxIterations; i++)
+        var i = 1;
+
+        for (; i <= _config.MaxIterations; i++)
         {
             var pScalarProduct = p.ScalarProduct();
             var alpha = p.ScalarProduct(r) / pScalarProduct;
@@ -48,7 +50,8 @@ public class LocalOptimalScheme : ISparseSLAESolver
             solution.Sum(z.Multiply(alpha, firstBufferVector), solution);
 
             var rNext = r.Subtract(p.Multiply(alpha, firstBufferVector), r);
-            var residualNext = rNext.ScalarProduct() / residual;
+
+            residualNext = rNext.ScalarProduct() / residual;
 
             if (residualNext <= targetResidual) return solution;
 
@@ -66,6 +69,12 @@ public class LocalOptimalScheme : ISparseSLAESolver
             p = pNext;
 
             //CourseHolder.GetResidualInfo(i, residualNext);
+        }
+
+        if (residualNext > targetResidual)
+        {
+            Console.WriteLine($"Iterations exceeded with residual {residualNext}");
+            Console.WriteLine();
         }
 
         VectorPool<double>.Return(r);

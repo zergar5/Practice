@@ -1,8 +1,10 @@
 ﻿using Application.DirectProblem._2D;
-using Application.FEM._2D.Grid;
+using Application.InverseProblem.Assembling.Concurrent;
 using Application.InverseProblem.Assembling.Harmonic;
 using Application.InverseProblem.Assembling.Regularization.Alpha;
 using Application.InverseProblem.Parameters;
+using Application.IO.Grid;
+using Application.IO.Measurements;
 using Application.MathObjects.Equation;
 using Application.MathObjects.Matrices;
 using Application.MathObjects.Vectors;
@@ -12,7 +14,6 @@ using Domain.Environment;
 using Domain.Materials;
 using Domain.Nodes;
 using System.Numerics;
-using Application.InverseProblem.Assembling.Concurrent;
 using static Application.FEM._2D.Grid.GridBuilder2D;
 
 namespace Application.InverseProblem._2D.Harmonic;
@@ -24,7 +25,10 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
     private readonly IHarmonicEquationAssembler _equationAssembler;
     private readonly IAlphaRegularization _alphaRegularization;
     private readonly MinimizationMethodConfig _config;
+    private readonly GridWriter2D _gridWriter;
+    private readonly HarmonicMeasurementsWriter2D _measurementsWriter;
     private readonly ParallelOptions _parallelOptions;
+
 
     private Parameter[] _targetParameters;
     private double[,] _targetMeasurements;
@@ -38,6 +42,8 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
         IHarmonicEquationAssembler equationAssembler,
         IAlphaRegularization alphaRegularization,
         MinimizationMethodConfig config,
+        GridWriter2D gridWriter,
+        HarmonicMeasurementsWriter2D measurementsWriter,
         ParallelOptions parallelOptions
     )
     {
@@ -46,6 +52,8 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
         _equationAssembler = equationAssembler;
         _alphaRegularization = alphaRegularization;
         _config = config;
+        _gridWriter = gridWriter;
+        _measurementsWriter = measurementsWriter;
         _parallelOptions = parallelOptions;
     }
 
@@ -120,14 +128,26 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
 
     public IVector<double> Solve()
     {
-        var previousFunctional = 2d;
-        var functional = 10d;
+        var previousFunctional = double.MaxValue;
 
         IEquation<IMatrix<double>, double> equation = null!;
 
         _equationAssembler.AllocateEquation(_targetParameters, _targetMeasurements, _weightSquares);
 
         GetMeasurements();
+
+        var functional = CalculateFunctional();
+
+        Console.WriteLine($"Initial values functional {functional:E6}");
+
+        var problemContext = _problemContextProvider.Get();
+        var gridParameters = problemContext.GridParameters;
+        var materials = problemContext.Materials;
+        var receiverLines = problemContext.ReceiverLines;
+        var frequencies = problemContext.Frequencies;
+
+        _gridWriter.WriteAreas(gridParameters, materials, "initial areas.txt");
+        _measurementsWriter.WriteMeasurements(receiverLines, _currentMeasurements, frequencies, functional, "initial measurements.txt");
 
         for (var i = 1; i <= _config.MaxIterations && CheckFunctional(functional, previousFunctional); i++)
         {
@@ -147,8 +167,11 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
 
             for (var j = 0; j < equation.Solution.Count; j++)
             {
-                Console.WriteLine($"Parameter value {equation.Solution[j]:F6} delta {parameterDeltas[j]:F6}");
+                Console.WriteLine($"Parameter {_targetParameters[j].Type} {_targetParameters[j].Index} value {equation.Solution[j]:F6} delta {parameterDeltas[j]:F6}");
             }
+
+            _gridWriter.WriteAreas(gridParameters, materials, $"iteration {i} areas.txt");
+            _measurementsWriter.WriteMeasurements(receiverLines, _currentMeasurements, frequencies, functional, $"iteration {i} measurements.txt");
         }
 
         return equation.Solution;
@@ -262,7 +285,7 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
     {
         var functionalRatio = Math.Abs(currentFunctional / previousFunctional);
 
-        return Math.Abs(double.Max(1 / functionalRatio, functionalRatio) - 1) >= _config.MinimizePrecision && 
+        return Math.Abs(double.Max(1 / functionalRatio, functionalRatio) - 1) >= _config.MinimizePrecision &&
                currentFunctional >= _config.MinimizePrecision;
     }
 }

@@ -16,8 +16,8 @@ using Application.FEM.Core.Assembling.Boundaries.First;
 using Application.FEM.Core.Assembling.Inserters;
 using Application.FEM.Core.Grid.Splitting;
 using Domain.Materials;
-using System.Numerics;
 using Domain.Nodes;
+using System.Numerics;
 
 namespace Application.DirectProblem._2D.Cylindrical.Harmonic;
 

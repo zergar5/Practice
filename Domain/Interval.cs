@@ -11,5 +11,5 @@ public class Interval
 public static class IntervalExtensions
 {
     public static double Length(this Interval interval) => interval.End - interval.Begin;
-    public static bool Has(this Interval interval, double point) => interval.Begin.LessOrEqual(point) && point.LessOrEqual(interval.End);
+    public static bool Has(this Interval interval, double point) => interval.Begin.LessOrEqualThan(point) && point.LessOrEqualThan(interval.End);
 }

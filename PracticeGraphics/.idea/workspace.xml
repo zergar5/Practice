@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8f305864-4292-4f2b-a10b-58430eeebd4c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../Common/Extensions/DoubleExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Common/Extensions/DoubleExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../DirectProblem/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../DirectProblem/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../DirectProblemDesktop/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../DirectProblemDesktop/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Domain/Interval.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Domain/Interval.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Domain/Nodes/Node2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Domain/Nodes/Node2D.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InverseProblem/Assembling/SLAEAssembler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../InverseProblem/Assembling/SLAEAssembler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InverseProblemDesktop/InverseProblemDesktop.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../InverseProblemDesktop/InverseProblemDesktop.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InverseProblemDesktop/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../InverseProblemDesktop/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/PracticeGraphics.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PracticeGraphics.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inverse_problem_graphics.py" beforeDir="false" afterPath="$PROJECT_DIR$/inverse_problem_graphics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/DirectProblem/2D/Cylindrical/Harmonic/HarmonicRotorDirectProblem2DFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/DirectProblem/2D/Cylindrical/Harmonic/HarmonicRotorDirectProblem2DFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/DirectProblem/2D/DirectProblem2DContextProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/DirectProblem/2D/DirectProblem2DContextProvider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/DirectProblem/2D/IDirectProblem2DFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/DirectProblem/2D/IDirectProblem2DFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/EquationSystems/Solvers/Sparse/LocalOptimalScheme.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/EquationSystems/Solvers/Sparse/LocalOptimalScheme.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/FEM/2D/Assembling/Boundaries/BoundCoverageResolver2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/FEM/2D/Assembling/Boundaries/BoundCoverageResolver2D.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/FEM/2D/Grid/GridBuilder2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/FEM/2D/Grid/GridBuilder2D.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/FEM/Assembling/2D/Boundaries/First/IDefinedValueFirstBoundaryProvider2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/FEM/Assembling/2D/Boundaries/First/IDefinedValueFirstBoundaryProvider2D.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/FEM/Core/Grid/Grid.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/FEM/Core/Grid/Grid.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/FEM/Core/Grid/Splitting/UniformSplitStrategy.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/FEM/Core/Grid/Splitting/UniformSplitStrategy.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/InverseProblem/2D/Harmonic/ConcurrentHarmonicInverseProblem2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/InverseProblem/2D/Harmonic/ConcurrentHarmonicInverseProblem2D.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/InverseProblem/Assembling/Concurrent/HarmonicMeasurementCalculatorManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/InverseProblem/Assembling/Concurrent/HarmonicMeasurementCalculatorManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/InverseProblem/Assembling/Derivatives/2D/Harmonic/HarmonicMeasurementDerivativesCalculator2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/InverseProblem/Assembling/Derivatives/2D/Harmonic/HarmonicMeasurementDerivativesCalculator2D.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/InverseProblem/Assembling/Regularization/Alpha/2D/AlphaRegularization2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/InverseProblem/Assembling/Regularization/Alpha/2D/AlphaRegularization2D.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/MathObjects/Vectors/VectorPool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/MathObjects/Vectors/VectorPool.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Tests/TestFrequencies.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Tests/TestFrequencies.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Tests/TestGridParameters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Tests/TestGridParameters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Tests/TestMaterials.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Tests/TestMaterials.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Tests/TestReceiverAndSourceConstructions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Tests/TestReceiverAndSourceConstructions.cs" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="36bxOy5Dxtzkpkl2i2jKbOS6DeM" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.direct_problem_graphics.executor&quot;: &quot;Run&quot;,
+    &quot;Python.inverse_problem_graphics.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;clean__architecture&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;F:/Visual Studio/Projects/Practice/PracticeGraphics&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.notifications&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-PY-251.29188.22" />
+        <option value="bundled-python-sdk-1f1b7bcced7d-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.29188.22" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8f305864-4292-4f2b-a10b-58430eeebd4c" name="Changes" comment="" />
+      <created>1765289043865</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1765289043865</updated>
+      <workItem from="1765289047289" duration="3645000" />
+      <workItem from="1765292736765" duration="72000" />
+      <workItem from="1765292824550" duration="501000" />
+      <workItem from="1765293368014" duration="34000" />
+      <workItem from="1765293410308" duration="167000" />
+      <workItem from="1765293652529" duration="12000" />
+      <workItem from="1765293926778" duration="45000" />
+      <workItem from="1765375697856" duration="143000" />
+      <workItem from="1765376056096" duration="286000" />
+      <workItem from="1765628221339" duration="14000" />
+      <workItem from="1765628250077" duration="331000" />
+      <workItem from="1766547053661" duration="6000" />
+      <workItem from="1766666957413" duration="392000" />
+      <workItem from="1766685372889" duration="2359000" />
+      <workItem from="1766717896456" duration="2000" />
+      <workItem from="1766717919867" duration="25000" />
+      <workItem from="1766717958215" duration="16000" />
+      <workItem from="1766724464772" duration="1024000" />
+      <workItem from="1766726188904" duration="120000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/direct_problem_graphics.py</url>
+          <line>2</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/PracticeGraphics$direct_problem_graphics.coverage" NAME="direct_problem_graphics Coverage Results" MODIFIED="1765376324217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PracticeGraphics$inverse_problem_graphics.coverage" NAME="inverse_problem_graphics Coverage Results" MODIFIED="1766726202244" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>

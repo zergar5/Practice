@@ -1,6 +1,5 @@
 ﻿using Application.FEM._2D.Grid;
 using Application.FEM.Core.Grid.Splitting;
-using DirectProblem.GridGenerator.Intervals.Splitting;
 using Domain.Areas;
 
 namespace Tests;

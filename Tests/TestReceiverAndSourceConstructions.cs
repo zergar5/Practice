@@ -144,4 +144,39 @@ public class TestReceiverAndSourceConstructions
 
         return (sources, receiverLines);
     }
+
+    public static (Source<Node2D>[] Sources, ReceiverLine<Node2D>[] Receivers) GetTwentyConstructions(double sourcePower)
+    {
+        var sources = new Source<Node2D>[20];
+        var receiverLines = new ReceiverLine<Node2D>[sources.Length];
+
+        for (var i = 0; i < sources.Length; i++)
+        {
+            sources[i] = new Source<Node2D>
+            {
+                Location = new Node2D
+                {
+                    X = 0.05,
+                    Y = -2 - 0.1 * i
+                },
+                Power = sourcePower,
+            };
+
+            receiverLines[i] = new ReceiverLine<Node2D>
+            {
+                ReceiverM = new Node2D
+                {
+                    X = sources[i].Location.R(),
+                    Y = sources[i].Location.Z() - 0.05,
+                },
+                ReceiverN = new Node2D
+                {
+                    X = sources[i].Location.R(),
+                    Y = sources[i].Location.Z() - 0.1,
+                }
+            };
+        }
+
+        return (sources, receiverLines);
+    }
 }

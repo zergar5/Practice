@@ -8,8 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Program.cs~RF55432.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Services\Application.csproj" />
     <ProjectReference Include="..\Tests\Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Results\" />
   </ItemGroup>
 
 </Project>

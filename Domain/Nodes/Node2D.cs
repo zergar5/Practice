@@ -14,6 +14,6 @@ public static class Node2DExtensions
 
     public static bool EqualsWithPrecision(this Node2D self, Node2D other, double precision = 1e-15)
     {
-        return self.X.Equal(other.X, precision) && self.Y.Equal(other.Y, precision);
+        return self.X.EqualTo(other.X, precision) && self.Y.EqualTo(other.Y, precision);
     }
 }

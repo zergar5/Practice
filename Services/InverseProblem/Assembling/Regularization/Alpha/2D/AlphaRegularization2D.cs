@@ -1,7 +1,4 @@
-﻿using System.Data.Common;
-using Application.DirectProblem;
-using Application.DirectProblem._2D.Cylindrical.Harmonic;
-using Application.EquationSystems.Solvers;
+﻿using Application.EquationSystems.Solvers;
 using Application.Extensions;
 using Application.InverseProblem._2D;
 using Application.InverseProblem.Parameters;
@@ -9,6 +6,7 @@ using Application.MathObjects.Equation;
 using Application.MathObjects.Matrices;
 using Application.MathObjects.Vectors;
 using Common.Extensions;
+using DirectProblem.Core.Base;
 using Domain;
 
 namespace Application.InverseProblem.Assembling.Regularization.Alpha._2D;
@@ -21,6 +19,7 @@ public class AlphaRegularization2D : IAlphaRegularization
     private readonly Parameter[] _parameters;
     private readonly IVector<double> _alphas;
     private readonly IEquation<IMatrix<double>, double> _regularizedEquation;
+    private readonly IVector<double> _currentDeltas;
     private readonly Interval _sigmaGlobalConstraintsInterval;
     private readonly double _sigmaLocalConstraintRatio;
     private readonly double _boundLocalConstraintDeviation;
@@ -55,6 +54,8 @@ public class AlphaRegularization2D : IAlphaRegularization
             new Vector<double>(parameters.Length)
         );
 
+        _currentDeltas = new Vector<double>(parameters.Length);
+
         _alphaChangeRatio = alphaChangeRatio;
     }
 
@@ -64,7 +65,12 @@ public class AlphaRegularization2D : IAlphaRegularization
         FindInitialAlphas(equation);
         FindBestAlphaForEachParameter(equation);
 
-        return _regularizedEquation.Solution.Subtract(equation.Solution, _regularizedEquation.Solution);
+        for (var i = 0; i < equation.Matrix.RowCount; i++)
+        {
+            Console.WriteLine($"Alpha {i} {_alphas[i]:E16}");
+        }
+
+        return _currentDeltas;
     }
 
     private void SetupAlphas(IMatrix<double> matrix)
@@ -103,6 +109,7 @@ public class AlphaRegularization2D : IAlphaRegularization
             AssembleRegularizedEquation(equation);
 
             _gaussElimination.Solve(_regularizedEquation);
+            _regularizedEquation.Solution.Copy(_currentDeltas);
 
             ChangeAlphasWithConstraints(equation, out stop);
 
@@ -156,7 +163,7 @@ public class AlphaRegularization2D : IAlphaRegularization
 
     private bool CheckBoundParameterConstraints(Parameter parameter, double parameterValue, double parameterPreviousValue)
     {
-        var isLocalConstrainsPassed = parameterPreviousValue.Equal(parameterValue, _boundLocalConstraintDeviation);
+        var isLocalConstrainsPassed = parameterPreviousValue.Difference(parameterValue).LessOrEqualThan(_boundLocalConstraintDeviation);
         var isGlobalConstrainsPassed = CheckBoundParameterGlobalConstraints(parameter, parameterValue);
 
         return isLocalConstrainsPassed && isGlobalConstrainsPassed;
@@ -173,8 +180,8 @@ public class AlphaRegularization2D : IAlphaRegularization
         var nextParameterValue = GetBoundParameterValue(nextParameterIndex, parameterType);
 
         return parameterValue >= previousParameterValue && parameterValue <= nextParameterValue &&
-               !Math.Sqrt(Math.Pow(parameterValue - previousParameterValue, 2)).Equal(_boundGlobalConstraintDeviation) &&
-               !Math.Sqrt(Math.Pow(nextParameterValue - parameterValue, 2)).Equal(_boundGlobalConstraintDeviation);
+               parameterValue.Difference(previousParameterValue).GreaterOrEqualThan(_boundGlobalConstraintDeviation) &&
+               nextParameterValue.Difference(parameterValue).GreaterOrEqualThan(_boundGlobalConstraintDeviation);
     }
 
     private double GetBoundParameterValue(int index, ParameterType parameterType)

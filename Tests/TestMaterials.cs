@@ -1,5 +1,4 @@
-﻿using Application.InverseProblem.Parameters;
-using Domain.Materials;
+﻿using Domain.Materials;
 
 namespace Tests;
 

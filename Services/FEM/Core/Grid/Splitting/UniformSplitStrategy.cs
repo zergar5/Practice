@@ -51,7 +51,7 @@ public class StepUniformSplitStrategy : ISplitStrategy
         }
         else
         {
-            if (!Math.Abs(steps % 1).Equal(0))
+            if (!Math.Abs(steps % 1).EqualTo(0))
             {
                 throw new ArgumentException("Invalid step or interval");
             }

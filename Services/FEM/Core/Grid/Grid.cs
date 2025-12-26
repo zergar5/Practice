@@ -1,7 +1,7 @@
 ﻿using Application.FEM._2D;
+using Common.Extensions;
 using Domain.Nodes;
 using System.Collections;
-using Common.Extensions;
 
 namespace Application.FEM.Core.Grid;
 
@@ -52,7 +52,7 @@ public static class GridExtensions
     // TODO вынести потом в другой место, связанное с геометрией, например завести class Rectangle
     public static bool PointInRectangle(Node2D node, Node2D lowerLeftCorner, Node2D upperRightCorner)
     {
-        return node.X.GreaterOrEqual(lowerLeftCorner.X) && node.Y.GreaterOrEqual(lowerLeftCorner.Y) &&
-               node.X.LessOrEqual(upperRightCorner.X) && node.Y.LessOrEqual(upperRightCorner.Y);
+        return node.X.GreaterOrEqualThan(lowerLeftCorner.X) && node.Y.GreaterOrEqualThan(lowerLeftCorner.Y) &&
+               node.X.LessOrEqualThan(upperRightCorner.X) && node.Y.LessOrEqualThan(upperRightCorner.Y);
     }
 }

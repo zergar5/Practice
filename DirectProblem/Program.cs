@@ -6,7 +6,6 @@ using DirectProblem.TwoDimensional.Assembling.Local;
 using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
-using Vector = DirectProblem.Core.Base.Vector;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 

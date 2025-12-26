@@ -1,12 +1,9 @@
 ﻿using Application.DirectProblem._2D;
 using Application.FEM._2D.Grid;
-using Application.InverseProblem._2D;
-using Application.InverseProblem.Parameters;
-using Domain.Environment;
-using Domain.Materials;
-using Domain.Nodes;
-using System.Numerics;
 using Application.InverseProblem._2D.Harmonic;
+using Application.InverseProblem.Parameters;
+using Domain.Materials;
+using System.Numerics;
 
 namespace Application.InverseProblem.Assembling.Derivatives._2D.Harmonic;
 
@@ -27,7 +24,7 @@ public class HarmonicMeasurementDerivativesCalculator2D : IHarmonicMeasurementDe
         IInverseProblemContextProvider<HarmonicInverseProblem2DContext> problemContextProvider,
         IHarmonicDirectProblem2DWithSources<Complex, GridBuilder2D.Grid2DParameters, MaterialWithSigmaMu> directProblem,
         double sigmaParameterDelta = 1e-1,
-        double boundParameterDelta = 1e-2
+        double boundParameterDelta = 1e-1
     )
     {
         _problemContextProvider = problemContextProvider;

@@ -1,24 +1,6 @@
-﻿using Application.DirectProblem;
-using Application.DirectProblem._2D.Cylindrical.Harmonic;
-using Application.EquationSystems;
-using Application.EquationSystems.MatrixDecompositions.LU;
-using Application.EquationSystems.Preconditions.Separate;
+﻿using Application.DirectProblem._2D.Cylindrical.Harmonic;
 using Application.EquationSystems.Solvers;
-using Application.EquationSystems.Solvers.Sparse;
-using Application.FEM._1D.Assembling.Local;
-using Application.FEM._2D;
-using Application.FEM._2D.Assembling.Boundaries;
 using Application.FEM._2D.Assembling.Boundaries.First;
-using Application.FEM._2D.Assembling.Global;
-using Application.FEM._2D.Assembling.Global.Sources;
-using Application.FEM._2D.Assembling.Local;
-using Application.FEM._2D.BasisFunctions;
-using Application.FEM._2D.Grid;
-using Application.FEM.Assembling._2D.Boundaries.First;
-using Application.FEM.Assembling.PortraitBuilders;
-using Application.FEM.Core.Assembling.Boundaries.First;
-using Application.FEM.Core.Assembling.Inserters;
-using Application.FEM.Core.Grid.Splitting;
 using Application.InverseProblem;
 using Application.InverseProblem._2D.Harmonic;
 using Application.InverseProblem.Assembling.Concurrent;
@@ -26,16 +8,9 @@ using Application.InverseProblem.Assembling.Derivatives._2D.Harmonic;
 using Application.InverseProblem.Assembling.Harmonic;
 using Application.InverseProblem.Assembling.Regularization.Alpha._2D;
 using Application.InverseProblem.Parameters;
-using DirectProblem.IO;
-using DirectProblem.TwoDimensional;
-using DirectProblem.TwoDimensional.Assembling.Local;
+using Application.IO.Grid;
+using Application.IO.Measurements;
 using Domain;
-using Domain.Boundaries;
-using Domain.Edges;
-using Domain.Enums;
-using Domain.Environment;
-using Domain.Materials;
-using Domain.Nodes;
 using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
@@ -56,6 +31,7 @@ var trueMeasurements = new double[frequencies.Length, sources.Length];
 var targetParameters = new Parameter[]
 {
     //new() { Type = ParameterType.Sigma, Index = 0, InitialValue = 0.1 },
+
     //new() { Type = ParameterType.Sigma, Index = 1, InitialValue = 0.1 },
     //new() { Type = ParameterType.Sigma, Index = 2, InitialValue = 0.1 },
     //new() { Type = ParameterType.Sigma, Index = 3, InitialValue = 0.1 },
@@ -64,25 +40,38 @@ var targetParameters = new Parameter[]
     //new() { Type = ParameterType.Sigma, Index = 6, InitialValue = 0.1 },
     //new() { Type = ParameterType.Sigma, Index = 7, InitialValue = 0.1 },
 
-    new() { Type = ParameterType.VerticalBound, Index = 2, InitialValue = 0.5 },
-    //new() { Type = ParameterType.VerticalBound, Index = 3, InitialValue = 1.5 },
+    new() { Type = ParameterType.VerticalBound, Index = 2, InitialValue = 0.75 },
+    new() { Type = ParameterType.VerticalBound, Index = 3, InitialValue = 1.75 },
 
-    new() { Type = ParameterType.HorizontalBound, Index = 5, InitialValue = -2.5 },
-    
+    new() { Type = ParameterType.HorizontalBound, Index = 1, InitialValue = -4.25 },
+    new() { Type = ParameterType.HorizontalBound, Index = 2, InitialValue = -3.5 },
+    new() { Type = ParameterType.HorizontalBound, Index = 3, InitialValue = -3.25 },
+    new() { Type = ParameterType.HorizontalBound, Index = 4, InitialValue = -3 },
+    new() { Type = ParameterType.HorizontalBound, Index = 5, InitialValue = -2.25 },
 };
 
 const int maxPossibleThreads = 10;
-var maxThreads = targetParameters.Length < maxPossibleThreads ? frequencies.Length : maxPossibleThreads;
+var maxThreads = targetParameters.Length < maxPossibleThreads ? targetParameters.Length : maxPossibleThreads;
 var frequenciesParallelOptions = new ParallelOptions { MaxDegreeOfParallelism = frequencies.Length };
 var parametersParallelOptions = new ParallelOptions { MaxDegreeOfParallelism = maxThreads };
 
-var directProblems = new HarmonicRotorDirectProblem2DFactory().Create(maxThreads);
+var directProblems = new HarmonicRotorDirectProblem2DFactory().Create(maxThreads > frequencies.Length ? maxThreads : frequencies.Length);
 var measurementCalculatorManager = new HarmonicMeasurementCalculatorManager(directProblems);
 
 var firstBoundaries =
     new ComplexDefinedValueFirstBoundaryProvider2D().GetOnAllBounds(trueGridParameters, new Complex(0, 0));
 
 var trueGrid = measurementCalculatorManager.GetAllFreeCalculators().First().GenerateGrid(trueGridParameters);
+
+var sigmaCount = targetParameters.Count(p => p.Type == ParameterType.Sigma);
+var verticalBoundCount = targetParameters.Count(p => p.Type == ParameterType.VerticalBound);
+var horizontalBoundCount = targetParameters.Count(p => p.Type == ParameterType.HorizontalBound);
+
+var writeBasePath =
+    $"../../../Results/{sigmaCount} Sigmas {verticalBoundCount} VerticalBounds {horizontalBoundCount} HorizontalBounds {frequencies.Length} Frequencies {receiverLines.Length} Receivers/";
+
+var gridWriter = new GridWriter2D(writeBasePath);
+var measurementsWriter = new HarmonicMeasurementsWriter2D(writeBasePath);
 
 Console.WriteLine("True measurements begin calculating");
 
@@ -119,6 +108,9 @@ stopwatch.Stop();
 
 var time = (double)stopwatch.ElapsedMilliseconds / 1000;
 
+gridWriter.WriteAreas(trueGridParameters, trueMaterials, "true areas.txt");
+measurementsWriter.WriteMeasurements(receiverLines, trueMeasurements, frequencies, 0,"true phase differences.txt");
+
 Console.WriteLine();
 Console.WriteLine("True measurements calculated");
 Console.WriteLine($"Elapsed time {time}");
@@ -134,7 +126,9 @@ var materials = TestMaterials.GetMaterialsForGridWith0Dot003125StepWith8Material
 var inverseProblemContextProvider = new HarmonicInverseProblem2DContextProvider();
 
 var measurementDerivativesCalculators = directProblems
-    .Select(p => new HarmonicMeasurementDerivativesCalculator2D(inverseProblemContextProvider, p)).ToArray<IHarmonicMeasurementDerivativesCalculator>();
+    .Select(p =>
+        new HarmonicMeasurementDerivativesCalculator2D(inverseProblemContextProvider, p, boundParameterDelta: 0.01))
+    .ToArray<IHarmonicMeasurementDerivativesCalculator>();
 
 var measurementDerivativesCalculatorManager = new HarmonicMeasurementDerivativeCalculatorManager(measurementDerivativesCalculators);
 var equationAssembler = new ConcurrentHarmonicEquationAssembler2D(measurementDerivativesCalculatorManager, parametersParallelOptions);
@@ -145,8 +139,8 @@ var alphaRegularization = new AlphaRegularization2D
     targetParameters,
     new Interval { Begin = 1e-3, End = 5 },
     2,
-    1e-1,
-    0.003125
+    0.05,
+    0.125
 );
 
 var inverseProblem = new ConcurrentHarmonicInverseProblem2D
@@ -156,7 +150,9 @@ var inverseProblem = new ConcurrentHarmonicInverseProblem2D
     equationAssembler,
     alphaRegularization,
     new MinimizationMethodConfig(),
-    parametersParallelOptions
+    gridWriter,
+    measurementsWriter,
+    frequenciesParallelOptions
 );
 
 inverseProblem.SetGridParameters(gridParameters);

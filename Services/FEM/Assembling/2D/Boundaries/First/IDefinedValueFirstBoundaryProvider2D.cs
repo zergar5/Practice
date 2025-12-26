@@ -1,8 +1,8 @@
-﻿using System.Numerics;
-using Application.FEM._2D.Grid;
+﻿using Application.FEM._2D.Grid;
 using Domain.Boundaries;
 using Domain.Edges;
 using Domain.Nodes;
+using System.Numerics;
 
 namespace Application.FEM.Assembling._2D.Boundaries.First;
 

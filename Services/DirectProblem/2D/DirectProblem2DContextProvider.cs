@@ -1,7 +1,6 @@
 ﻿using Application.FEM._2D;
 using Application.FEM.Core.Grid;
 using Domain.Nodes;
-using static Application.FEM._2D.Grid.GridBuilder2D;
 
 namespace Application.DirectProblem._2D;
 
