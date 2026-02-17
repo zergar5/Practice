@@ -1,5 +1,9 @@
 ﻿using Application.DirectProblem._2D.Cylindrical.Harmonic;
+using Application.EquationSystems;
+using Application.EquationSystems.MatrixDecompositions.LU;
+using Application.EquationSystems.Preconditions.Separate;
 using Application.EquationSystems.Solvers;
+using Application.EquationSystems.Solvers.Sparse;
 using Application.FEM._2D.Assembling.Boundaries.First;
 using Application.InverseProblem;
 using Application.InverseProblem._2D.Harmonic;
@@ -18,9 +22,9 @@ using Tests;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var trueGridParameters = TestGridParameters.GetGridWith0Dot003125StepWithElementNearToWellWith8Materials();
+var trueGridParameters = TestGridParameters.GetGridWith0Dot003125StepWithElementCloseToWellWith8Materials();
 var trueMaterials = TestMaterials.GetMaterialsForGridWith0Dot003125StepWith8Materials();
-var frequencies = TestFrequencies.GetFourFrequencies();
+var frequencies = TestFrequencies.GetSevenFrequencies();
 
 const int sourcePower = 1;
 
@@ -32,22 +36,30 @@ var targetParameters = new Parameter[]
 {
     //new() { Type = ParameterType.Sigma, Index = 0, InitialValue = 0.1 },
 
-    //new() { Type = ParameterType.Sigma, Index = 1, InitialValue = 0.1 },
-    //new() { Type = ParameterType.Sigma, Index = 2, InitialValue = 0.1 },
-    //new() { Type = ParameterType.Sigma, Index = 3, InitialValue = 0.1 },
-    //new() { Type = ParameterType.Sigma, Index = 4, InitialValue = 0.1 },
-    //new() { Type = ParameterType.Sigma, Index = 5, InitialValue = 0.1 },
-    //new() { Type = ParameterType.Sigma, Index = 6, InitialValue = 0.1 },
-    //new() { Type = ParameterType.Sigma, Index = 7, InitialValue = 0.1 },
+    new() { Type = ParameterType.Sigma, Index = 1, InitialValue = 0.1 },
+    new() { Type = ParameterType.Sigma, Index = 2, InitialValue = 0.1 },
+    new() { Type = ParameterType.Sigma, Index = 3, InitialValue = 0.1 },
+    new() { Type = ParameterType.Sigma, Index = 4, InitialValue = 0.1 },
+    new() { Type = ParameterType.Sigma, Index = 5, InitialValue = 0.1 },
+    new() { Type = ParameterType.Sigma, Index = 6, InitialValue = 0.1 },
+    new() { Type = ParameterType.Sigma, Index = 7, InitialValue = 0.1 },
 
-    new() { Type = ParameterType.VerticalBound, Index = 2, InitialValue = 0.75 },
-    new() { Type = ParameterType.VerticalBound, Index = 3, InitialValue = 1.75 },
+    new() { Type = ParameterType.VerticalBound, Index = 2, InitialValue = 0.5 },
+    //new() { Type = ParameterType.VerticalBound, Index = 3, InitialValue = 1.5 },
 
-    new() { Type = ParameterType.HorizontalBound, Index = 1, InitialValue = -4.25 },
-    new() { Type = ParameterType.HorizontalBound, Index = 2, InitialValue = -3.5 },
-    new() { Type = ParameterType.HorizontalBound, Index = 3, InitialValue = -3.25 },
-    new() { Type = ParameterType.HorizontalBound, Index = 4, InitialValue = -3 },
-    new() { Type = ParameterType.HorizontalBound, Index = 5, InitialValue = -2.25 },
+    new() { Type = ParameterType.HorizontalBound, Index = 1, InitialValue = -4.5 },
+    new() { Type = ParameterType.HorizontalBound, Index = 2, InitialValue = -3.75 },
+    new() { Type = ParameterType.HorizontalBound, Index = 3, InitialValue = -3.5 },
+    new() { Type = ParameterType.HorizontalBound, Index = 4, InitialValue = -3.25 },
+    new() { Type = ParameterType.HorizontalBound, Index = 5, InitialValue = -2.5 },
+
+    //new() { Type = ParameterType.HorizontalBound, Index = 1, InitialValue = -4.5 },
+    //new() { Type = ParameterType.HorizontalBound, Index = 2, InitialValue = -4.25 },
+    //new() { Type = ParameterType.HorizontalBound, Index = 3, InitialValue = -3.75 },
+    //new() { Type = ParameterType.HorizontalBound, Index = 4, InitialValue = -3.5 },
+    //new() { Type = ParameterType.HorizontalBound, Index = 5, InitialValue = -3.25 },
+    //new() { Type = ParameterType.HorizontalBound, Index = 6, InitialValue = -2.75 },
+    //new() { Type = ParameterType.HorizontalBound, Index = 7, InitialValue = -2.5 },
 };
 
 const int maxPossibleThreads = 10;
@@ -55,7 +67,16 @@ var maxThreads = targetParameters.Length < maxPossibleThreads ? targetParameters
 var frequenciesParallelOptions = new ParallelOptions { MaxDegreeOfParallelism = frequencies.Length };
 var parametersParallelOptions = new ParallelOptions { MaxDegreeOfParallelism = maxThreads };
 
-var directProblems = new HarmonicRotorDirectProblem2DFactory().Create(maxThreads > frequencies.Length ? maxThreads : frequencies.Length);
+var luIncompleteDecomposition = new LUIncompleteDecomposition();
+var iterativeMethodConfig = new IterativeMethodConfig();
+
+var directProblems = new HarmonicRotorDirectProblem2DFactory().Create
+(
+    () => new LocalOptimalScheme(new LUPrecondition(luIncompleteDecomposition), iterativeMethodConfig),
+    //() => new LU(new LUDecomposition()),
+    maxThreads > frequencies.Length ? maxThreads : frequencies.Length
+);
+
 var measurementCalculatorManager = new HarmonicMeasurementCalculatorManager(directProblems);
 
 var firstBoundaries =
@@ -109,7 +130,7 @@ stopwatch.Stop();
 var time = (double)stopwatch.ElapsedMilliseconds / 1000;
 
 gridWriter.WriteAreas(trueGridParameters, trueMaterials, "true areas.txt");
-measurementsWriter.WriteMeasurements(receiverLines, trueMeasurements, frequencies, 0,"true phase differences.txt");
+measurementsWriter.WriteMeasurements(receiverLines, trueMeasurements, frequencies, 0,"true measurements.txt");
 
 Console.WriteLine();
 Console.WriteLine("True measurements calculated");
@@ -120,7 +141,7 @@ Console.WriteLine($"Elapsed time {time}");
 //    Console.WriteLine(phaseDifference);
 //}
 
-var gridParameters = TestGridParameters.GetGridWith0Dot003125StepWithElementNearToWellWith8Materials();
+var gridParameters = TestGridParameters.GetGridWith0Dot003125StepWithElementCloseToWellWith8Materials();
 var materials = TestMaterials.GetMaterialsForGridWith0Dot003125StepWith8Materials();
 
 var inverseProblemContextProvider = new HarmonicInverseProblem2DContextProvider();
@@ -139,7 +160,7 @@ var alphaRegularization = new AlphaRegularization2D
     targetParameters,
     new Interval { Begin = 1e-3, End = 5 },
     2,
-    0.05,
+    0.1,
     0.125
 );
 

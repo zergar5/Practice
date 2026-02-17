@@ -1,12 +1,35 @@
-﻿using Application.DirectProblem._2D.Cylindrical.Harmonic;
-using Application.FEM._2D.Assembling.Boundaries.First;
-using Domain.Nodes;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
+using Application.DirectProblem._2D.Cylindrical.Harmonic;
+using Application.EquationSystems;
+using Application.EquationSystems.MatrixDecompositions.LU;
+using Application.EquationSystems.Preconditions.Separate;
+using Application.EquationSystems.Solvers.Sparse;
+using Application.FEM._2D.Assembling.Boundaries.First;
+using Application.MathObjects.Equation;
+using Application.MathObjects.Matrices;
+using Domain.Nodes;
 using Tests;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+
+//var globalMatrix = new SparseMatrix<double>
+//(
+//    [0, 0, 1, 2, 4],
+//    [0, 0, 0, 1],
+//    [10d, 10d, 10d, 10d],
+//    [1d, 1d, 1d, 1d],
+//    [2d, 2d, 2d, 2d]
+//);
+
+//var lu = new LU(new LUDecomposition());
+//var rightPart = new Application.MathObjects.Vectors.Vector<double>([16d, 13d, 11d, 12d]);
+//var sol = new Application.MathObjects.Vectors.Vector<double>(rightPart.Count);
+
+//var profequation = new Equation<ISparseMatrix<double>, double>(globalMatrix, sol, rightPart);
+
+//var soluti = lu.Solve(profequation);
 
 var gridParameters = TestGridParameters.GetGridWith0Dot003125StepWithElementCloseToWellWith8Materials();
 var materials = TestMaterials.GetMaterialsForGridWith0Dot003125StepWith8Materials();
@@ -25,7 +48,9 @@ for (var i = 0; i < sources.Length; i++)
     centersZ[i] = (sources[i].Location.Z() + receiverLines[i].ReceiverN.Z()) / 2;
 }
 
-var directProblem = new HarmonicRotorDirectProblem2DFactory().Create();
+//var directProblem = new HarmonicRotorDirectProblem2DFactory().Create(new LocalOptimalScheme(new LUPrecondition(new LUIncompleteDecomposition()), new IterativeMethodConfig()));
+var directProblem = new HarmonicRotorDirectProblem2DFactory().Create(new LU(new LUDecomposition()));
+
 var firstBoundaries =
     new ComplexDefinedValueFirstBoundaryProvider2D().GetOnAllBounds(gridParameters, new Complex(0, 0));
 

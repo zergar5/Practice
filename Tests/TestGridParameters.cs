@@ -372,6 +372,7 @@ public class TestGridParameters
                 new UniformSplitStrategy(16),
                 new StepProportionalSplitStrategy(0.003125, 1.1),
                 new StepProportionalSplitStrategy(0.1, 1.1),
+                new StepProportionalSplitStrategy(0.25, 1.1),
             ],
             YSplitStrategies =
             [
@@ -400,7 +401,7 @@ public class TestGridParameters
                 {
                     MaterialId = 1,
                     XStartControlPointId = 1,
-                    XEndControlPointId = 3,
+                    XEndControlPointId = 4,
                     YStartControlPointId = 7,
                     YEndControlPointId = 8,
                 },
@@ -449,8 +450,8 @@ public class TestGridParameters
                 new Area2D
                 {
                     MaterialId = 4,
-                    XStartControlPointId = 2,
-                    XEndControlPointId = 3,
+                    XStartControlPointId = 1,
+                    XEndControlPointId = 2,
                     YStartControlPointId = 2,
                     YEndControlPointId = 3,
                 },
@@ -484,7 +485,7 @@ public class TestGridParameters
                 {
                     MaterialId = 7,
                     XStartControlPointId = 1,
-                    XEndControlPointId = 3,
+                    XEndControlPointId = 4,
                     YStartControlPointId = 0,
                     YEndControlPointId = 1,
                 },

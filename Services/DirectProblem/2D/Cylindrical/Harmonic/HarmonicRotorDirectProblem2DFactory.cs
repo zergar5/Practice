@@ -1,6 +1,7 @@
 ﻿using Application.EquationSystems;
 using Application.EquationSystems.MatrixDecompositions.LU;
 using Application.EquationSystems.Preconditions.Separate;
+using Application.EquationSystems.Solvers;
 using Application.EquationSystems.Solvers.Sparse;
 using Application.FEM._1D.Assembling.Local;
 using Application.FEM._2D;
@@ -23,7 +24,7 @@ namespace Application.DirectProblem._2D.Cylindrical.Harmonic;
 
 public class HarmonicRotorDirectProblem2DFactory : IDirectProblem2DFactory<Complex, GridBuilder2D.Grid2DParameters, MaterialWithSigmaMu>
 {
-    public IHarmonicDirectProblem2DWithSources<Complex, GridBuilder2D.Grid2DParameters, MaterialWithSigmaMu> Create()
+    public IHarmonicDirectProblem2DWithSources<Complex, GridBuilder2D.Grid2DParameters, MaterialWithSigmaMu> Create(ISparseSLAESolver slaeSolver)
     {
         var directProblemContextProvider = new HarmonicRotorDirectProblem2DContextProvider();
         var bilinearBasisFunctionsProvider = new BilinearBasisFunctionsProvider(directProblemContextProvider);
@@ -51,7 +52,7 @@ public class HarmonicRotorDirectProblem2DFactory : IDirectProblem2DFactory<Compl
 
         var sparseInserter = new SparseInserter();
 
-        var slaeSolver = new LocalOptimalScheme(new LUPrecondition(new LUIncompleteDecomposition()), new IterativeMethodConfig());
+        //var slaeSolver = new LocalOptimalScheme(new LUPrecondition(new LUIncompleteDecomposition()), new IterativeMethodConfig());
 
         return new HarmonicRotorDirectProblem2D
         (
@@ -71,14 +72,14 @@ public class HarmonicRotorDirectProblem2DFactory : IDirectProblem2DFactory<Compl
         );
     }
 
-    public IHarmonicDirectProblem2DWithSources<Complex, GridBuilder2D.Grid2DParameters, MaterialWithSigmaMu>[] Create(int count)
+    public IHarmonicDirectProblem2DWithSources<Complex, GridBuilder2D.Grid2DParameters, MaterialWithSigmaMu>[] Create(Func<ISparseSLAESolver> slaeSolverFactoryMethod, int count)
     {
         var directProblems =
             new IHarmonicDirectProblem2DWithSources<Complex, GridBuilder2D.Grid2DParameters, MaterialWithSigmaMu>[count];
 
         for (var i = 0; i < count; i++)
         {
-            directProblems[i] = Create();
+            directProblems[i] = Create(slaeSolverFactoryMethod());
         }
 
         return directProblems;

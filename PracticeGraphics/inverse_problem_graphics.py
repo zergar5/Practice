@@ -180,7 +180,7 @@ def draw_areas_plot_for_initial_values(areas):
     plt.show()
 
 # Директория, откуда нужно считать файлы
-directory = "..\\InverseProblemDesktop\\Results\\0 Sigmas 2 VerticalBounds 5 HorizontalBounds 4 Frequencies 10 Receivers\\"
+directory = "..\\InverseProblemDesktop\\Results\\7 Sigmas 2 VerticalBounds 7 HorizontalBounds 7 Frequencies 10 Receivers\\"
 
 # Обработка каждого файла в директории
 for file_name in os.listdir(directory):

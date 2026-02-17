@@ -5,38 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8f305864-4292-4f2b-a10b-58430eeebd4c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Common/Extensions/DoubleExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Common/Extensions/DoubleExtensions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../DirectProblem/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../DirectProblem/Program.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../DirectProblemDesktop/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../DirectProblemDesktop/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Domain/Interval.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Domain/Interval.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Domain/Nodes/Node2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Domain/Nodes/Node2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../InverseProblem/Assembling/SLAEAssembler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../InverseProblem/Assembling/SLAEAssembler.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../InverseProblemDesktop/InverseProblemDesktop.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../InverseProblemDesktop/InverseProblemDesktop.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../InverseProblemDesktop/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../InverseProblemDesktop/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/PracticeGraphics.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PracticeGraphics.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InverseProblemDesktop/Results/7 Sigmas 2 VerticalBounds 5 HorizontalBounds 7 Frequencies 10 Receivers/true phase differences.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/inverse_problem_graphics.py" beforeDir="false" afterPath="$PROJECT_DIR$/inverse_problem_graphics.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Services/DirectProblem/2D/Cylindrical/Harmonic/HarmonicRotorDirectProblem2DFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/DirectProblem/2D/Cylindrical/Harmonic/HarmonicRotorDirectProblem2DFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Services/DirectProblem/2D/DirectProblem2DContextProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/DirectProblem/2D/DirectProblem2DContextProvider.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Services/DirectProblem/2D/IDirectProblem2DFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/DirectProblem/2D/IDirectProblem2DFactory.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Services/EquationSystems/Solvers/Sparse/LocalOptimalScheme.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/EquationSystems/Solvers/Sparse/LocalOptimalScheme.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Services/FEM/2D/Assembling/Boundaries/BoundCoverageResolver2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/FEM/2D/Assembling/Boundaries/BoundCoverageResolver2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Services/FEM/2D/Grid/GridBuilder2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/FEM/2D/Grid/GridBuilder2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Services/FEM/Assembling/2D/Boundaries/First/IDefinedValueFirstBoundaryProvider2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/FEM/Assembling/2D/Boundaries/First/IDefinedValueFirstBoundaryProvider2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Services/FEM/Core/Grid/Grid.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/FEM/Core/Grid/Grid.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Services/FEM/Core/Grid/Splitting/UniformSplitStrategy.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/FEM/Core/Grid/Splitting/UniformSplitStrategy.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Services/InverseProblem/2D/Harmonic/ConcurrentHarmonicInverseProblem2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/InverseProblem/2D/Harmonic/ConcurrentHarmonicInverseProblem2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Services/InverseProblem/Assembling/Concurrent/HarmonicMeasurementCalculatorManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/InverseProblem/Assembling/Concurrent/HarmonicMeasurementCalculatorManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Services/InverseProblem/Assembling/Derivatives/2D/Harmonic/HarmonicMeasurementDerivativesCalculator2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/InverseProblem/Assembling/Derivatives/2D/Harmonic/HarmonicMeasurementDerivativesCalculator2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Services/InverseProblem/Assembling/Regularization/Alpha/2D/AlphaRegularization2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/InverseProblem/Assembling/Regularization/Alpha/2D/AlphaRegularization2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Services/MathObjects/Vectors/VectorPool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/MathObjects/Vectors/VectorPool.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Tests/TestFrequencies.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Tests/TestFrequencies.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Services/MathObjects/Matrices/SparseMatrix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Services/MathObjects/Matrices/SparseMatrix.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Tests/TestGridParameters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Tests/TestGridParameters.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Tests/TestMaterials.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Tests/TestMaterials.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Tests/TestReceiverAndSourceConstructions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Tests/TestReceiverAndSourceConstructions.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -117,6 +95,10 @@
       <workItem from="1766717958215" duration="16000" />
       <workItem from="1766724464772" duration="1024000" />
       <workItem from="1766726188904" duration="120000" />
+      <workItem from="1766985591495" duration="5000" />
+      <workItem from="1766985612829" duration="1597000" />
+      <workItem from="1766987978319" duration="141000" />
+      <workItem from="1766988161147" duration="1365000" />
     </task>
     <servers />
   </component>
@@ -136,6 +118,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/PracticeGraphics$direct_problem_graphics.coverage" NAME="direct_problem_graphics Coverage Results" MODIFIED="1765376324217" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/PracticeGraphics$inverse_problem_graphics.coverage" NAME="inverse_problem_graphics Coverage Results" MODIFIED="1766726202244" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/PracticeGraphics$inverse_problem_graphics.coverage" NAME="inverse_problem_graphics Coverage Results" MODIFIED="1766988699965" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

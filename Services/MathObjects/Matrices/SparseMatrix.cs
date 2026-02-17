@@ -1,5 +1,6 @@
 ﻿using Application.MathObjects.Vectors;
 using System.Numerics;
+using Common.Extensions;
 
 namespace Application.MathObjects.Matrices;
 
@@ -110,7 +111,7 @@ public class SparseMatrix<T> : SparseMatrixBase<T>, ISparseMatrix<T> where T : I
         _upperValues = new T[rowIndexes[^1]];
     }
 
-    private SparseMatrix
+    public SparseMatrix
     (
         int[] rowIndexes,
         int[] columnIndexes,
@@ -167,5 +168,48 @@ public static class SparseMatrixExtensions
         }
 
         return result;
+    }
+
+    public static IProfileMatrix<double> ToProfileMatrix(this ISparseMatrix<double> sparseMatrix)
+    {
+        var diagonal = new double[sparseMatrix.RowCount];
+        var rowsIndexes = sparseMatrix.RowIndexes.ToArray();
+        var lowerValues = new List<double>();
+        var upperValues = new List<double>();
+
+        for (var i = 1; i < rowsIndexes.Length; i++)
+        {
+            var previousRowIndex = i - 1;
+            var rowBegin = previousRowIndex;
+
+            diagonal[previousRowIndex] = sparseMatrix[previousRowIndex, previousRowIndex];
+
+            foreach (var j in sparseMatrix[previousRowIndex])
+            {
+                if (sparseMatrix[previousRowIndex, j].EqualTo(0) && sparseMatrix[j, previousRowIndex].EqualTo(0)) 
+                    continue;
+
+                rowBegin = j;
+                break;
+            }
+
+            rowsIndexes[i] = rowsIndexes[previousRowIndex] + (previousRowIndex - rowBegin);
+
+            for (var k = rowsIndexes[previousRowIndex]; k < rowsIndexes[i]; k++, rowBegin++)
+            {
+                try
+                {
+                    lowerValues.Add(sparseMatrix[previousRowIndex, rowBegin]);
+                    upperValues.Add(sparseMatrix[rowBegin, previousRowIndex]);
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    lowerValues.Add(0d);
+                    upperValues.Add(0d);
+                }
+            }
+        }
+
+        return new ProfileMatrix<double>(rowsIndexes, diagonal, lowerValues, upperValues);
     }
 }
