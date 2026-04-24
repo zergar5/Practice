@@ -6,7 +6,7 @@ public static class DoubleExtensions
 
     public static bool EqualTo(this double self, double other, double precision = DefaultDoublePrecision)
     {
-        return Math.Abs(self - other) <= precision;
+        return Difference(self, other) <= precision;
     }
 
     public static bool LessOrEqualThan(this double self, double other, double precision = DefaultDoublePrecision)

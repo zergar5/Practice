@@ -47,7 +47,7 @@ public class StepUniformSplitStrategy : ISplitStrategy
 
         if (_safe)
         {
-            steps = Math.Ceiling(steps);
+            steps = Math.Round(steps, MidpointRounding.AwayFromZero);
         }
         else
         {

@@ -53,6 +53,9 @@ public class HarmonicRotorDirectProblem2D : IHarmonicDirectProblem2DWithSources<
     public IGrid<Node2D, IElement2D> GenerateGrid(Grid2DParameters gridParameters)
     {
         var grid = _gridBuilder.Build(gridParameters);
+
+        Console.WriteLine($"Grid built with node count {grid.Nodes.Count}");
+
         var context = _problemContextProvider.Get();
 
         context.Grid = grid;

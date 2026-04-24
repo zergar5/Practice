@@ -14,7 +14,7 @@ public class ConcurrentHarmonicEquationAssembler2D : IHarmonicEquationAssembler
 
     private Parameter[] _parameters;
     private double[,] _targetMeasurements;
-    private double[,] _weightsSquares;
+    private double[,] _weights;
     private double[,,] _measurementDerivatives;
     private IEquation<IMatrix<double>, double> _equation;
 
@@ -28,11 +28,11 @@ public class ConcurrentHarmonicEquationAssembler2D : IHarmonicEquationAssembler
         _parallelOptions = parallelOptions;
     }
 
-    public IHarmonicEquationAssembler AllocateEquation(Parameter[] parameters, double[,] targetMeasurements, double[,] weightSquares)
+    public IEquation<IMatrix<double>, double> AllocateEquation(Parameter[] parameters, double[,] targetMeasurements, double[,] weights)
     {
         _parameters = parameters;
         _targetMeasurements = targetMeasurements;
-        _weightsSquares = weightSquares;
+        _weights = weights;
         _measurementDerivatives = new double[parameters.Length, targetMeasurements.GetLength(0), targetMeasurements.GetLength(1)];
 
         _equation = new Equation<IMatrix<double>, double>
@@ -49,7 +49,7 @@ public class ConcurrentHarmonicEquationAssembler2D : IHarmonicEquationAssembler
             calculator.Init();
         }
 
-        return this;
+        return _equation;
     }
 
     public IEquation<IMatrix<double>, double> Assemble(double[,] measurements)
@@ -105,7 +105,7 @@ public class ConcurrentHarmonicEquationAssembler2D : IHarmonicEquationAssembler
                 {
                     for (var k = 0; k < measurementDerivatives.GetLength(2); k++)
                     {
-                        sum += _weightsSquares[i, k] * measurementDerivatives[q, i, k] *
+                        sum += Math.Pow(_weights[i, k], 2) * measurementDerivatives[q, i, k] *
                                measurementDerivatives[s, i, k];
                     }
                 }
@@ -125,8 +125,7 @@ public class ConcurrentHarmonicEquationAssembler2D : IHarmonicEquationAssembler
             {
                 for (var k = 0; k < measurements.GetLength(1); k++)
                 {
-                    sum -= _weightsSquares[i, k] *
-                           (measurements[i, k] - _targetMeasurements[i, k]) *
+                    sum -= Math.Pow(_weights[i, k], 2) * (measurements[i, k] - _targetMeasurements[i, k]) *
                            measurementDerivatives[q, i, k];
                 }
             }

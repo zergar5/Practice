@@ -10,19 +10,19 @@ public class TestGridParameters
     {
         var gridParameters = new GridBuilder2D.Grid2DParameters
         {
-            XControlPoints = [1e-4, 0.1, 3d],
+            XControlPoints = [1e-4, 0.1, 4d],
             YControlPoints = [-6d, -4d, -3d, -2d, 0d],
             XSplitStrategies =
             [
                 new UniformSplitStrategy(16),
-                new StepProportionalSplitStrategy(0.003125, 1.1),
+                new StepProportionalSplitStrategy(0.00625, 1.1),
             ],
             YSplitStrategies =
             [
-                new StepProportionalSplitStrategy(0.003125, 1 / 1.1),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepProportionalSplitStrategy(0.003125, 1.1),
+                new StepProportionalSplitStrategy(0.00625, 1 / 1.1),
+                new UniformSplitStrategy(160),
+                new UniformSplitStrategy(160),
+                new StepProportionalSplitStrategy(0.00625, 1.1),
             ],
             Areas =
             [
@@ -87,19 +87,19 @@ public class TestGridParameters
     {
         var gridParameters = new GridBuilder2D.Grid2DParameters
         {
-            XControlPoints = [1e-4, 0.1, 3d],
-            YControlPoints = [-6d, -4d, -3d, -2d, 0d],
+            XControlPoints = [1e-4, 0.1, 4d],
+            YControlPoints = [-6d, -4, -3d, -2d, 0d],
             XSplitStrategies =
             [
-                new UniformSplitStrategy(16),
-                new StepProportionalSplitStrategy(0.003125, 1.1),
+                new UniformSplitStrategy(8),
+                new StepProportionalSplitStrategy(0.0125, 1.1),
             ],
             YSplitStrategies =
             [
-                new StepProportionalSplitStrategy(0.003125, 1 / 1.1),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepProportionalSplitStrategy(0.003125, 1.1),
+                new StepProportionalSplitStrategy(0.0125, 1 / 1.1),
+                new UniformSplitStrategy(80),
+                new UniformSplitStrategy(80),
+                new StepProportionalSplitStrategy(0.0125, 1.1),
             ],
             Areas =
             [
@@ -161,10 +161,10 @@ public class TestGridParameters
             YSplitStrategies =
             [
                 new StepProportionalSplitStrategy(0.003125, 1 / 1.1),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
+                new UniformSplitStrategy(240),
+                new UniformSplitStrategy(80),
+                new UniformSplitStrategy(80),
+                new UniformSplitStrategy(240),
                 new StepProportionalSplitStrategy(0.003125, 1.1),
             ],
             Areas =
@@ -261,10 +261,10 @@ public class TestGridParameters
             YSplitStrategies =
             [
                 new StepProportionalSplitStrategy(0.003125, 1 / 1.1),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
+                new UniformSplitStrategy(320),
+                new UniformSplitStrategy(320),
+                new UniformSplitStrategy(320),
+                new UniformSplitStrategy(320),
                 new StepProportionalSplitStrategy(0.003125, 1.1),
             ],
             Areas =
@@ -377,12 +377,12 @@ public class TestGridParameters
             YSplitStrategies =
             [
                 new StepProportionalSplitStrategy(0.003125, 1 / 1.1),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
-                new StepUniformSplitStrategy(0.003125, true),
+                new UniformSplitStrategy(80),
+                new UniformSplitStrategy(160),
+                new UniformSplitStrategy(80),
+                new UniformSplitStrategy(80),
+                new UniformSplitStrategy(160),
+                new UniformSplitStrategy(80),
                 new StepProportionalSplitStrategy(0.003125, 1.1),
             ],
             Areas =

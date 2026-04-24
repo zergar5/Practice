@@ -61,16 +61,34 @@ public class AlphaRegularization2D : IAlphaRegularization
 
     public IVector<double> Regularize(IEquation<IMatrix<double>, double> equation)
     {
-        SetupAlphas(equation.Matrix);
-        FindInitialAlphas(equation);
-        FindBestAlphaForEachParameter(equation);
+        //SetupAlphas(equation.Matrix);
 
-        for (var i = 0; i < equation.Matrix.RowCount; i++)
-        {
-            Console.WriteLine($"Alpha {i} {_alphas[i]:E16}");
-        }
+        //for (var i = 0; i < equation.Matrix.RowCount; i++)
+        //{
+        //    Console.WriteLine($"Initial alpha {i} {_alphas[i]:E16}");
+        //}
 
-        return _currentDeltas;
+        //FindInitialAlphas(equation);
+
+        //for (var i = 0; i < _regularizedEquation.Solution.Count; i++)
+        //{
+        //    Console.WriteLine($"Initial deltas {i} {_regularizedEquation.Solution[i]:F6}");
+        //}
+
+        //FindBestAlphaForEachParameter(equation);
+
+        //for (var i = 0; i < equation.Matrix.RowCount; i++)
+        //{
+        //    Console.WriteLine($"Final alpha {i} {_alphas[i]:E16}");
+        //}
+
+        //return _currentDeltas;
+
+        AssembleRegularizedEquation(equation);
+
+        _gaussElimination.Solve(_regularizedEquation);
+
+        return _regularizedEquation.Solution;
     }
 
     private void SetupAlphas(IMatrix<double> matrix)

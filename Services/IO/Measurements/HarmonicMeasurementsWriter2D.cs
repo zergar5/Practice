@@ -1,5 +1,10 @@
-﻿using Domain.Environment;
+﻿using System.Numerics;
+using Application.DirectProblem;
+using Domain.Environment;
 using Domain.Nodes;
+using System.Xml.Linq;
+using Application.FEM._2D;
+using Application.FEM.Core.Grid;
 
 namespace Application.IO.Measurements;
 
@@ -44,5 +49,43 @@ public class HarmonicMeasurementsWriter2D
         }
 
         streamWriterForPython.WriteLine($"{functional:E6}");
+    }
+
+    public void WriteMeasurements(double[] zPoints, double[] measurements, string fileName)
+    {
+        using var streamWriterForPython =
+            new StreamWriter(_path + fileName, new FileStreamOptions { Access = FileAccess.Write, Mode = FileMode.Create });
+
+        foreach (var zPoint in zPoints)
+        {
+            streamWriterForPython.Write($"{zPoint:F15} ");
+        }
+
+        streamWriterForPython.WriteLine();
+
+        foreach (var measurement in measurements)
+        {
+            streamWriterForPython.Write($"{measurement:E15} ");
+        }
+    }
+
+    public void WriteSinuses(ISolutionResolver<Complex, Node2D> solution, IGrid<Node2D, IElement2D> grid, string fileName)
+    {
+        using var binaryWriter = new BinaryWriter(File.Open(_path + fileName, FileMode.OpenOrCreate));
+
+        foreach (var node in grid.Nodes)
+        {
+            binaryWriter.Write(solution.Get(node).Real);
+        }
+    }
+
+    public void WriteCosinuses(ISolutionResolver<Complex, Node2D> solution, IGrid<Node2D, IElement2D> grid, string fileName)
+    {
+        using var binaryWriter = new BinaryWriter(File.Open(_path + fileName, FileMode.OpenOrCreate));
+
+        foreach (var node in grid.Nodes)
+        {
+            binaryWriter.Write(solution.Get(node).Imaginary);
+        }
     }
 }

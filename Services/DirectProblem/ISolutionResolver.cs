@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using Application.MathObjects.Vectors;
 
 namespace Application.DirectProblem;
 

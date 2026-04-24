@@ -29,11 +29,10 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
     private readonly HarmonicMeasurementsWriter2D _measurementsWriter;
     private readonly ParallelOptions _parallelOptions;
 
-
     private Parameter[] _targetParameters;
     private double[,] _targetMeasurements;
     private double[,] _currentMeasurements;
-    private double[,] _weightSquares;
+    private double[,] _weights;
 
     public ConcurrentHarmonicInverseProblem2D
     (
@@ -121,18 +120,15 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
         _targetParameters = parameters;
         _targetMeasurements = targetMeasurements;
         _currentMeasurements = new double[frequencies.Length, receiverLines.Length];
-        _weightSquares = new double[frequencies.Length, receiverLines.Length];
+        _weights = new double[frequencies.Length, receiverLines.Length];
 
-        CalculateWeightSquares();
+        CalculateWeights();
     }
 
     public IVector<double> Solve()
     {
         var previousFunctional = double.MaxValue;
-
-        IEquation<IMatrix<double>, double> equation = null!;
-
-        _equationAssembler.AllocateEquation(_targetParameters, _targetMeasurements, _weightSquares);
+        var equation = _equationAssembler.AllocateEquation(_targetParameters, _targetMeasurements, _weights);
 
         GetMeasurements();
 
@@ -167,7 +163,7 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
 
             for (var j = 0; j < equation.Solution.Count; j++)
             {
-                Console.WriteLine($"Parameter {_targetParameters[j].Type} {_targetParameters[j].Index} value {equation.Solution[j]:F6} delta {parameterDeltas[j]:F6}");
+                Console.WriteLine($"Parameter {_targetParameters[j].Type} {_targetParameters[j].Index} value {equation.Solution[j]:F16} delta {parameterDeltas[j]:F16}");
             }
 
             _gridWriter.WriteAreas(gridParameters, materials, $"iteration {i} areas.txt");
@@ -177,7 +173,7 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
         return equation.Solution;
     }
 
-    private void CalculateWeightSquares()
+    private void CalculateWeights()
     {
         var problemContext = _problemContextProvider.Get();
 
@@ -185,7 +181,7 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
         {
             for (var j = 0; j < problemContext.ReceiverLines.Length; j++)
             {
-                _weightSquares[i, j] = Math.Pow(1 / _targetMeasurements[i, j], 2);
+                _weights[i, j] = 1 / _targetMeasurements[i, j];
             }
         }
     }
@@ -271,8 +267,7 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
         {
             for (var j = 0; j < receiverLines.Length; j++)
             {
-                functional += _weightSquares[i, j] *
-                              Math.Pow(_currentMeasurements[i, j] - _targetMeasurements[i, j], 2);
+                functional += Math.Pow(_weights[i, j] * (_currentMeasurements[i, j] - _targetMeasurements[i, j]), 2);
             }
         }
 

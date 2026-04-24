@@ -35,7 +35,7 @@ def draw_phase_differences_plot_for_iteration(frequencies, z_coordinate, measure
     plt.xlabel('Phase differences')
     plt.ylabel('Z, m')
     plt.title(f'Phase differences on iteration {iteration_number}')
-    plt.ylim(-3.5, -2.5)
+    plt.ylim(-4, -2)
     plt.legend()
     plt.show()
 
@@ -68,7 +68,7 @@ def draw_areas_plot_for_iteration(areas, iteration):
     ax.set_ylabel('Z, m')
     ax.set_title(f'Areas on iteration {iteration}')
     ax.set_aspect('auto', adjustable='box')
-    ax.set_xlim(1e-4, 3)
+    ax.set_xlim(1e-4, 4)
     ax.set_ylim(-6, 0)
 
     # Добавляем цветовую шкалу
@@ -85,7 +85,7 @@ def draw_plot_for_true_values(frequencies, z_coordinate, measurements):
     plt.xlabel('Phase differences')
     plt.ylabel('Z, m')
     plt.title(f'Phase differences true')
-    plt.ylim(-3.5, -2.5)
+    plt.ylim(-4, -2)
     plt.legend()
     plt.show()
 
@@ -118,7 +118,7 @@ def draw_areas_plot_for_true_values(areas):
     ax.set_ylabel('Z, m')
     ax.set_title(f'Area true')
     ax.set_aspect('auto', adjustable='box')
-    ax.set_xlim(1e-4, 3)
+    ax.set_xlim(1e-4, 4)
     ax.set_ylim(-6, 0)
 
     # Добавляем цветовую шкалу
@@ -135,7 +135,7 @@ def draw_plot_for_initial_values(frequencies, z_coordinate, measurements):
     plt.xlabel('Phase differences')
     plt.ylabel('Z, m')
     plt.title(f'Initial phase differences')
-    plt.ylim(-3.5, -2.5)
+    plt.ylim(-4, -2)
     plt.legend()
     plt.show()
 
@@ -168,7 +168,7 @@ def draw_areas_plot_for_initial_values(areas):
     ax.set_ylabel('Z, m')
     ax.set_title(f'Initial area')
     ax.set_aspect('auto', adjustable='box')
-    ax.set_xlim(1e-4, 3)
+    ax.set_xlim(1e-4, 4)
     ax.set_ylim(-6, 0)
 
     # Добавляем цветовую шкалу
@@ -180,7 +180,7 @@ def draw_areas_plot_for_initial_values(areas):
     plt.show()
 
 # Директория, откуда нужно считать файлы
-directory = "..\\InverseProblemDesktop\\Results\\7 Sigmas 2 VerticalBounds 7 HorizontalBounds 7 Frequencies 10 Receivers\\"
+directory = "..\\InverseProblemDesktop\\Results\\0 Sigmas 0 VerticalBounds 1 HorizontalBounds 1 Frequencies 39 Receivers\\"
 
 # Обработка каждого файла в директории
 for file_name in os.listdir(directory):

@@ -74,6 +74,8 @@ public class HarmonicMeasurementDerivativesCalculator2D : IHarmonicMeasurementDe
 
         SetParameterValue(parameter, parameterValue + delta);
 
+        //Console.WriteLine($"{parameter.Type} {parameter.Index} with value {parameterValue} shifted on {delta} to {parameterValue + delta}");
+
         switch (parameter.Type)
         {
             case ParameterType.Sigma:
@@ -105,6 +107,8 @@ public class HarmonicMeasurementDerivativesCalculator2D : IHarmonicMeasurementDe
                 var fieldN = solution.Get(receiverLines[j].ReceiverN);
 
                 _measurementDerivatives![i, j] = (fieldM.Phase - fieldN.Phase) * 180d / Math.PI;
+
+                //Console.WriteLine(_measurementDerivatives![i, j]);
 
                 _measurementDerivatives[i, j] =
                     (_measurementDerivatives[i, j] - measurements[i, j]) / delta;
