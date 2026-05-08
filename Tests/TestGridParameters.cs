@@ -97,8 +97,8 @@ public class TestGridParameters
             YSplitStrategies =
             [
                 new StepProportionalSplitStrategy(0.0125, 1 / 1.1),
-                new UniformSplitStrategy(80),
-                new UniformSplitStrategy(80),
+                new StepUniformSplitStrategy(0.0125, true),
+                new StepUniformSplitStrategy(0.0125, true),
                 new StepProportionalSplitStrategy(0.0125, 1.1),
             ],
             Areas =
@@ -150,22 +150,22 @@ public class TestGridParameters
     {
         var gridParameters = new GridBuilder2D.Grid2DParameters
         {
-            XControlPoints = [1e-4, 0.1, 1d, 3d],
+            XControlPoints = [1e-4, 0.1, 1d, 4d],
             YControlPoints = [-6d, -4d, -3.25, -3d, -2.75, -2d, 0d],
             XSplitStrategies =
             [
-                new UniformSplitStrategy(16),
-                new StepProportionalSplitStrategy(0.003125, 1.1),
-                new StepProportionalSplitStrategy(0.1, 1.1),
+                new UniformSplitStrategy(8),
+                new StepProportionalSplitStrategy(0.0125, 1.1),
+                new StepProportionalSplitStrategy(0.21, 1.1),
             ],
             YSplitStrategies =
             [
-                new StepProportionalSplitStrategy(0.003125, 1 / 1.1),
-                new UniformSplitStrategy(240),
-                new UniformSplitStrategy(80),
-                new UniformSplitStrategy(80),
-                new UniformSplitStrategy(240),
-                new StepProportionalSplitStrategy(0.003125, 1.1),
+                new StepProportionalSplitStrategy(0.0125, 1 / 1.1),
+                new StepUniformSplitStrategy(0.0125, true),
+                new StepUniformSplitStrategy(0.0125, true),
+                new StepUniformSplitStrategy(0.0125, true),
+                new StepUniformSplitStrategy(0.0125, true),
+                new StepProportionalSplitStrategy(0.0125, 1.1),
             ],
             Areas =
             [

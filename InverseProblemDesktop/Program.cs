@@ -22,13 +22,13 @@ using Tests;
 
 Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-var trueGridParameters = TestGridParameters.GetGridWith0Dot003125StepWith4Materials();
-var trueMaterials = TestMaterials.GetMaterialsForGridWith0Dot003125StepWith4Materials();
+var trueGridParameters = TestGridParameters.GetGridWith0Dot003125StepWithElementCloseToWellWith8Materials();
+var trueMaterials = TestMaterials.GetMaterialsForGridWith0Dot003125StepWith8Materials();
 var frequencies = TestFrequencies.GetOneFrequency().Select(f => f * 2 * Math.PI).ToArray();
 
 const int sourcePower = 1;
 
-var (sources, receiverLines) = TestReceiverAndSourceConstructions.GetOneConstruction(sourcePower);
+var (sources, receiverLines) = TestReceiverAndSourceConstructions.GetAllConstructions(sourcePower);
 
 var trueMeasurements = new double[frequencies.Length, sources.Length];
 
@@ -44,14 +44,14 @@ var targetParameters = new Parameter[]
     //new() { Type = ParameterType.Sigma, Index = 6, InitialValue = 0.1 },
     //new() { Type = ParameterType.Sigma, Index = 7, InitialValue = 0.1 },
 
-    //new() { Type = ParameterType.VerticalBound, Index = 2, InitialValue = 1.1 },
+    //new() { Type = ParameterType.VerticalBound, Index = 2, InitialValue = 1.5 },
     //new() { Type = ParameterType.VerticalBound, Index = 3, InitialValue = 2.1 },
 
-    //new() { Type = ParameterType.HorizontalBound, Index = 1, InitialValue = -4.1 },
-    //new() { Type = ParameterType.HorizontalBound, Index = 2, InitialValue = -3.75 },
-    //new() { Type = ParameterType.HorizontalBound, Index = 3, InitialValue = -3.1 },
-    //new() { Type = ParameterType.HorizontalBound, Index = 4, InitialValue = -3.25 },
-    //new() { Type = ParameterType.HorizontalBound, Index = 5, InitialValue = -2 },
+    new() { Type = ParameterType.HorizontalBound, Index = 1, InitialValue = -4.5 },
+    new() { Type = ParameterType.HorizontalBound, Index = 2, InitialValue = -3.75 },
+    new() { Type = ParameterType.HorizontalBound, Index = 3, InitialValue = -3.5 },
+    new() { Type = ParameterType.HorizontalBound, Index = 4, InitialValue = -3.25 },
+    new() { Type = ParameterType.HorizontalBound, Index = 5, InitialValue = -2.5 },
 
     //new() { Type = ParameterType.HorizontalBound, Index = 1, InitialValue = -4.5 },
     //new() { Type = ParameterType.HorizontalBound, Index = 2, InitialValue = -4.25 },
@@ -61,9 +61,8 @@ var targetParameters = new Parameter[]
     //new() { Type = ParameterType.HorizontalBound, Index = 6, InitialValue = -2.75 },
     //new() { Type = ParameterType.HorizontalBound, Index = 7, InitialValue = -2.5 },
 
-    //new() { Type = ParameterType.HorizontalBound, Index = 1, InitialValue = -3.9 },
-    //new() { Type = ParameterType.HorizontalBound, Index = 2, InitialValue = -3.1 },
-    new() { Type = ParameterType.HorizontalBound, Index = 3, InitialValue = -2 },
+    //new() { Type = ParameterType.HorizontalBound, Index = 1, InitialValue = -3.5 },
+    //new() { Type = ParameterType.HorizontalBound, Index = 3, InitialValue = -2.5 },
 };
 
 const int maxPossibleThreads = 10;
@@ -100,9 +99,9 @@ var measurementsWriter = new HarmonicMeasurementsWriter2D(writeBasePath);
 
 Console.WriteLine("True measurements begin calculating");
 
-gridWriter.WriteMaterials(trueGrid, "nvkat2d.dat");
-gridWriter.WriteElements(trueGrid, "nvtr.dat");
-gridWriter.WriteNodes(trueGrid, "rz.dat");
+//gridWriter.WriteMaterials(trueGrid, "nvkat2d.dat");
+//gridWriter.WriteElements(trueGrid, "nvtr.dat");
+//gridWriter.WriteNodes(trueGrid, "rz.dat");
 
 var stopwatch = new Stopwatch();
 stopwatch.Start();
@@ -122,8 +121,8 @@ Parallel.For(0, frequencies.Length, frequenciesParallelOptions, frequencyIndex =
 
         var directProblemSolution = measurementCalculator.Solve();
 
-        measurementsWriter.WriteSinuses(directProblemSolution, trueGrid, "v2s.dat");
-        measurementsWriter.WriteCosinuses(directProblemSolution, trueGrid, "v2c.dat");
+        //measurementsWriter.WriteSinuses(directProblemSolution, trueGrid, "v2s.dat");
+        //measurementsWriter.WriteCosinuses(directProblemSolution, trueGrid, "v2c.dat");
 
         var potentialM = directProblemSolution.Get(receiverLines[j].ReceiverM);
         var potentialN = directProblemSolution.Get(receiverLines[j].ReceiverN);
@@ -152,14 +151,14 @@ Console.WriteLine($"Elapsed time {time}");
 //    Console.WriteLine(phaseDifference);
 //}
 
-var gridParameters = TestGridParameters.GetGridWith0Dot003125StepWith4Materials();
-var materials = TestMaterials.GetMaterialsForGridWith0Dot003125StepWith4Materials();
+var gridParameters = TestGridParameters.GetGridWith0Dot003125StepWithElementCloseToWellWith8Materials();
+var materials = TestMaterials.GetMaterialsForGridWith0Dot003125StepWith8Materials();
 
 var inverseProblemContextProvider = new HarmonicInverseProblem2DContextProvider();
 
 var measurementDerivativesCalculators = directProblems
     .Select(p =>
-        new HarmonicMeasurementDerivativesCalculator2D(inverseProblemContextProvider, p, boundParameterDelta: 0.01))
+        new HarmonicMeasurementDerivativesCalculator2D(inverseProblemContextProvider, p, boundParameterDelta: 0.0125))
     .ToArray<IHarmonicMeasurementDerivativesCalculator>();
 
 var measurementDerivativesCalculatorManager = new HarmonicMeasurementDerivativeCalculatorManager(measurementDerivativesCalculators);
@@ -184,7 +183,8 @@ var inverseProblem = new ConcurrentHarmonicInverseProblem2D
     new MinimizationMethodConfig(),
     gridWriter,
     measurementsWriter,
-    frequenciesParallelOptions
+    frequenciesParallelOptions,
+    0.0125
 );
 
 inverseProblem.SetGridParameters(gridParameters);

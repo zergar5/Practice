@@ -69,7 +69,7 @@ public class StepProportionalSplitStrategy : ISplitStrategy
                 value = nextValue;
                 stepNumber++;
 
-                if (!(interval.Begin > value)) continue;
+                if (!(interval.Begin > value - _startStep * Math.Pow(dischargeRatio, stepNumber))) continue;
 
                 values.Add(interval.Begin);
 
@@ -91,7 +91,7 @@ public class StepProportionalSplitStrategy : ISplitStrategy
                 value = nextValue;
                 stepNumber++;
 
-                if (!(interval.End < value)) continue;
+                if (!(interval.End < value + _startStep * Math.Pow(_dischargeRatio, stepNumber))) continue;
 
                 values.Add(interval.End);
 

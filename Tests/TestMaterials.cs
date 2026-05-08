@@ -78,7 +78,7 @@ public class TestMaterials
             new MaterialWithSigmaMu
             {
                 Id = 1,
-                Sigma = 0.05,
+                Sigma = 0.01,
             },
             new MaterialWithSigmaMu
             {
@@ -88,7 +88,7 @@ public class TestMaterials
             new MaterialWithSigmaMu
             {
                 Id = 3,
-                Sigma = 0.01,
+                Sigma = 0.05,
             },
             new MaterialWithSigmaMu
             {
@@ -98,12 +98,12 @@ public class TestMaterials
             new MaterialWithSigmaMu
             {
                 Id = 5,
-                Sigma = 0.2,
+                Sigma = 0.1,
             },
             new MaterialWithSigmaMu
             {
                 Id = 6,
-                Sigma = 0.1,
+                Sigma = 0.2,
             },
             new MaterialWithSigmaMu
             {

@@ -28,6 +28,7 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
     private readonly GridWriter2D _gridWriter;
     private readonly HarmonicMeasurementsWriter2D _measurementsWriter;
     private readonly ParallelOptions _parallelOptions;
+    private readonly double _minGridStep;
 
     private Parameter[] _targetParameters;
     private double[,] _targetMeasurements;
@@ -43,7 +44,8 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
         MinimizationMethodConfig config,
         GridWriter2D gridWriter,
         HarmonicMeasurementsWriter2D measurementsWriter,
-        ParallelOptions parallelOptions
+        ParallelOptions parallelOptions,
+        double minGridStep
     )
     {
         _problemContextProvider = problemContextProvider;
@@ -54,6 +56,7 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
         _gridWriter = gridWriter;
         _measurementsWriter = measurementsWriter;
         _parallelOptions = parallelOptions;
+        _minGridStep = minGridStep;
     }
 
     public void SetGridParameters(Grid2DParameters gridParameters)
@@ -200,9 +203,11 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
                     problemContext.Materials[parameter.Index].Sigma = parameterValues[i];
                     break;
                 case ParameterType.VerticalBound:
+                    parameterValues[i] = RoundToGridStep(parameterValues[i], _minGridStep);
                     problemContext.GridParameters.XControlPoints[parameter.Index] = parameterValues[i];
                     break;
                 case ParameterType.HorizontalBound:
+                    parameterValues[i] = RoundToGridStep(parameterValues[i], _minGridStep);
                     problemContext.GridParameters.YControlPoints[parameter.Index] = parameterValues[i];
                     break;
                 default:
@@ -282,5 +287,10 @@ public class ConcurrentHarmonicInverseProblem2D : IHarmonicInverseProblem<Grid2D
 
         return Math.Abs(double.Max(1 / functionalRatio, functionalRatio) - 1) >= _config.MinimizePrecision &&
                currentFunctional >= _config.MinimizePrecision;
+    }
+
+    private double RoundToGridStep(double parameterValue, double step)
+    {
+        return Math.Round(parameterValue / step) * step;
     }
 }

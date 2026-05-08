@@ -20,7 +20,7 @@ public class TestReceiverAndSourceConstructions
                 Location = new Node2D
                 {
                     X = 0.05,
-                    Y = -2.85
+                    Y = -3.95
                 },
                 Power = sourcePower,
             };
